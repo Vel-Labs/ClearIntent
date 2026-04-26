@@ -4,6 +4,7 @@ All notable repo changes should be logged here.
 
 ## 2026-04-26
 
+- Modernized root repo-local skills with YAML frontmatter, clearer trigger descriptions, skill-local templates, and a `core-enforcement` skill for the planned `packages/core/` implementation layer.
 - Converted root `ROADMAP.md` and `DECISIONS.md` into high-visibility indexes, moved detailed roadmap scope into `docs/roadmaps/ROADMAP.md`, and split durable decisions into dated logs under `docs/decisions/`.
 - Moved top-level architecture and repo-boundary docs into `docs/architecture/`, moved repo-local skill templates to root `skills/`, and updated scaffold routing/validation references.
 - Added a machine-readable `REPO_PROFILE.json`, scaffold validation command, agent start guide, repo-local skill templates, handoff templates, minimal GitHub hygiene, and docs routing for agent-friendly onboarding.

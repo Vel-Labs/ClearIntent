@@ -113,8 +113,12 @@ scripts/validate-contracts.ts
 scripts/validate-scaffold.ts
 skills/README.md
 skills/agent-assignment-writer/SKILL.md
+skills/agent-assignment-writer/templates/agent-assignment.md
+skills/agent-assignment-writer/templates/fresh-agent-handoff.md
 skills/contract-steward/SKILL.md
+skills/core-enforcement/SKILL.md
 skills/phase-closeout-audit/SKILL.md
+skills/phase-closeout-audit/templates/closeout-audit.md
 skills/repo-orientation/SKILL.md
 tests/README.md
 tests/contracts/validate-contracts.test.ts

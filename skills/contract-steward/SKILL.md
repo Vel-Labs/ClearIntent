@@ -1,13 +1,15 @@
+---
+name: contract-steward
+description: Use when changing ClearIntent contracts, schemas, lifecycle gates, examples, contract validation, or fail-closed authority rules.
+---
+
 # Contract Steward
 
-Use this scaffold skill for changes that touch ClearIntent authority contracts, schemas, fixtures, validation, or tests.
+Contract stewardship keeps canonical authority truth in `contracts/` and prevents drift into tests, docs, or implementation packages.
 
-## Objective
+## Read First
 
-Preserve `contracts/` as the canonical authority contract. Implementation packages and adapters must consume or wrap these contracts, not redefine them.
-
-## Required reading
-
+- `REPO_PROFILE.json`
 - `contracts/README.md`
 - `contracts/authority-lifecycle.md`
 - `docs/governance/stability-handoff.md`
@@ -17,12 +19,21 @@ Preserve `contracts/` as the canonical authority contract. Implementation packag
 
 ## Workflow
 
-1. Confirm the requested change belongs in `contracts/`.
-2. Update schema, fixture, lifecycle docs, and validation together when behavior changes.
-3. Keep human review as an explicit gate. Signing is not a substitute for `HumanReviewCheckpoint`.
-4. Add or update contract tests when contract behavior changes.
-5. Update `DECISIONS.md` and the relevant `docs/decisions/` daily file only for durable architecture decisions.
-6. Update `CHANGELOG.md` for concrete changes.
+1. Identify the canonical truth change and confirm it belongs in `contracts/`.
+2. Update lifecycle docs, schemas, examples, and validation together when meaning changes.
+3. Keep `HumanReviewCheckpoint` as an explicit gate; signing is not a substitute for review.
+4. Add valid and invalid examples when behavior or shape changes.
+5. Update tests under `tests/` as consumers of `contracts/`, not as duplicate truth.
+6. Update `DECISIONS.md` and the relevant `docs/decisions/` daily file only for durable authority or architecture decisions.
+7. Update `CHANGELOG.md` for concrete changes.
+
+## Stop Conditions
+
+Stop before changing governance doctrine, widening downstream implementation scope, or redefining canonical truth outside `contracts/`.
+
+## Contract Law
+
+When `contracts/`, implementation packages, and tests disagree, `contracts/` wins unless the contract layer is deliberately updated with docs, changelog, decision, and validation coverage.
 
 ## Validation
 

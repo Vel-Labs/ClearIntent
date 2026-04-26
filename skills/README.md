@@ -1,12 +1,23 @@
-# Repo-Local Agent Skills
+# Skills
 
-These are scaffold assets for ClearIntent agents. They are not globally installed skills.
+This folder contains ClearIntent repo-local skills in the Claude-style skill layout:
 
-Use them as local operating templates when preparing or executing repo work:
+```text
+skills/
+  skill-name/
+    SKILL.md
+    templates/
+```
 
-- `repo-orientation/` for checkout orientation
-- `contract-steward/` for contract/schema/fixture stewardship
-- `phase-closeout-audit/` for roadmap closeout checks
-- `agent-assignment-writer/` for bounded fresh-agent assignments
+Each `SKILL.md` starts with YAML frontmatter:
 
-If a global agent runtime imports these later, preserve the repo-local authority boundaries in `AGENTS.md` and `REPO_PROFILE.json`.
+```yaml
+---
+name: skill-name
+description: Use when...
+---
+```
+
+These skills are scaffold assets. They are not globally installed automatically. To activate one in an agent runtime, copy or symlink the desired skill folder into that runtime's configured skills directory.
+
+The purpose is to reduce token use by giving humans and agents narrow, reusable instructions for common ClearIntent governance tasks.

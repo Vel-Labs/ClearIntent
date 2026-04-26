@@ -1,29 +1,40 @@
+---
+name: phase-closeout-audit
+description: Use when closing a ClearIntent roadmap phase, scaffold pass, or governance task with verification evidence and follow-up routing.
+---
+
 # Phase Closeout Audit
 
-Use this scaffold skill when closing a roadmap phase or subphase.
+Phase closeout is the evidence pass that turns completed work into inspectable project truth.
 
-## Objective
+## Read First
 
-Verify that implementation, docs, contracts, tests, and roadmap routing agree before a phase is called complete.
-
-## Required reading
-
+- `skills/phase-closeout-audit/templates/closeout-audit.md`
 - `ROADMAP.md`
 - `docs/roadmaps/ROADMAP.md`
 - `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
 - relevant `docs/roadmaps/features/` file
+- `DECISIONS.md`
+- `docs/decisions/`
+- `CHANGELOG.md`
 - `docs/governance/phase-cadence.md`
 - `docs/governance/AUDIT_PHILOSOPHY.md`
-- `docs/templates/CLOSEOUT_AUDIT_TEMPLATE.md`
 
 ## Workflow
 
 1. Identify phase id, promised deliverables, and stop point.
-2. Compare changed files against the phase scope.
-3. Verify docs, decisions, changelog, and audit artifacts are current.
-4. Run the broadest safe validation gate.
-5. Record blockers, degraded states, deferred work, and follow-up routing.
+2. Inspect changed files against scope.
+3. Run the broadest responsible verification, usually `npm run check`.
+4. Create or update the closeout audit note.
+5. Update roadmap/current-state routing.
+6. Update `DECISIONS.md` and a dated decision file when authority or architecture changed.
+7. Update `CHANGELOG.md`.
+8. State follow-up clearly and keep downstream work deferred unless explicitly authorized.
+
+## Required Evidence
+
+Record exact commands and exact results. Do not mark work done from intent alone.
 
 ## Output
 
-Create or update an audit under `docs/audits/` using `docs/templates/CLOSEOUT_AUDIT_TEMPLATE.md`.
+Use the template in `templates/`. Keep the audit factual; findings should tie to files, commands, or explicit missing evidence.

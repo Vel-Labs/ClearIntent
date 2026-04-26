@@ -1,31 +1,34 @@
+---
+name: repo-orientation
+description: Use when orienting a new human or agent to ClearIntent, auditing implemented vs planned surfaces, or preparing a first safe action.
+---
+
 # Repo Orientation
 
-Use this scaffold skill when a local agent needs to understand ClearIntent before making changes.
+Repo orientation builds a checkout-grounded map before changing files. It should separate implemented truth, documented-only plans, and forbidden early scope.
 
-## Objective
-
-Build a repo-grounded orientation from the current checkout. Do not infer product or architecture details from memory alone.
-
-## Inputs
+## Read First
 
 - `AGENTS.md`
 - `REPO_PROFILE.json`
 - `README.md`
+- `docs/agents/START_HERE.md`
 - `contracts/README.md`
 - `contracts/authority-lifecycle.md`
 - `docs/architecture/ARCHITECTURE.md`
 - `docs/architecture/REPO_BOUNDARIES.md`
 - `ROADMAP.md`
 - `docs/roadmaps/ROADMAP.md`
-- `DECISIONS.md`
 - `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
+- `DECISIONS.md`
 
 ## Workflow
 
-1. Read the files in `REPO_PROFILE.json` `readFirstFiles`.
-2. Identify canonical paths, planned paths, and out-of-scope areas.
-3. Run `npm run validate:scaffold` if the task touches onboarding, governance, templates, docs routing, or quality gates.
-4. Report implemented, documented-only, planned, and forbidden early-scope areas separately.
+1. Read `REPO_PROFILE.json` and its `readFirstFiles`.
+2. Confirm the checkout state with `git status --short`.
+3. Identify canonical paths, planned paths, and out-of-scope areas.
+4. Run `npm run validate:scaffold` if the task touches onboarding, governance, templates, docs routing, or quality gates.
+5. Report implemented, documented-only, planned, and forbidden early-scope areas separately.
 
 ## Output
 
