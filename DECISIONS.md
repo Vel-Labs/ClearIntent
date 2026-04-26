@@ -71,3 +71,10 @@ Use this file to record durable architectural decisions.
 - Context: The project must support human intervention and testing throughout the lifecycle, not only final signing.
 - Decision: Add `human_approved` as a lifecycle state and define `HumanReviewCheckpoint` as a required contract before signing or execution.
 - Consequences: Signing is not treated as a substitute for review. Demo and adapter flows must expose a pause point where a human can inspect the exact intent hash, policy hash, risk report, warnings, and executor target.
+
+## 2026-04-26: Contract/core stability handoff gates downstream work
+
+- Status: Accepted
+- Context: ClearIntent can only parallelize provider adapters and demo implementation safely after canonical authority truth and executable enforcement are stable.
+- Decision: Treat `contracts/` plus `packages/core/` as the final stability handoff before ENS, 0G, KeeperHub, signer, Ledger, or demo work proceeds.
+- Consequences: Future scaffolds should include this pattern by default when correctness, replayability, or multi-agent implementation matter. Adapters and demos must consume the contract/core API rather than becoming alternate sources of truth.

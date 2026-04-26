@@ -2,6 +2,11 @@
 
 All notable repo changes should be logged here.
 
+## 2026-04-26
+
+- Hardened the Phase 1B package and documentation baseline with a first-class `npm run typecheck` script, clearer install and validation instructions, explicit `tests/` quality-gate expectations, and updated Phase 1 routing toward `packages/core/`.
+- Added a contract/core stability handoff governance doc and reusable scaffold prompt so future projects can establish canonical truth, executable core enforcement, and local quality gates before adapter or demo work.
+
 ## 2026-04-25
 
 - Added initial ClearIntent governance and documentation scaffold.

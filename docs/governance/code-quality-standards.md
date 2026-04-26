@@ -73,6 +73,17 @@ Fail closed when authority is unclear.
 
 ## Tests
 
+`tests/` is the shared pre-commit quality gate. A fresh checkout should install dependencies with `npm install` and pass:
+
+```bash
+npm run validate:contracts
+npm run test:contracts
+npm test
+npm run typecheck
+```
+
+Contract and core tests must consume `contracts/` as source truth. They should not create parallel intent, policy, risk, review, receipt, or audit definitions.
+
 Prefer deterministic tests for:
 
 - intent hash stability

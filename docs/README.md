@@ -18,6 +18,7 @@ docs/
 ```
 
 Top-level `contracts/` is also required reading. It is outside `docs/` because it is both human-readable governance and machine-checkable contract truth.
+For implementation sequencing, `governance/stability-handoff.md` explains why `contracts/` and `packages/core/` must stabilize before provider adapters or demos.
 
 ## Recommended reading paths
 
@@ -28,7 +29,8 @@ Top-level `contracts/` is also required reading. It is outside `docs/` because i
 3. `repo-truth/THC_METHODOLOGY.md`
 4. `repo-truth/THC_IN_THIS_REPO.md`
 5. `governance/code-quality-standards.md`
-6. `roadmaps/README.md`
+6. `governance/stability-handoff.md`
+7. `roadmaps/README.md`
 
 ### Coding agent
 
@@ -37,8 +39,9 @@ Top-level `contracts/` is also required reading. It is outside `docs/` because i
 3. `../contracts/authority-lifecycle.md`
 4. `governance/multi-agent-workflow.md`
 5. `governance/worktree-governance.md`
-6. assigned roadmap feature file
-7. relevant architecture file
+6. `governance/stability-handoff.md`
+7. assigned roadmap feature file
+8. relevant architecture file
 
 ### Hackathon submission prep
 

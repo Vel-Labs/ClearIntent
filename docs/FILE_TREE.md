@@ -28,6 +28,7 @@ docs/governance/code-quality-standards.md
 docs/governance/multi-agent-workflow.md
 docs/governance/open-source-governance.md
 docs/governance/phase-cadence.md
+docs/governance/stability-handoff.md
 docs/governance/worktree-governance.md
 docs/hackathon/README.md
 docs/hackathon/demo-plan.md
@@ -51,6 +52,7 @@ docs/roadmaps/features/feature-05-hardware-signer-readable-approval.md
 docs/roadmaps/features/feature-06-guardian-agent-example.md
 docs/roadmaps/features/feature-07-stretch-standards.md
 docs/templates/AGENT_ASSIGNMENT_TEMPLATE.md
+docs/templates/CONTRACT_CORE_STABILITY_HANDOFF_PROMPT.md
 docs/templates/PHASE_AUDIT_TEMPLATE.md
 docs/templates/PHASE_IMPLEMENTATION_TEMPLATE.md
 docs/templates/PHASE_PROMPT_TEMPLATE.md

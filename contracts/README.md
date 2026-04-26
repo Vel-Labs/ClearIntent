@@ -51,6 +51,12 @@ Run all repo-local tests:
 npm test
 ```
 
+Run TypeScript checking for validation scripts and tests:
+
+```bash
+npm run typecheck
+```
+
 The validation tooling reads schemas and fixtures from this folder. It must not redefine contract truth outside `contracts/`.
 
 ## Contract families

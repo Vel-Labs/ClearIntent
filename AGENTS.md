@@ -30,6 +30,7 @@ Build a reusable authority layer for autonomous onchain agents. ClearIntent shou
 - `docs/governance/multi-agent-workflow.md`
 - `docs/governance/worktree-governance.md`
 - `docs/governance/code-quality-standards.md`
+- `docs/governance/stability-handoff.md`
 - `docs/hackathon/vendor-tracks.md`
 - `docs/hackathon/rules.md`
 
@@ -37,6 +38,7 @@ Build a reusable authority layer for autonomous onchain agents. ClearIntent shou
 
 - Treat `contracts/` as the non-negotiable authority contract. It defines the shared shapes and lifecycle gates for the whole repo.
 - Treat `packages/core/` as the lowest-level ClearIntent implementation primitive. It must implement and enforce `contracts/`, not redefine them.
+- Treat `contracts/` plus `packages/core/` as the stability handoff before provider adapters and demo integration proceed.
 - Before shaping schemas, adapters, demo lifecycle, signer behavior, or audit artifacts, read `contracts/README.md` and `contracts/authority-lifecycle.md`.
 - Do not create adapter-specific intent, policy, risk, receipt, or audit shapes unless they wrap or extend the contract layer explicitly.
 - Preserve the explicit human intervention gate. Signing is not a substitute for `HumanReviewCheckpoint`.

@@ -2,7 +2,7 @@
 
 ## Current state
 
-Governance scaffold exists. Phase 1A contract authority baseline is scaffolded under `contracts/`. Phase 1B adds repo-local Node/TypeScript validation tooling and shared tests that consume the contract schemas and examples directly.
+Governance scaffold exists. Phase 1A contract authority baseline is complete under `contracts/`. Phase 1B validation tooling baseline is complete with repo-local Node/TypeScript validation, Vitest contract tests, shared `tests/` quality-gate docs, and a package-level `typecheck` command.
 
 ## Immediate next action
 
@@ -15,10 +15,21 @@ Core implementation must consume:
 - `contracts/examples/*.json`
 - `scripts/validate-contracts.ts`
 - `tests/contracts/validate-contracts.test.ts`
+- `docs/governance/stability-handoff.md`
+
+Before writing core business logic, a fresh checkout should pass:
+
+```bash
+npm install
+npm run validate:contracts
+npm run test:contracts
+npm test
+npm run typecheck
+```
 
 ## Recommended parallelization
 
-After Phase 1 contracts and core validation are stable:
+After Phase 1 contracts and `packages/core/` are stable:
 
 - one agent can build ENS resolver scaffolding
 - one agent can build 0G storage scaffolding
@@ -28,6 +39,8 @@ After Phase 1 contracts and core validation are stable:
 
 ## Do not start yet
 
+- provider adapter implementation
+- demo integration
 - ERC-7857 iNFTs
 - zk proofs
 - auto-rotating ENS addresses

@@ -129,3 +129,169 @@ Result: pass.
 - pass
 
 Phase 1B resolves the Phase 1A audit follow-up by replacing the inline Python validation caveat with first-class repo-local TypeScript tooling and shared tests. The immediate next step is core implementation against these checks.
+
+## Follow-up hardening: package and docs baseline
+
+### Scope
+
+Documented and hardened the package/test baseline after Phase 1B so future humans and agents can start `packages/core/` from a deterministic local quality gate.
+
+Out of scope:
+
+- `packages/core/` business logic
+- provider adapters
+- ENS, 0G, KeeperHub, Ledger, signer, or demo implementation
+- contract schema changes
+
+### Files changed
+
+- `package.json`
+- `README.md`
+- `contracts/README.md`
+- `tests/README.md`
+- `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
+- `docs/roadmaps/features/feature-01-core-authority-kernel.md`
+- `docs/governance/code-quality-standards.md`
+- `CHANGELOG.md`
+- `docs/audits/phase-1-core-authority-kernel/1b-contract-validation-tooling-closeout.md`
+
+### Commands run
+
+```bash
+npm install
+```
+
+Result:
+
+```text
+up to date in 464ms
+```
+
+```bash
+npm run validate:contracts
+```
+
+Result:
+
+```text
+PASS schema valid-agent-intent.json -> AgentIntent
+PASS schema valid-agent-policy.json -> AgentPolicy
+PASS schema valid-audit-bundle.json -> AuditBundle
+PASS schema valid-execution-receipt.json -> ExecutionReceipt
+PASS schema valid-human-review-checkpoint.json -> HumanReviewCheckpoint
+PASS schema valid-risk-report.json -> RiskReport
+PASS invalid-missing-policy.json rejected by AgentIntent schema
+PASS invalid-expired-deadline.json expired before fixed clock 2026-04-26T00:00:00Z
+PASS invalid-policy-hash.json does not match valid-agent-policy.json
+PASS valid-human-review-checkpoint.json binds valid-agent-intent.json intent hash
+PASS valid-audit-bundle.json binds valid intent and policy hashes
+contract validation ok
+```
+
+```bash
+npm run test:contracts
+```
+
+Result:
+
+```text
+Test Files  1 passed (1)
+Tests  9 passed (9)
+```
+
+```bash
+npm test
+```
+
+Result:
+
+```text
+Test Files  1 passed (1)
+Tests  9 passed (9)
+```
+
+```bash
+npm run typecheck
+```
+
+Result:
+
+```text
+tsc --noEmit
+```
+
+### Remaining follow-up
+
+- Begin `packages/core/` implementation against the top-level contracts and keep the Phase 1B quality gate passing.
+- Keep provider adapters and demo integration deferred until the core authority kernel exists.
+
+### Decision
+
+- pass
+
+## Follow-up hardening: reusable stability handoff
+
+### Scope
+
+Captured `contracts/` plus `packages/core/` as the explicit stability handoff for ClearIntent and added a reusable scaffold prompt for future projects.
+
+Out of scope:
+
+- `packages/core/` business logic
+- provider adapters
+- ENS, 0G, KeeperHub, Ledger, signer, or demo implementation
+- contract schema changes
+
+### Files changed
+
+- `AGENTS.md`
+- `README.md`
+- `DECISIONS.md`
+- `CHANGELOG.md`
+- `docs/README.md`
+- `docs/FILE_TREE.md`
+- `docs/governance/README.md`
+- `docs/governance/stability-handoff.md`
+- `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
+- `docs/roadmaps/features/feature-01-core-authority-kernel.md`
+- `docs/templates/CONTRACT_CORE_STABILITY_HANDOFF_PROMPT.md`
+- `docs/audits/phase-1-core-authority-kernel/1b-contract-validation-tooling-closeout.md`
+
+### Commands run
+
+```bash
+npm run validate:contracts
+npm run test:contracts
+npm test
+npm run typecheck
+```
+
+Result:
+
+```text
+contract validation ok
+Test Files  1 passed (1)
+Tests  9 passed (9)
+Test Files  1 passed (1)
+Tests  9 passed (9)
+tsc --noEmit
+```
+
+```bash
+npm install
+```
+
+Result:
+
+```text
+up to date in 382ms
+```
+
+### Remaining follow-up
+
+- Implement `packages/core/` as the executable enforcement layer for the contract truth.
+- Keep provider adapters and demo integration deferred until that core stability handoff is complete.
+
+### Decision
+
+- pass

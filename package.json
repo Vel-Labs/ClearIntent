@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "validate:contracts": "tsx scripts/validate-contracts.ts",
     "test": "vitest run",
     "test:contracts": "vitest run tests/contracts"

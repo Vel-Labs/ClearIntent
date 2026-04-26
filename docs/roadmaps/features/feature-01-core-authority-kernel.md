@@ -64,7 +64,25 @@ Validation commands:
 npm run validate:contracts
 npm run test:contracts
 npm test
+npm run typecheck
 ```
+
+Status: complete. Phase 1B now includes package and documentation hardening so a new checkout can install dependencies and run the validation gate before `packages/core/` begins.
+
+### 1C Core package implementation readiness
+
+Begin `packages/core/` implementation only after the Phase 1B gate passes locally. Core must consume the top-level contract schemas, examples, and lifecycle docs as source truth.
+
+Required before core work starts:
+
+- dependencies install with `npm install`
+- contract validation passes with `npm run validate:contracts`
+- contract-only tests pass with `npm run test:contracts`
+- all repo-local tests pass with `npm test`
+- TypeScript scripts and tests pass `npm run typecheck`
+- provider adapters and demo integration remain deferred
+
+The stability handoff is complete only when `contracts/` defines the authority truth and `packages/core/` enforces it through a reusable API that adapters can consume without redefining intent, policy, risk, review, receipt, or audit shapes.
 
 ### 1.1 Core schema implementation
 
@@ -104,7 +122,7 @@ Document lifecycle and run focused checks.
 
 ### 1.9 Closeout audit
 
-Audit target: core can be consumed by adapters without vendor-specific assumptions.
+Audit target: core can be consumed by adapters without vendor-specific assumptions. Closeout must explicitly state whether the contract/core stability handoff is complete.
 
 ## Success criteria
 

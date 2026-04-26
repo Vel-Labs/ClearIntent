@@ -4,9 +4,9 @@ ClearIntent is an authority layer for autonomous onchain agents.
 
 The project goal is to let agents reason, plan, and coordinate without giving them unchecked execution authority. Agents produce bounded intents. Humans and approved operators review those intents through readable signing flows. Onchain contracts verify the authority, policy, nonce, deadline, and execution bounds before KeeperHub or any other executor can act.
 
-## Current repository state
+## Current Repository State
 
-This scaffold is documentation and governance first. It is meant to create an orderly, auditable project foundation before implementation begins.
+This scaffold is documentation, contracts, and validation tooling first. Phase 1A established the canonical `contracts/` authority layer. Phase 1B established repo-local TypeScript/Node validation and Vitest contract checks. The immediate next build step is `packages/core/`, which must implement and enforce `contracts/` without redefining authority shapes.
 
 The first implementation target is a working example agent that demonstrates:
 
@@ -56,7 +56,48 @@ contracts/
   authority-lifecycle.md          lifecycle states and human intervention gates
   schemas/                        machine-checkable intent, policy, risk, review, receipt, and audit schemas
   examples/                       valid and invalid fixtures for contract-first implementation
+
+scripts/
+  validate-contracts.ts           repo-local contract validation command
+
+tests/
+  README.md                       shared local quality gate for humans and agents
+  contracts/                      contract validation tests
 ```
+
+## Local Setup and Validation
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the contract validation script:
+
+```bash
+npm run validate:contracts
+```
+
+Run contract-only tests:
+
+```bash
+npm run test:contracts
+```
+
+Run all repo-local tests:
+
+```bash
+npm test
+```
+
+Run TypeScript checking for scripts and tests:
+
+```bash
+npm run typecheck
+```
+
+Before `packages/core/` implementation begins, these commands should pass locally. Provider adapters and demo integrations are deferred until the core authority kernel consumes the contract layer cleanly.
 
 ## Start here
 
@@ -78,6 +119,7 @@ Read in this order:
 - Agents may propose. Authority must be bounded.
 - `contracts/` defines the non-negotiable information contract for authority shapes.
 - `packages/core/` implements and enforces the contracts; it does not invent authority semantics independently.
+- `contracts/` plus `packages/core/` are the stability handoff before provider adapters and demo work.
 - Identity must resolve from durable records, not hidden configuration.
 - Policies must be inspectable and versioned.
 - Signed intents must be replayable and auditable.
@@ -91,4 +133,4 @@ ClearIntent should stay vendor-neutral. Ledger hardware, ENS, 0G, KeeperHub, ERC
 
 ## Status
 
-Pre-implementation governance scaffold.
+Contract and validation baseline complete. Ready for `packages/core/` implementation against the Phase 1B quality gate; not ready to claim provider integration readiness.
