@@ -21,7 +21,7 @@ Preserve `contracts/` as the canonical authority contract. Implementation packag
 2. Update schema, fixture, lifecycle docs, and validation together when behavior changes.
 3. Keep human review as an explicit gate. Signing is not a substitute for `HumanReviewCheckpoint`.
 4. Add or update contract tests when contract behavior changes.
-5. Update `DECISIONS.md` only for durable architecture decisions.
+5. Update `DECISIONS.md` and the relevant `docs/decisions/` daily file only for durable architecture decisions.
 6. Update `CHANGELOG.md` for concrete changes.
 
 ## Validation

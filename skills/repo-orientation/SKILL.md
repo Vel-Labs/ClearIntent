@@ -13,9 +13,11 @@ Build a repo-grounded orientation from the current checkout. Do not infer produc
 - `README.md`
 - `contracts/README.md`
 - `contracts/authority-lifecycle.md`
-- `ARCHITECTURE.md`
-- `REPO_BOUNDARIES.md`
+- `docs/architecture/ARCHITECTURE.md`
+- `docs/architecture/REPO_BOUNDARIES.md`
 - `ROADMAP.md`
+- `docs/roadmaps/ROADMAP.md`
+- `DECISIONS.md`
 - `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
 
 ## Workflow

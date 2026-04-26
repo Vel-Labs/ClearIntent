@@ -80,11 +80,11 @@ These contracts establish repo truth for Phase 1A and are covered by repo-local 
 
 Changes to this folder must update:
 
-- `ARCHITECTURE.md` when lifecycle or plane boundaries change
+- `docs/architecture/ARCHITECTURE.md` when lifecycle or plane boundaries change
 - `docs/architecture/intent-lifecycle.md` when step order or human review gates change
 - `docs/roadmaps/features/feature-01-core-authority-kernel.md` when Phase 1 scope changes
 - `CHANGELOG.md`
-- `DECISIONS.md` for durable architecture decisions
+- `DECISIONS.md` and the relevant `docs/decisions/` daily file for durable architecture decisions
 
 ## Human intervention rule
 

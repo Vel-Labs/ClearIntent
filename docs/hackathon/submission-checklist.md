@@ -10,6 +10,7 @@
 - [ ] `AI_USAGE.md`
 - [ ] `CHANGELOG.md`
 - [ ] `DECISIONS.md`
+- [ ] `docs/decisions/`
 - [ ] `KEEPERHUB_FEEDBACK.md`
 - [ ] Contract addresses if deployed
 

@@ -19,6 +19,6 @@ Related scaffold surfaces:
 ```text
 ../../REPO_PROFILE.json       machine-readable repo taxonomy and command index
 ../agents/START_HERE.md       agent onboarding guide
-../agent-skills/              repo-local agent skill templates
+../../skills/                 repo-local agent skill templates
 ../templates/                 handoff, audit, phase, and prompt templates
 ```

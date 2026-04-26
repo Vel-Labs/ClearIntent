@@ -18,9 +18,9 @@ The repo must clearly separate:
 Read first:
 1. AGENTS.md or the repo's agent instructions, if present
 2. README.md
-3. ARCHITECTURE.md, if present
-4. ROADMAP.md, if present
-5. DECISIONS.md, if present
+3. docs/architecture/ARCHITECTURE.md, if present
+4. ROADMAP.md and docs/roadmaps/ROADMAP.md, if present
+5. DECISIONS.md and docs/decisions/, if present
 6. CHANGELOG.md, if present
 7. package.json, pyproject.toml, Makefile, or equivalent local command source
 8. Existing docs/templates, docs/governance, and docs/roadmaps files, if present
@@ -65,13 +65,13 @@ Required work:
 
 4. Establish routing docs
 - Update README.md with current state, local setup, validation commands, and the next allowed build step.
-- Update ROADMAP.md or docs/roadmaps/CURRENT_STATE_AND_NEXT.md with:
+- Update ROADMAP.md, docs/roadmaps/ROADMAP.md, or docs/roadmaps/CURRENT_STATE_AND_NEXT.md with:
   - contract baseline status
   - validation/core baseline status
   - immediate next implementation step
   - deferred adapters, demos, or stretch work
 - Update governance docs with the contract/core handoff rule.
-- Update DECISIONS.md for durable architectural boundaries.
+- Update DECISIONS.md and the relevant docs/decisions/ daily file for durable architectural boundaries.
 - Update CHANGELOG.md with concrete changes.
 
 5. Add audit or closeout evidence

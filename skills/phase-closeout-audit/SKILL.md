@@ -9,6 +9,7 @@ Verify that implementation, docs, contracts, tests, and roadmap routing agree be
 ## Required reading
 
 - `ROADMAP.md`
+- `docs/roadmaps/ROADMAP.md`
 - `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
 - relevant `docs/roadmaps/features/` file
 - `docs/governance/phase-cadence.md`

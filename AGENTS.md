@@ -21,9 +21,10 @@ Build a reusable authority layer for autonomous onchain agents. ClearIntent shou
 - `README.md`
 - `contracts/README.md`
 - `contracts/authority-lifecycle.md`
-- `ARCHITECTURE.md`
-- `REPO_BOUNDARIES.md`
+- `docs/architecture/ARCHITECTURE.md`
+- `docs/architecture/REPO_BOUNDARIES.md`
 - `ROADMAP.md`
+- `docs/roadmaps/ROADMAP.md`
 - `docs/README.md`
 - `docs/repo-truth/THC_METHODOLOGY.md`
 - `docs/repo-truth/THC_IN_THIS_REPO.md`
@@ -118,9 +119,11 @@ ClearIntent is an authority system. Treat unsafe ambiguity as a bug.
 
 ## Required docs to update when behavior changes
 
-- `ARCHITECTURE.md`
+- `docs/architecture/ARCHITECTURE.md`
 - `ROADMAP.md`
+- `docs/roadmaps/ROADMAP.md`
 - `DECISIONS.md`
+- relevant `docs/decisions/` daily decision file
 - `CHANGELOG.md`
 - relevant `docs/architecture/` file
 - relevant `docs/roadmaps/features/` file
@@ -136,5 +139,5 @@ A change is not done unless:
 - tests or deterministic checks exist where practical
 - hackathon eligibility implications are understood
 - `CHANGELOG.md` has a concrete entry
-- `DECISIONS.md` has an entry for real architectural decisions
+- `DECISIONS.md` links to an entry for real architectural decisions
 - required midpoint and closeout audits exist for roadmap phases

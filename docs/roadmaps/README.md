@@ -2,9 +2,12 @@
 
 This folder splits ClearIntent into feature roadmaps with phases, subphases, dependencies, and audit points.
 
+Root `../../ROADMAP.md` is the high-visibility roadmap index. `ROADMAP.md` in this folder preserves the detailed aggregate phase sequence.
+
 ## Files
 
 ```text
+ROADMAP.md
 CURRENT_STATE_AND_NEXT.md
 features/
   feature-01-core-authority-kernel.md
@@ -18,4 +21,4 @@ features/
 
 ## Rule
 
-Do not assign coding agents to a feature until its dependencies are clear.
+Do not assign coding agents to a feature until its dependencies are clear. Use `CURRENT_STATE_AND_NEXT.md` as the operational next-step truth.

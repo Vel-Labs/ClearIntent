@@ -34,23 +34,25 @@ The framework primitive is the important part. The example agent proves the prim
 ```text
 AGENTS.md                         operating rules for humans and coding agents
 REPO_PROFILE.json                 machine-readable repo taxonomy, commands, and scaffold rules
-ARCHITECTURE.md                   top-level system design
-ROADMAP.md                        feature roadmap and dependency order
-DECISIONS.md                      durable architectural decisions
+docs/architecture/ARCHITECTURE.md                   top-level system design
+docs/architecture/REPO_BOUNDARIES.md                layer ownership and authority boundaries
+ROADMAP.md                        high-visibility roadmap index
+DECISIONS.md                      high-visibility decision index
 CHANGELOG.md                      chronological repo changes
 CONTRIBUTING.md                   contributor expectations
 AI_USAGE.md                       AI tooling disclosure log
 .claude/                          Claude-specific bootstrap pointers
+skills/                           repo-local scaffold skill templates
 
 docs/
   README.md                       documentation index
   agents/                         agent start guide and onboarding routing
-  agent-skills/                   repo-local scaffold skill templates
   repo-truth/                     durable truth, methodology, boundaries, source materials
   governance/                     audits, multi-agent workflow, worktrees, quality standards
   hackathon/                      objectives, rules, vendor tracks, submission plan
   architecture/                   technical architecture references
-  roadmaps/                       feature-level roadmap packages
+  decisions/                      dated decision logs
+  roadmaps/                       roadmap detail, current state, and feature packages
   templates/                      phase, audit, and prompt templates
   audits/                         midpoint and closeout audit outputs
 
@@ -120,12 +122,14 @@ Read in this order:
 4. `docs/README.md`
 5. `docs/repo-truth/THC_METHODOLOGY.md`
 6. `docs/repo-truth/THC_IN_THIS_REPO.md`
-7. `ARCHITECTURE.md`
-8. `REPO_BOUNDARIES.md`
+7. `docs/architecture/ARCHITECTURE.md`
+8. `docs/architecture/REPO_BOUNDARIES.md`
 9. `ROADMAP.md`
-10. `docs/hackathon/README.md`
-11. `docs/hackathon/vendor-tracks.md`
-12. `docs/hackathon/rules.md`
+10. `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
+11. `DECISIONS.md`
+12. `docs/hackathon/README.md`
+13. `docs/hackathon/vendor-tracks.md`
+14. `docs/hackathon/rules.md`
 
 ## Core doctrine
 

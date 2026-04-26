@@ -32,7 +32,7 @@ Before ENS, 0G, KeeperHub, signer, Ledger, or demo work starts:
 - `tests/` acts as the shared local quality gate.
 - `packages/core/` consumes the contract artifacts and exposes the only reusable authority API.
 - The roadmap names provider adapters and demo work as downstream consumers.
-- `CHANGELOG.md` and `DECISIONS.md` describe the boundary.
+- `CHANGELOG.md`, `DECISIONS.md`, and the relevant `docs/decisions/` daily file describe the boundary.
 
 ## Quality Gate
 

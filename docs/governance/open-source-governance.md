@@ -13,11 +13,12 @@ ClearIntent should be easy for outside builders to inspect, run, fork, and exten
 ## Required public docs
 
 - `README.md`
-- `ARCHITECTURE.md`
+- `docs/architecture/ARCHITECTURE.md`
 - `AI_USAGE.md`
 - `CONTRIBUTING.md`
 - `CHANGELOG.md`
 - `DECISIONS.md`
+- `docs/decisions/README.md`
 - `docs/hackathon/vendor-tracks.md`
 - `docs/hackathon/submission-checklist.md`
 

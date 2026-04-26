@@ -26,7 +26,7 @@ Each worktree should declare:
 - forbidden files
 - expected integration points
 
-Shared root files such as `ARCHITECTURE.md`, `ROADMAP.md`, `DECISIONS.md`, and `CHANGELOG.md` should be updated carefully and reviewed before merge.
+Shared routing files such as `docs/architecture/ARCHITECTURE.md`, `docs/architecture/REPO_BOUNDARIES.md`, `ROADMAP.md`, `docs/roadmaps/ROADMAP.md`, `DECISIONS.md`, `docs/decisions/`, and `CHANGELOG.md` should be updated carefully and reviewed before merge.
 
 ## Sync rule
 

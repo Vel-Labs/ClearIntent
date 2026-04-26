@@ -19,10 +19,10 @@ Truth is grounded in explicit artifacts.
 Examples:
 
 - `AGENTS.md` defines how humans and coding agents operate.
-- `ARCHITECTURE.md` defines the system planes and lifecycle.
-- `REPO_BOUNDARIES.md` defines which layer owns which responsibility.
-- `ROADMAP.md` and `docs/roadmaps/features/` define dependency-aware sequencing.
-- `DECISIONS.md` records durable architecture choices.
+- `docs/architecture/ARCHITECTURE.md` defines the system planes and lifecycle.
+- `docs/architecture/REPO_BOUNDARIES.md` defines which layer owns which responsibility.
+- `ROADMAP.md`, `docs/roadmaps/ROADMAP.md`, and `docs/roadmaps/features/` define dependency-aware sequencing.
+- `DECISIONS.md` indexes durable architecture choices; dated entries live under `docs/decisions/`.
 - `docs/hackathon/` records prize targets, rules, and eligibility claims.
 - future `contracts/`, `schemas/`, and `packages/core/` artifacts should define machine-verifiable authority truth.
 

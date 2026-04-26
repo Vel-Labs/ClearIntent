@@ -9,14 +9,16 @@ ClearIntent is a reusable authority layer for autonomous onchain agents. The rep
 3. `README.md`
 4. `contracts/README.md`
 5. `contracts/authority-lifecycle.md`
-6. `ARCHITECTURE.md`
-7. `REPO_BOUNDARIES.md`
+6. `docs/architecture/ARCHITECTURE.md`
+7. `docs/architecture/REPO_BOUNDARIES.md`
 8. `ROADMAP.md`
-9. `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
-10. `docs/governance/multi-agent-workflow.md`
-11. `docs/governance/worktree-governance.md`
-12. `docs/governance/code-quality-standards.md`
-13. `docs/governance/stability-handoff.md`
+9. `docs/roadmaps/ROADMAP.md`
+10. `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
+11. `DECISIONS.md`
+12. `docs/governance/multi-agent-workflow.md`
+13. `docs/governance/worktree-governance.md`
+14. `docs/governance/code-quality-standards.md`
+15. `docs/governance/stability-handoff.md`
 
 ## Default commands
 
@@ -42,10 +44,11 @@ Treat these paths as repo law, not casual scratch space:
 - `docs/repo-truth/`
 - `docs/governance/`
 - `docs/roadmaps/`
+- `docs/decisions/`
 - `docs/templates/`
-- `docs/agent-skills/`
-- `ARCHITECTURE.md`
-- `REPO_BOUNDARIES.md`
+- `skills/`
+- `docs/architecture/ARCHITECTURE.md`
+- `docs/architecture/REPO_BOUNDARIES.md`
 - `ROADMAP.md`
 - `DECISIONS.md`
 - `CHANGELOG.md`
@@ -68,7 +71,7 @@ Stop and ask for direction if:
 - a requested change weakens policy, nonce, deadline, executor, ENS identity, policy hash, or audit requirements
 - adapter, demo, UI, deployment, or stretch-standard work is requested before the contract/core handoff is stable
 - `contracts/` and implementation expectations conflict
-- a governance-locked file needs a decision that is not already recorded in `DECISIONS.md`
+- a governance-locked file needs a decision that is not indexed in `DECISIONS.md` and recorded under `docs/decisions/`
 - a validation command fails for a reason unrelated to the current change
 
 ## Closeout requirements
@@ -79,5 +82,5 @@ Before calling work complete:
 - Record commands run and results.
 - Update docs indexes or routing files when adding docs.
 - Update `CHANGELOG.md` for shipped changes.
-- Add or update `DECISIONS.md` only for durable architectural decisions.
+- Add or update `DECISIONS.md` and the relevant `docs/decisions/` daily file only for durable architectural decisions.
 - Leave deferred work in roadmap/current-state docs instead of expanding scope silently.

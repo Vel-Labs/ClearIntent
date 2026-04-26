@@ -7,8 +7,8 @@ Use this checklist when refreshing ClearIntent repo governance or adapting the s
 - [ ] `AGENTS.md` reflects the current repo mission and boundaries.
 - [ ] `REPO_PROFILE.json` points to existing paths, not aspirational structure.
 - [ ] `README.md` and `docs/README.md` route new contributors correctly.
-- [ ] `ROADMAP.md` and `docs/roadmaps/CURRENT_STATE_AND_NEXT.md` agree.
-- [ ] `DECISIONS.md` captures durable architecture decisions only.
+- [ ] `ROADMAP.md`, `docs/roadmaps/ROADMAP.md`, and `docs/roadmaps/CURRENT_STATE_AND_NEXT.md` agree.
+- [ ] `DECISIONS.md` summarizes durable architecture decisions and links to dated entries under `docs/decisions/`.
 - [ ] `CHANGELOG.md` has concrete entries for shipped changes.
 
 ## Commands

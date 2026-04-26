@@ -24,7 +24,7 @@ Phase 1A established the top-level `contracts/` folder as the canonical ClearInt
 - `contracts/schemas/audit-bundle.schema.json`
 - valid fixtures under `contracts/examples/`
 - invalid fixtures for missing policy, expired deadline, and policy hash mismatch
-- directive updates in `AGENTS.md`, `README.md`, `REPO_BOUNDARIES.md`, `ARCHITECTURE.md`, and roadmap docs
+- directive updates in `AGENTS.md`, `README.md`, `docs/architecture/REPO_BOUNDARIES.md`, `docs/architecture/ARCHITECTURE.md`, and roadmap docs
 
 ## Audit actions executed
 
@@ -40,8 +40,8 @@ Phase 1A established the top-level `contracts/` folder as the canonical ClearInt
 
 - `AGENTS.md`
 - `README.md`
-- `REPO_BOUNDARIES.md`
-- `ARCHITECTURE.md`
+- `docs/architecture/REPO_BOUNDARIES.md`
+- `docs/architecture/ARCHITECTURE.md`
 - `ROADMAP.md`
 - `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
 - `docs/roadmaps/features/feature-01-core-authority-kernel.md`
@@ -97,7 +97,7 @@ local markdown links ok
 ```
 
 ```bash
-LC_ALL=C rg -n "[^\\x00-\\x7F]" contracts AGENTS.md README.md REPO_BOUNDARIES.md ARCHITECTURE.md ROADMAP.md docs/README.md docs/architecture/intent-lifecycle.md docs/governance/code-quality-standards.md docs/roadmaps/CURRENT_STATE_AND_NEXT.md docs/roadmaps/features/feature-01-core-authority-kernel.md DECISIONS.md CHANGELOG.md
+LC_ALL=C rg -n "[^\\x00-\\x7F]" contracts AGENTS.md README.md docs/architecture/REPO_BOUNDARIES.md docs/architecture/ARCHITECTURE.md ROADMAP.md docs/README.md docs/architecture/intent-lifecycle.md docs/governance/code-quality-standards.md docs/roadmaps/CURRENT_STATE_AND_NEXT.md docs/roadmaps/features/feature-01-core-authority-kernel.md DECISIONS.md CHANGELOG.md
 ```
 
 Result: no non-ASCII matches.
