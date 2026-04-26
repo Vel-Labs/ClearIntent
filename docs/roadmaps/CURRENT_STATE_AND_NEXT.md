@@ -2,7 +2,7 @@
 
 ## Current state
 
-Governance scaffold exists. Phase 1A contract authority baseline is complete under `contracts/`. Phase 1B validation tooling baseline is complete with repo-local Node/TypeScript validation, Vitest contract tests, shared `tests/` quality-gate docs, and a package-level `typecheck` command.
+Governance scaffold exists. Phase 0 now includes `REPO_PROFILE.json`, `docs/agents/START_HERE.md`, repo-local agent skill templates, fresh-agent and closeout templates, scaffold validation, and minimal GitHub hygiene. Phase 1A contract authority baseline is complete under `contracts/`. Phase 1B validation tooling baseline is complete with repo-local Node/TypeScript validation, Vitest contract tests, shared `tests/` quality-gate docs, and a package-level `typecheck` command.
 
 ## Immediate next action
 
@@ -21,10 +21,12 @@ Before writing core business logic, a fresh checkout should pass:
 
 ```bash
 npm install
+npm run validate:scaffold
 npm run validate:contracts
 npm run test:contracts
 npm test
 npm run typecheck
+npm run check
 ```
 
 ## Recommended parallelization

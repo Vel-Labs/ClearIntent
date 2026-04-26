@@ -33,6 +33,7 @@ The framework primitive is the important part. The example agent proves the prim
 
 ```text
 AGENTS.md                         operating rules for humans and coding agents
+REPO_PROFILE.json                 machine-readable repo taxonomy, commands, and scaffold rules
 ARCHITECTURE.md                   top-level system design
 ROADMAP.md                        feature roadmap and dependency order
 DECISIONS.md                      durable architectural decisions
@@ -43,6 +44,8 @@ AI_USAGE.md                       AI tooling disclosure log
 
 docs/
   README.md                       documentation index
+  agents/                         agent start guide and onboarding routing
+  agent-skills/                   repo-local scaffold skill templates
   repo-truth/                     durable truth, methodology, boundaries, source materials
   governance/                     audits, multi-agent workflow, worktrees, quality standards
   hackathon/                      objectives, rules, vendor tracks, submission plan
@@ -58,6 +61,7 @@ contracts/
   examples/                       valid and invalid fixtures for contract-first implementation
 
 scripts/
+  validate-scaffold.ts            repo-local scaffold and taxonomy validation command
   validate-contracts.ts           repo-local contract validation command
 
 tests/
@@ -76,6 +80,7 @@ npm install
 Run the contract validation script:
 
 ```bash
+npm run validate:scaffold
 npm run validate:contracts
 ```
 
@@ -97,6 +102,12 @@ Run TypeScript checking for scripts and tests:
 npm run typecheck
 ```
 
+Run the full local quality gate:
+
+```bash
+npm run check
+```
+
 Before `packages/core/` implementation begins, these commands should pass locally. Provider adapters and demo integrations are deferred until the core authority kernel consumes the contract layer cleanly.
 
 ## Start here
@@ -104,15 +115,17 @@ Before `packages/core/` implementation begins, these commands should pass locall
 Read in this order:
 
 1. `AGENTS.md`
-2. `docs/README.md`
-3. `docs/repo-truth/THC_METHODOLOGY.md`
-4. `docs/repo-truth/THC_IN_THIS_REPO.md`
-5. `ARCHITECTURE.md`
-6. `REPO_BOUNDARIES.md`
-7. `ROADMAP.md`
-8. `docs/hackathon/README.md`
-9. `docs/hackathon/vendor-tracks.md`
-10. `docs/hackathon/rules.md`
+2. `REPO_PROFILE.json`
+3. `docs/agents/START_HERE.md`
+4. `docs/README.md`
+5. `docs/repo-truth/THC_METHODOLOGY.md`
+6. `docs/repo-truth/THC_IN_THIS_REPO.md`
+7. `ARCHITECTURE.md`
+8. `REPO_BOUNDARIES.md`
+9. `ROADMAP.md`
+10. `docs/hackathon/README.md`
+11. `docs/hackathon/vendor-tracks.md`
+12. `docs/hackathon/rules.md`
 
 ## Core doctrine
 

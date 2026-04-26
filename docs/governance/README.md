@@ -13,3 +13,12 @@ stability-handoff.md         contract/core baseline before adapter and demo work
 phase-cadence.md             .1-.9 phase execution pattern
 open-source-governance.md    public repo posture
 ```
+
+Related scaffold surfaces:
+
+```text
+../../REPO_PROFILE.json       machine-readable repo taxonomy and command index
+../agents/START_HERE.md       agent onboarding guide
+../agent-skills/              repo-local agent skill templates
+../templates/                 handoff, audit, phase, and prompt templates
+```

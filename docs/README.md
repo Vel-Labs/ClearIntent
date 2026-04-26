@@ -7,6 +7,8 @@ This folder is the operating map for ClearIntent.
 ```text
 docs/
   README.md                 this index
+  agents/                   agent start guide and onboarding routing
+  agent-skills/             repo-local scaffold skill templates
   repo-truth/               durable truth, methodology, source material, operating doctrine
   governance/               audit, workflow, worktree, quality, and contribution rules
   hackathon/                objective, rules, vendor tracks, judging, demo, submission checklist
@@ -18,6 +20,7 @@ docs/
 ```
 
 Top-level `contracts/` is also required reading. It is outside `docs/` because it is both human-readable governance and machine-checkable contract truth.
+Top-level `REPO_PROFILE.json` is the machine-readable taxonomy for paths, commands, governance locks, and scaffold validation.
 For implementation sequencing, `governance/stability-handoff.md` explains why `contracts/` and `packages/core/` must stabilize before provider adapters or demos.
 
 ## Recommended reading paths
@@ -26,22 +29,26 @@ For implementation sequencing, `governance/stability-handoff.md` explains why `c
 
 1. `../README.md`
 2. `../AGENTS.md`
-3. `repo-truth/THC_METHODOLOGY.md`
-4. `repo-truth/THC_IN_THIS_REPO.md`
-5. `governance/code-quality-standards.md`
-6. `governance/stability-handoff.md`
-7. `roadmaps/README.md`
+3. `../REPO_PROFILE.json`
+4. `agents/START_HERE.md`
+5. `repo-truth/THC_METHODOLOGY.md`
+6. `repo-truth/THC_IN_THIS_REPO.md`
+7. `governance/code-quality-standards.md`
+8. `governance/stability-handoff.md`
+9. `roadmaps/README.md`
 
 ### Coding agent
 
 1. `../AGENTS.md`
-2. `../contracts/README.md`
-3. `../contracts/authority-lifecycle.md`
-4. `governance/multi-agent-workflow.md`
-5. `governance/worktree-governance.md`
-6. `governance/stability-handoff.md`
-7. assigned roadmap feature file
-8. relevant architecture file
+2. `../REPO_PROFILE.json`
+3. `agents/START_HERE.md`
+4. `../contracts/README.md`
+5. `../contracts/authority-lifecycle.md`
+6. `governance/multi-agent-workflow.md`
+7. `governance/worktree-governance.md`
+8. `governance/stability-handoff.md`
+9. assigned roadmap feature file
+10. relevant architecture file
 
 ### Hackathon submission prep
 

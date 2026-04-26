@@ -1,0 +1,41 @@
+name: Scaffold or Governance Change
+description: Request a change to repo taxonomy, governance, agent onboarding, templates, or quality gates.
+title: "[scaffold]: "
+labels:
+  - scaffold
+  - governance
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What should change, and why?
+    validations:
+      required: true
+  - type: textarea
+    id: affected_paths
+    attributes:
+      label: Affected paths
+      description: List expected files or directories.
+      placeholder: |
+        - REPO_PROFILE.json
+        - docs/agents/START_HERE.md
+    validations:
+      required: true
+  - type: textarea
+    id: authority_impact
+    attributes:
+      label: Authority or governance impact
+      description: Name any impact on contracts, lifecycle gates, roadmap routing, or locked governance files.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Expected validation
+      description: List commands that should pass.
+      placeholder: |
+        npm run validate:scaffold
+        npm run check
+    validations:
+      required: true

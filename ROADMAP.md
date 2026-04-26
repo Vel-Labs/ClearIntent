@@ -10,18 +10,24 @@ Deliverables:
 
 - root README
 - `AGENTS.md`
+- `REPO_PROFILE.json`
 - `.claude/` pointer folder
 - docs index
+- agent start guide
+- repo-local agent skill templates
 - repo truth folder
 - hackathon objective and rules
 - vendor-track eligibility docs
 - feature roadmap files
 - phase templates
+- fresh-agent and closeout templates
 - audit philosophy
+- scaffold validation command
+- minimal GitHub hygiene
 
 Audit: `docs/audits/phase-0.9-governance-closeout.md`
 
-Status: scaffolded.
+Status: scaffolded, with an added machine-readable repo profile and scaffold validation layer.
 
 ## Phase 1: ClearIntent Core Authority Kernel
 
