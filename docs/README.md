@@ -14,7 +14,7 @@ docs/
   roadmaps/                 feature-level roadmap packages
   templates/                phase, audit, and agent execution templates
   audits/                   midpoint and closeout audit artifacts
-  providers/                builder informatino about relevant projects/providers
+  providers/                builder information about relevant projects/providers
 ```
 
 ## Recommended reading paths

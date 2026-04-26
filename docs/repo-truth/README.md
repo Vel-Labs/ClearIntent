@@ -9,6 +9,7 @@ THC_METHODOLOGY.md          general Truth, Hardening, Clarity methodology
 THC_IN_THIS_REPO.md         ClearIntent-specific mapping
 OPERATING_DOCTRINE.md       project doctrine and non-negotiables
 TRUTH_BOUNDARIES.md         where truth lives and where it does not
+source-material/            captured prompts, source intakes, and scaffold notes
 ```
 
 ## Rule
