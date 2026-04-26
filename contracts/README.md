@@ -25,6 +25,34 @@ contracts/
   examples/                         valid and invalid contract fixtures
 ```
 
+## Repo-local validation
+
+Install the Node toolchain dependencies:
+
+```bash
+npm install
+```
+
+Run the concise contract validation script:
+
+```bash
+npm run validate:contracts
+```
+
+Run only contract validation tests:
+
+```bash
+npm run test:contracts
+```
+
+Run all repo-local tests:
+
+```bash
+npm test
+```
+
+The validation tooling reads schemas and fixtures from this folder. It must not redefine contract truth outside `contracts/`.
+
 ## Contract families
 
 | Contract | Purpose |
@@ -38,9 +66,9 @@ contracts/
 
 ## Claim level
 
-Current status: `Scaffolded`.
+Current status: `Tooled scaffold`.
 
-These contracts establish repo truth for Phase 1A. They do not prove live ENS, 0G, KeeperHub, or Ledger integrations.
+These contracts establish repo truth for Phase 1A and are covered by repo-local Phase 1B validation tooling. They do not prove live ENS, 0G, KeeperHub, or Ledger integrations.
 
 ## Change discipline
 

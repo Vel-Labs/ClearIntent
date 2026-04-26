@@ -45,6 +45,27 @@ Required outputs:
 - `contracts/schemas/`
 - `contracts/examples/`
 
+### 1B Contract validation tooling baseline
+
+Add repo-local TypeScript/Node validation tooling before implementation packages so humans and agents can run the same deterministic checks before commits.
+
+Required outputs:
+
+- `package.json`
+- `tsconfig.json`
+- `scripts/validate-contracts.ts`
+- `tests/README.md`
+- `tests/contracts/validate-contracts.test.ts`
+- Phase 1B closeout audit
+
+Validation commands:
+
+```bash
+npm run validate:contracts
+npm run test:contracts
+npm test
+```
+
 ### 1.1 Core schema implementation
 
 Implement TypeScript types and validators from the top-level contract schemas.

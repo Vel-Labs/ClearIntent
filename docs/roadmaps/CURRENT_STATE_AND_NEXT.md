@@ -2,17 +2,19 @@
 
 ## Current state
 
-Governance scaffold exists. Phase 1A contract authority baseline is scaffolded under `contracts/`.
+Governance scaffold exists. Phase 1A contract authority baseline is scaffolded under `contracts/`. Phase 1B adds repo-local Node/TypeScript validation tooling and shared tests that consume the contract schemas and examples directly.
 
 ## Immediate next action
 
-Start Phase 1B: implement `packages/core/` against the top-level contracts.
+Start the core implementation: implement `packages/core/` against the top-level contracts and keep it passing the Phase 1B validation gate.
 
 Core implementation must consume:
 
 - `contracts/authority-lifecycle.md`
 - `contracts/schemas/*.schema.json`
 - `contracts/examples/*.json`
+- `scripts/validate-contracts.ts`
+- `tests/contracts/validate-contracts.test.ts`
 
 ## Recommended parallelization
 
