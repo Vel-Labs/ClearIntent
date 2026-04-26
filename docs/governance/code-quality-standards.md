@@ -59,6 +59,8 @@ signIntent(intent): SignedIntent
 executeIntent(intent, signature): ExecutionReceipt
 ```
 
+Interfaces that touch authority state must consume the shared contracts in `contracts/`. Do not create adapter-local substitutes for intent, policy, risk, human review, receipt, or audit shapes.
+
 ## Error handling
 
 Fail closed when authority is unclear.
@@ -79,5 +81,6 @@ Prefer deterministic tests for:
 - deadline expiry
 - executor mismatch
 - signer mismatch
+- missing human review checkpoint
 - ENS resolution fallback
 - audit artifact shape

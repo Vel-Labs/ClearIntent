@@ -2,15 +2,21 @@
 
 ## Current state
 
-Governance scaffold exists. Implementation has not started.
+Governance scaffold exists. Phase 1A contract authority baseline is scaffolded under `contracts/`.
 
 ## Immediate next action
 
-Start Phase 1: ClearIntent Core Authority Kernel.
+Start Phase 1B: implement `packages/core/` against the top-level contracts.
+
+Core implementation must consume:
+
+- `contracts/authority-lifecycle.md`
+- `contracts/schemas/*.schema.json`
+- `contracts/examples/*.json`
 
 ## Recommended parallelization
 
-After Phase 1 schemas are stable:
+After Phase 1 contracts and core validation are stable:
 
 - one agent can build ENS resolver scaffolding
 - one agent can build 0G storage scaffolding

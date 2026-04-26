@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clearintent.local/contracts/schemas/audit-bundle.schema.json",
+  "title": "AuditBundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "bundleId",
+    "intentHash",
+    "policyHash",
+    "createdAt",
+    "artifacts",
+    "finalStatus"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "clearintent.audit-bundle.v1" },
+    "bundleId": { "type": "string", "minLength": 1 },
+    "intentHash": { "$ref": "#/$defs/bytes32" },
+    "policyHash": { "$ref": "#/$defs/bytes32" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "policy", "intent", "riskReport", "humanReview"],
+      "properties": {
+        "identity": { "$ref": "#/$defs/artifactRef" },
+        "policy": { "$ref": "#/$defs/artifactRef" },
+        "intent": { "$ref": "#/$defs/artifactRef" },
+        "riskReport": { "$ref": "#/$defs/artifactRef" },
+        "humanReview": { "$ref": "#/$defs/artifactRef" },
+        "signature": { "$ref": "#/$defs/artifactRef" },
+        "executionReceipt": { "$ref": "#/$defs/artifactRef" }
+      }
+    },
+    "finalStatus": { "type": "string", "enum": ["audited", "degraded", "blocked"] },
+    "degradedReasons": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "$defs": {
+    "bytes32": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{64}$"
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "hash"],
+      "properties": {
+        "uri": { "type": "string", "minLength": 1 },
+        "hash": { "$ref": "#/$defs/bytes32" }
+      }
+    }
+  }
+}

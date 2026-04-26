@@ -10,11 +10,21 @@
 - Governance, audits, and phase planning
 - Open-source contribution discipline
 
+## What `contracts/` owns
+
+- canonical authority lifecycle states
+- canonical intent, policy, risk, human review, receipt, and audit schemas
+- valid and invalid fixtures for contract-first implementation
+- non-negotiable human intervention gates
+- vendor-neutral information contracts consumed by core and adapters
+
+No package, adapter, or demo may silently replace these shapes with local variants.
+
 ## What the core package owns
 
-- typed intent construction
+- typed intent construction from `contracts/`
 - policy validation interfaces
-- authority lifecycle state machine
+- authority lifecycle state machine enforcement
 - adapter contracts
 - local deterministic test fixtures
 
@@ -83,6 +93,7 @@
 
 External code, examples, or generated work may enter the repo only when it lands behind a clear boundary:
 
+- `contracts/`
 - `packages/<adapter>/`
 - `packages/core/`
 - `examples/<example-name>/`

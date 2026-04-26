@@ -17,6 +17,8 @@ docs/
   providers/                builder information about relevant projects/providers
 ```
 
+Top-level `contracts/` is also required reading. It is outside `docs/` because it is both human-readable governance and machine-checkable contract truth.
+
 ## Recommended reading paths
 
 ### New contributor
@@ -31,10 +33,12 @@ docs/
 ### Coding agent
 
 1. `../AGENTS.md`
-2. `governance/multi-agent-workflow.md`
-3. `governance/worktree-governance.md`
-4. assigned roadmap feature file
-5. relevant architecture file
+2. `../contracts/README.md`
+3. `../contracts/authority-lifecycle.md`
+4. `governance/multi-agent-workflow.md`
+5. `governance/worktree-governance.md`
+6. assigned roadmap feature file
+7. relevant architecture file
 
 ### Hackathon submission prep
 

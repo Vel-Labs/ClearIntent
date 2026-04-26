@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "clearintent.agent-intent.v1",
+  "intentId": "invalid-missing-policy",
+  "lifecycleState": "proposed",
+  "createdAt": "2026-05-03T18:00:00Z",
+  "agentIdentity": {
+    "ensName": "guardian.clearintent.eth",
+    "controllerAddress": "0x1111111111111111111111111111111111111111"
+  },
+  "action": {
+    "actionType": "contract_call",
+    "target": "0x4444444444444444444444444444444444444444",
+    "chainId": 11155111,
+    "description": "Invalid because policy URI and policy hash are missing."
+  },
+  "authority": {
+    "signer": "0x3333333333333333333333333333333333333333",
+    "executor": "0x2222222222222222222222222222222222222222",
+    "nonce": "1",
+    "deadline": "2026-05-03T18:15:00Z",
+    "verifyingContract": "0x5555555555555555555555555555555555555555"
+  },
+  "hashes": {
+    "actionHash": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "intentHash": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  }
+}

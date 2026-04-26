@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "clearintent.agent-policy.v1",
+  "policyId": "guardian-demo-policy",
+  "policyHash": "0x1111111111111111111111111111111111111111111111111111111111111111",
+  "subject": {
+    "ensName": "guardian.clearintent.eth",
+    "controllerAddress": "0x1111111111111111111111111111111111111111"
+  },
+  "allowedActions": ["contract_call"],
+  "allowedExecutors": ["0x2222222222222222222222222222222222222222"],
+  "signerRequirements": {
+    "allowedSigners": ["0x3333333333333333333333333333333333333333"],
+    "hardwareBackedRequired": true
+  },
+  "limits": {
+    "maxValue": "100000000000000000",
+    "deadlineSeconds": 900
+  },
+  "riskRequirements": {
+    "riskReviewRequired": true,
+    "maxAllowedSeverity": "medium"
+  }
+}

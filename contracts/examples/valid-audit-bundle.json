@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "clearintent.audit-bundle.v1",
+  "bundleId": "guardian-demo-audit-001",
+  "intentHash": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "policyHash": "0x1111111111111111111111111111111111111111111111111111111111111111",
+  "createdAt": "2026-05-03T18:07:00Z",
+  "artifacts": {
+    "identity": {
+      "uri": "0g://guardian-demo-agent-card",
+      "hash": "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "policy": {
+      "uri": "0g://guardian-demo-policy",
+      "hash": "0x1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "intent": {
+      "uri": "0g://guardian-demo-intent-001",
+      "hash": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "riskReport": {
+      "uri": "0g://guardian-demo-risk-001",
+      "hash": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "humanReview": {
+      "uri": "0g://guardian-demo-review-001",
+      "hash": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "executionReceipt": {
+      "uri": "0g://guardian-demo-receipt-001",
+      "hash": "0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  },
+  "finalStatus": "audited",
+  "degradedReasons": []
+}

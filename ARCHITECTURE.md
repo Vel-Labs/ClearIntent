@@ -33,8 +33,11 @@ Responsibilities:
 - nonce and deadline requirements
 - typed verification inputs
 - event and audit envelope definitions
+- explicit human review checkpoint
 
 Rule: the intent contract is the boundary between agent reasoning and executable authority.
+
+`contracts/` is the canonical source of authority truth. `packages/core/` must implement and enforce it. Provider adapters may translate to vendor-specific requests, but they must not replace the shared contracts.
 
 ### 2. Agent framework plane
 
@@ -151,7 +154,7 @@ User goal
   -> Policy loader fetches current policy from 0G
   -> Risk critic evaluates the proposed action
   -> Intent builder creates bounded EIP-712 intent
-  -> Human reviews readable intent
+  -> Human reviews readable intent and creates HumanReviewCheckpoint
   -> Hardware signer signs bounded intent
   -> Verifier checks signature, policy hash, nonce, deadline, executor, and bounds
   -> KeeperHub executes approved workflow
@@ -166,6 +169,7 @@ User goal
 - Policy hash mismatch blocks execution.
 - Missing risk report creates degraded state and may block execution depending on policy.
 - Missing signature blocks execution.
+- Missing human review checkpoint blocks signing and execution.
 - Unknown signer blocks execution.
 - Expired deadline blocks execution.
 - Reused nonce blocks execution.

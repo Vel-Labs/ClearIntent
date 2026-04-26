@@ -37,11 +37,25 @@ Dependencies:
 
 Key deliverables:
 
+- `contracts/`
 - `packages/core/`
 - intent lifecycle state machine
 - policy interface
 - risk report interface
 - deterministic intent fixtures
+
+### Phase 1A: Contract Authority Baseline
+
+Goal: create the non-negotiable top-level authority contract before implementation packages.
+
+Deliverables:
+
+- canonical lifecycle with explicit human intervention gate
+- JSON schemas for intent, policy, risk report, human review checkpoint, execution receipt, and audit bundle
+- valid and invalid fixtures
+- directive docs that tell agents to read `contracts/` before shaping adapters or core behavior
+
+Status: scaffolded.
 
 ## Phase 2: 0G Policy Memory and Audit Layer
 

@@ -19,6 +19,8 @@ Build a reusable authority layer for autonomous onchain agents. ClearIntent shou
 ## Required reading before structural changes
 
 - `README.md`
+- `contracts/README.md`
+- `contracts/authority-lifecycle.md`
 - `ARCHITECTURE.md`
 - `REPO_BOUNDARIES.md`
 - `ROADMAP.md`
@@ -33,8 +35,11 @@ Build a reusable authority layer for autonomous onchain agents. ClearIntent shou
 
 ## Working rules
 
-- Treat `contracts/` as the machine-verifiable authority boundary once contracts exist.
-- Treat `packages/core/` as the lowest-level ClearIntent primitive.
+- Treat `contracts/` as the non-negotiable authority contract. It defines the shared shapes and lifecycle gates for the whole repo.
+- Treat `packages/core/` as the lowest-level ClearIntent implementation primitive. It must implement and enforce `contracts/`, not redefine them.
+- Before shaping schemas, adapters, demo lifecycle, signer behavior, or audit artifacts, read `contracts/README.md` and `contracts/authority-lifecycle.md`.
+- Do not create adapter-specific intent, policy, risk, receipt, or audit shapes unless they wrap or extend the contract layer explicitly.
+- Preserve the explicit human intervention gate. Signing is not a substitute for `HumanReviewCheckpoint`.
 - Treat vendor integrations as adapters, not as the global brain.
 - Do not hard-code ENS names, wallet addresses, policy hashes, executor addresses, or 0G artifact references in demos.
 - Do not let an agent executor bypass policy verification.

@@ -50,6 +50,12 @@ docs/
   roadmaps/                       feature-level roadmap packages
   templates/                      phase, audit, and prompt templates
   audits/                         midpoint and closeout audit outputs
+
+contracts/
+  README.md                       canonical authority contract overview
+  authority-lifecycle.md          lifecycle states and human intervention gates
+  schemas/                        machine-checkable intent, policy, risk, review, receipt, and audit schemas
+  examples/                       valid and invalid fixtures for contract-first implementation
 ```
 
 ## Start here
@@ -70,6 +76,8 @@ Read in this order:
 ## Core doctrine
 
 - Agents may propose. Authority must be bounded.
+- `contracts/` defines the non-negotiable information contract for authority shapes.
+- `packages/core/` implements and enforces the contracts; it does not invent authority semantics independently.
 - Identity must resolve from durable records, not hidden configuration.
 - Policies must be inspectable and versioned.
 - Signed intents must be replayable and auditable.

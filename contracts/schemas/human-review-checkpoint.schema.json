@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clearintent.local/contracts/schemas/human-review-checkpoint.schema.json",
+  "title": "HumanReviewCheckpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "reviewId",
+    "reviewer",
+    "decision",
+    "reviewedAt",
+    "approvedIntentHash",
+    "policyHash",
+    "summary",
+    "displayWarnings"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "clearintent.human-review-checkpoint.v1" },
+    "reviewId": { "type": "string", "minLength": 1 },
+    "reviewer": { "type": "string", "minLength": 1 },
+    "decision": { "type": "string", "enum": ["approved", "rejected", "needs_changes"] },
+    "reviewedAt": { "type": "string", "format": "date-time" },
+    "approvedIntentHash": { "$ref": "#/$defs/bytes32" },
+    "policyHash": { "$ref": "#/$defs/bytes32" },
+    "summary": { "type": "string", "minLength": 1 },
+    "displayWarnings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "$defs": {
+    "bytes32": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{64}$"
+    }
+  }
+}

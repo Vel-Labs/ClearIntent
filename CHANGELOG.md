@@ -14,3 +14,4 @@ All notable repo changes should be logged here.
 - Added feature-level roadmap files with dependencies and subphases.
 - Added reusable phase, audit, and execution prompt templates.
 - Added provider documentation funnels for 0G, ENS, KeeperHub, and Ledger under `docs/providers/`, plus a repo-truth provider source intake note.
+- Added Phase 1A contract authority baseline under `contracts/`, including lifecycle docs, JSON schemas, fixtures, and directive updates requiring agents to treat `contracts/` as canonical authority truth.

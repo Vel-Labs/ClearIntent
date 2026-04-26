@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clearintent.local/contracts/schemas/agent-intent.schema.json",
+  "title": "AgentIntent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "intentId",
+    "lifecycleState",
+    "createdAt",
+    "agentIdentity",
+    "policy",
+    "action",
+    "authority",
+    "hashes"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "clearintent.agent-intent.v1" },
+    "intentId": { "type": "string", "minLength": 1 },
+    "lifecycleState": {
+      "type": "string",
+      "enum": [
+        "proposed",
+        "policy_checked",
+        "reviewed",
+        "human_approved",
+        "signed",
+        "verified",
+        "submitted",
+        "executed",
+        "audited"
+      ]
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "agentIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ensName", "controllerAddress"],
+      "properties": {
+        "ensName": { "type": "string", "minLength": 3 },
+        "controllerAddress": { "$ref": "#/$defs/evmAddress" },
+        "agentCardUri": { "type": "string", "minLength": 1 },
+        "role": { "type": "string" }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policyUri", "policyHash"],
+      "properties": {
+        "policyUri": { "type": "string", "minLength": 1 },
+        "policyHash": { "$ref": "#/$defs/bytes32" }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actionType", "target", "chainId", "description"],
+      "properties": {
+        "actionType": { "type": "string", "minLength": 1 },
+        "target": { "$ref": "#/$defs/evmAddress" },
+        "chainId": { "type": "integer", "minimum": 1 },
+        "valueLimit": { "type": "string", "pattern": "^[0-9]+$" },
+        "calldataHash": { "$ref": "#/$defs/bytes32" },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signer", "executor", "nonce", "deadline", "verifyingContract"],
+      "properties": {
+        "signer": { "$ref": "#/$defs/evmAddress" },
+        "executor": { "$ref": "#/$defs/evmAddress" },
+        "nonce": { "type": "string", "pattern": "^[0-9]+$" },
+        "deadline": { "type": "string", "format": "date-time" },
+        "verifyingContract": { "$ref": "#/$defs/evmAddress" }
+      }
+    },
+    "hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actionHash", "intentHash"],
+      "properties": {
+        "actionHash": { "$ref": "#/$defs/bytes32" },
+        "intentHash": { "$ref": "#/$defs/bytes32" }
+      }
+    }
+  },
+  "$defs": {
+    "evmAddress": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{40}$"
+    },
+    "bytes32": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{64}$"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clearintent.local/contracts/schemas/execution-receipt.schema.json",
+  "title": "ExecutionReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "intentHash",
+    "executor",
+    "status",
+    "submittedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "clearintent.execution-receipt.v1" },
+    "receiptId": { "type": "string", "minLength": 1 },
+    "intentHash": { "$ref": "#/$defs/bytes32" },
+    "executor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter", "address"],
+      "properties": {
+        "adapter": { "type": "string", "minLength": 1 },
+        "address": { "$ref": "#/$defs/evmAddress" },
+        "workflowId": { "type": "string" },
+        "runId": { "type": "string" }
+      }
+    },
+    "status": { "type": "string", "enum": ["submitted", "executed", "failed", "degraded"] },
+    "submittedAt": { "type": "string", "format": "date-time" },
+    "completedAt": { "type": "string", "format": "date-time" },
+    "transactionHash": { "type": "string", "pattern": "^0x[a-fA-F0-9]{64}$" },
+    "error": { "type": "string" },
+    "degradedReason": { "type": "string" }
+  },
+  "$defs": {
+    "evmAddress": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{40}$"
+    },
+    "bytes32": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{64}$"
+    }
+  }
+}

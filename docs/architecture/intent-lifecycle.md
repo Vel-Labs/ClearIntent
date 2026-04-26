@@ -63,6 +63,16 @@ The framework creates a typed intent with:
 
 The user sees a clear preview. If a hardware signer is used, display limitations or blind-signing fallback must be visible.
 
+Expected output:
+
+- `HumanReviewCheckpoint`
+- explicit approved/rejected/needs-changes decision
+- reviewed intent hash
+- policy hash
+- display warnings
+
+Signing must not proceed unless the checkpoint approves the exact intent hash.
+
 ## 8. Signature
 
 The signer signs the bounded intent.
@@ -85,6 +95,7 @@ Expected audit bundle:
 - resolved identity
 - policy
 - risk report
+- human review checkpoint
 - typed intent
 - signature
 - execution receipt

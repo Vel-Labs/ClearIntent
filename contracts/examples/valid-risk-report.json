@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "clearintent.risk-report.v1",
+  "reportId": "guardian-demo-risk-001",
+  "intentHash": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "policyHash": "0x1111111111111111111111111111111111111111111111111111111111111111",
+  "decision": "needs_human_review",
+  "severity": "low",
+  "reasons": [
+    "Intent action type is allowed by policy.",
+    "Executor matches policy allowlist.",
+    "Human review is still required before signing."
+  ],
+  "createdAt": "2026-05-03T18:01:00Z",
+  "degradedSignals": []
+}

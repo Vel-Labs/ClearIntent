@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "clearintent.execution-receipt.v1",
+  "receiptId": "guardian-demo-receipt-001",
+  "intentHash": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "executor": {
+    "adapter": "keeperhub",
+    "address": "0x2222222222222222222222222222222222222222",
+    "workflowId": "fixture-workflow-001",
+    "runId": "fixture-run-001"
+  },
+  "status": "executed",
+  "submittedAt": "2026-05-03T18:05:00Z",
+  "completedAt": "2026-05-03T18:06:00Z",
+  "transactionHash": "0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+}

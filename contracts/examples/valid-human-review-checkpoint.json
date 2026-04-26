@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "clearintent.human-review-checkpoint.v1",
+  "reviewId": "guardian-demo-review-001",
+  "reviewer": "human-operator",
+  "decision": "approved",
+  "reviewedAt": "2026-05-03T18:02:00Z",
+  "approvedIntentHash": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "policyHash": "0x1111111111111111111111111111111111111111111111111111111111111111",
+  "summary": "Approved bounded demo contract call after reviewing policy, risk report, executor, nonce, and deadline.",
+  "displayWarnings": [
+    "Hardware signer display support is not yet proven in this scaffold."
+  ]
+}

@@ -14,9 +14,11 @@ Every adapter depends on the intent, policy, risk, and receipt shapes. Without t
 
 ## Goals
 
+- define top-level `contracts/` as canonical authority truth
 - define `AgentIntent`
 - define `AgentPolicy`
 - define `RiskReport`
+- define `HumanReviewCheckpoint`
 - define `ExecutionReceipt`
 - define lifecycle states
 - define fail-closed validation behavior
@@ -32,16 +34,27 @@ Every adapter depends on the intent, policy, risk, and receipt shapes. Without t
 
 ## Subphases
 
-### 1.1 Schema draft
+### 1A Contract authority baseline
 
-Create initial TypeScript or JSON schema for intent, policy, risk report, and receipt.
+Create top-level `contracts/` with canonical lifecycle, JSON schemas, fixtures, and directive documentation.
+
+Required outputs:
+
+- `contracts/README.md`
+- `contracts/authority-lifecycle.md`
+- `contracts/schemas/`
+- `contracts/examples/`
+
+### 1.1 Core schema implementation
+
+Implement TypeScript types and validators from the top-level contract schemas.
 
 ### 1.2 Lifecycle state machine
 
 Define transitions:
 
 ```text
-proposed -> policy_checked -> reviewed -> signed -> verified -> executed -> audited
+proposed -> policy_checked -> reviewed -> human_approved -> signed -> verified -> submitted -> executed -> audited
 ```
 
 ### 1.3 Deterministic hashing
@@ -76,5 +89,6 @@ Audit target: core can be consumed by adapters without vendor-specific assumptio
 
 - stable intent fixture
 - stable policy fixture
+- stable human review checkpoint fixture
 - failure cases documented
 - adapters can start without inventing their own schema

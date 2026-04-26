@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clearintent.local/contracts/schemas/agent-policy.schema.json",
+  "title": "AgentPolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "policyId",
+    "policyHash",
+    "subject",
+    "allowedActions",
+    "allowedExecutors",
+    "signerRequirements",
+    "limits",
+    "riskRequirements"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "clearintent.agent-policy.v1" },
+    "policyId": { "type": "string", "minLength": 1 },
+    "policyHash": { "$ref": "#/$defs/bytes32" },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ensName", "controllerAddress"],
+      "properties": {
+        "ensName": { "type": "string", "minLength": 3 },
+        "controllerAddress": { "$ref": "#/$defs/evmAddress" }
+      }
+    },
+    "allowedActions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "allowedExecutors": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/evmAddress" }
+    },
+    "signerRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedSigners", "hardwareBackedRequired"],
+      "properties": {
+        "allowedSigners": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/evmAddress" }
+        },
+        "hardwareBackedRequired": { "type": "boolean" }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxValue", "deadlineSeconds"],
+      "properties": {
+        "maxValue": { "type": "string", "pattern": "^[0-9]+$" },
+        "deadlineSeconds": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "riskRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["riskReviewRequired", "maxAllowedSeverity"],
+      "properties": {
+        "riskReviewRequired": { "type": "boolean" },
+        "maxAllowedSeverity": {
+          "type": "string",
+          "enum": ["none", "low", "medium", "high", "critical"]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "evmAddress": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{40}$"
+    },
+    "bytes32": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{64}$"
+    }
+  }
+}

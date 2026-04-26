@@ -57,3 +57,17 @@ Use this file to record durable architectural decisions.
 - Context: These standards support a strong future stack, but full implementation risks diluting the core demo.
 - Decision: Keep them in the roadmap and implement only if the MVP is stable.
 - Consequences: Do not claim eligibility based on incomplete stretch layers.
+
+## 2026-04-25: Contracts folder is the authority contract layer
+
+- Status: Accepted
+- Context: ClearIntent needs shared shapes and primitives locked before provider adapters or implementation packages start.
+- Decision: Create top-level `contracts/` as the canonical information contract for lifecycle states, intent, policy, risk report, human review checkpoint, execution receipt, audit bundle, and fixtures.
+- Consequences: `packages/core/` implements and enforces these contracts. Provider adapters consume or wrap them, but do not redefine authority semantics locally.
+
+## 2026-04-25: Human review is an explicit lifecycle gate
+
+- Status: Accepted
+- Context: The project must support human intervention and testing throughout the lifecycle, not only final signing.
+- Decision: Add `human_approved` as a lifecycle state and define `HumanReviewCheckpoint` as a required contract before signing or execution.
+- Consequences: Signing is not treated as a substitute for review. Demo and adapter flows must expose a pause point where a human can inspect the exact intent hash, policy hash, risk report, warnings, and executor target.
