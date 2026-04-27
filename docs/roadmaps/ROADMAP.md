@@ -128,12 +128,32 @@ Status: complete. Closeout audit: `docs/audits/phase-1-core-authority-kernel/1f-
 
 Goal: build the CLI-first product center over the stable core authority API before provider adapters or demo integration.
 
+Rationale:
+
+- `packages/core` is now stable enough to consume, but it is a library, not an operator experience.
+- ClearIntent needs a foundational Center that lets humans and AI agents inspect lifecycle state, missing evidence, blocked/degraded conditions, and next actions.
+- The CLI is the correct first Center because it is local, auditable, scriptable, and usable by both humans and coding agents.
+- Provider adapters should plug into this Center later rather than defining their own fragmented operator surfaces.
+
+Phase package:
+
+- `docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md`
+- `docs/roadmaps/phase-1.5-center-cli-skeleton/EXECUTION_PROMPT.md`
+
 Expected deliverables:
 
 - CLI command skeleton over `packages/core`
 - module registration or command contract scaffold
 - terminal-first human status/readout path
+- deterministic AI-readable JSON output path
 - no provider-specific behavior
+
+Usage layering:
+
+- Human-readable layer: default terminal output for operators, with concise status and next action.
+- AI-readable layer: `--json` output for agents and automation, with stable issue codes and no leading prose.
+- Core authority layer: command behavior derived from `packages/core`, not reimplemented in CLI code.
+- Future module layer: module metadata and doctor checks prepare ENS, 0G, KeeperHub, signer, notification, and demo modules to plug in later.
 
 Status: recommended next phase.
 

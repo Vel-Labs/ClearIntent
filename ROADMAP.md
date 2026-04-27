@@ -27,6 +27,7 @@ Completed baseline:
 Immediate next action:
 
 - Start Phase 1.5 Center CLI skeleton over `packages/core` without implementing provider adapters or demo integration.
+- Phase package: `docs/roadmaps/phase-1.5-center-cli-skeleton/`
 
 ## Feature Order
 

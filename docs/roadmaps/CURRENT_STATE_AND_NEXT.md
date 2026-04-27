@@ -16,7 +16,25 @@ Phase 1F is complete. The contract/core stability handoff is closed for local au
 
 Start Phase 1.5: build the Center CLI skeleton over `packages/core` without implementing provider adapters, demo integration, live signer behavior, or transport-specific webhook/OS notification delivery.
 
-Core implementation must consume:
+Phase package:
+
+- `docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md`
+- `docs/roadmaps/phase-1.5-center-cli-skeleton/EXECUTION_PROMPT.md`
+
+Rationale:
+
+- Phase 1 proved local contract/core authority behavior, but humans and AI agents still need a single product center to inspect state, missing evidence, next actions, and blocked/degraded conditions.
+- Building provider adapters before the Center CLI would push UX and authority-routing choices into adapter code.
+- The CLI skeleton should become the shared local surface that later ENS, 0G, KeeperHub, signer, notification, and demo layers plug into.
+
+Structure for usage:
+
+- Human-readable layer: default terminal output with concise status, next action, missing evidence, and blocked/degraded state.
+- AI-readable layer: deterministic `--json` output with stable issue codes and next-action codes, no leading prose.
+- Core authority layer: all commands consume `packages/core` public primitives such as `deriveCoreStateSnapshot` and `evaluateCoreAuthority`.
+- Module layer: `module list` and `module doctor` establish a registration/health-check shape for future feature modules without loading real providers yet.
+
+Phase 1.5 implementation must consume:
 
 - `contracts/authority-lifecycle.md`
 - `contracts/schemas/*.schema.json`
@@ -31,8 +49,9 @@ Core implementation must consume:
 - `docs/audits/phase-1-core-authority-kernel/1d-core-lifecycle-state-api-closeout.md`
 - `docs/audits/phase-1-core-authority-kernel/1e-core-developer-module-api-closeout.md`
 - `docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md`
+- `docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md`
 
-Before expanding core business logic, a fresh checkout should pass:
+Before expanding CLI skeleton behavior, a fresh checkout should pass:
 
 ```bash
 npm install
@@ -58,6 +77,8 @@ After the Center CLI skeleton is stable:
 
 - provider adapter implementation
 - demo integration
+- webhook delivery
+- local OS notification delivery
 - ERC-7857 iNFTs
 - zk proofs
 - auto-rotating ENS addresses

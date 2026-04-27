@@ -11,6 +11,7 @@ All notable repo changes should be logged here.
 - Completed Phase 1D by adding the `deriveCoreStateSnapshot` API with evidence summaries, next-action codes, degraded-signal visibility, terminal-state handling, tests, and closeout routing.
 - Completed Phase 1E by adding `evaluateCoreAuthority`, stable public API guidance, and module-facing tests that compose state snapshots, lifecycle advancement, and authority verification.
 - Completed Phase 1F by closing the contract/core stability handoff and routing the next implementation target to a Phase 1.5 Center CLI skeleton over `packages/core`.
+- Added the Phase 1.5 Center CLI skeleton roadmap package with rationale, human/AI readability layering, implementation plan, and execution prompt.
 - Added implementation-facing repo-local skills for roadmap phase planning, feature implementation, contract fixture authoring, adapter scaffolding, repo doc routing, hackathon submission auditing, and pre-commit quality gates.
 - Added explicit repo-local skill discovery and maintenance guidance to `AGENTS.md`, root `README.md`, and `skills/README.md`.
 - Modernized root repo-local skills with YAML frontmatter, clearer trigger descriptions, skill-local templates, and a `core-enforcement` skill for the planned `packages/core/` implementation layer.
