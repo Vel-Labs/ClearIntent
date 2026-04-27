@@ -52,6 +52,34 @@ Build a reusable authority layer for autonomous onchain agents. ClearIntent shou
 - Keep large implementation files below 350 lines where practical. Files over 400 lines require clear purpose. Files over 500 lines require extraction or written justification.
 - Comments should feel human: explain why a boundary exists, what can go wrong, and what future maintainers should not accidentally break.
 
+## Repo-local skills
+
+- Check `skills/README.md` before starting recurring governance, contract, roadmap, audit, assignment, or core-enforcement work.
+- Use the relevant repo-local skill when the task matches its description.
+- If a task is likely to recur, has fragile steps, or would benefit from reusable agent guidance, propose a new repo-local skill or an update to an existing one.
+- Keep skills in the root `skills/` folder using `skills/<skill-name>/SKILL.md` with YAML frontmatter.
+- Put repeatable output artifacts in skill-local `templates/` folders instead of duplicating template text across docs.
+- Do not treat scaffold skills as globally installed; they are repo-local assets unless an operator imports them into an agent runtime.
+
+Available repo-local skills:
+
+| Skill | Use when |
+| --- | --- |
+| `repo-orientation` | Orienting a new human or agent to ClearIntent before first action. |
+| `repo-doc-router` | Adding, moving, indexing, or reorganizing docs, templates, skills, roadmap files, decisions, or repo taxonomy. |
+| `roadmap-phase-planner` | Turning a roadmap feature or phase into an executable implementation plan. |
+| `agent-assignment-writer` | Preparing bounded human or agent assignments, fresh-session handoffs, or parallel-agent prompts. |
+| `feature-implementation-runner` | Executing an approved phase plan or feature implementation. |
+| `contract-steward` | Changing authority contracts, lifecycle gates, schemas, validation, or fail-closed rules. |
+| `contract-fixture-author` | Adding or updating contract schemas, valid fixtures, invalid fixtures, and contract tests. |
+| `core-enforcement` | Implementing planned `packages/core` enforcement logic against canonical contracts. |
+| `adapter-scaffold` | Creating or reviewing ENS, 0G, KeeperHub, signer, OpenCleaw, or x402 adapters. |
+| `phase-closeout-audit` | Closing a roadmap phase, scaffold pass, or governance task with verification evidence. |
+| `pre-commit-quality-gate` | Checking commit, push, handoff, or merge readiness after changes. |
+| `hackathon-submission-auditor` | Checking hackathon submission readiness, vendor eligibility, demo claims, feedback files, and disclosure requirements. |
+
+Before commit, push, or phase handoff, use `pre-commit-quality-gate` or an equivalent checklist and report exact commands/results.
+
 ## Multi-agent development rules
 
 Use separate worktrees for parallel coding agents. No two agents should own the same files unless a human operator explicitly coordinates the merge.

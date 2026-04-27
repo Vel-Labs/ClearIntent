@@ -162,6 +162,8 @@
     "<exact command>",
     "<command>",
     "<result>",
+    "<skill-name>",
+    "<date>",
     "<roadmap family or phase id>",
     "<phase name>",
     "<phase>",

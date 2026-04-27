@@ -112,6 +112,27 @@ npm run check
 
 Before `packages/core/` implementation begins, these commands should pass locally. Provider adapters and demo integrations are deferred until the core authority kernel consumes the contract layer cleanly.
 
+## Repo-local skills
+
+ClearIntent keeps reusable agent guidance in root `skills/`. These are repo-local scaffold assets, not automatically installed global skills.
+
+| Skill | Use when |
+| --- | --- |
+| `repo-orientation` | Orienting a new human or agent to ClearIntent before first action. |
+| `repo-doc-router` | Adding, moving, indexing, or reorganizing docs, templates, skills, roadmap files, decisions, or repo taxonomy. |
+| `roadmap-phase-planner` | Turning a roadmap feature or phase into an executable implementation plan. |
+| `agent-assignment-writer` | Preparing bounded human or agent workstream assignments, fresh-session handoffs, or parallel-agent prompts. |
+| `feature-implementation-runner` | Executing an approved phase plan or feature implementation. |
+| `contract-steward` | Changing contracts, schemas, lifecycle gates, examples, validation, or fail-closed authority rules. |
+| `contract-fixture-author` | Adding or updating contract schemas, valid fixtures, invalid fixtures, and contract tests. |
+| `core-enforcement` | Implementing `packages/core` enforcement logic against canonical contracts. |
+| `adapter-scaffold` | Creating or reviewing ENS, 0G, KeeperHub, signer, OpenCleaw, or x402 adapters. |
+| `phase-closeout-audit` | Closing a roadmap phase, scaffold pass, or governance task with verification evidence. |
+| `pre-commit-quality-gate` | Checking commit, push, handoff, or merge readiness after changes. |
+| `hackathon-submission-auditor` | Checking hackathon submission readiness, vendor eligibility, demo claims, feedback files, and disclosure requirements. |
+
+See `skills/README.md` for the skill directory and maintenance rules.
+
 ## Start here
 
 Read in this order:
