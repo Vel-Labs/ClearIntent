@@ -78,7 +78,38 @@ Initial deliverables:
 - fail-closed authority verification for policy, risk report, human review, deadline, signer, executor, identity, and value-limit checks
 - focused core tests under `tests/core/`
 
-Status: started. The current implementation is an initial kernel and does not yet close the full contract/core stability handoff.
+Status: complete. Closeout audit: `docs/audits/phase-1-core-authority-kernel/1c-core-package-closeout.md`.
+
+### Phase 1D: Core Lifecycle/State API
+
+Goal: expand the initial lifecycle/status primitives into a stable core state API that future Center CLI, webhook, adapter, and demo layers can consume.
+
+Handoff prompt:
+
+- `docs/roadmaps/phase-1d-core-lifecycle-state-api/FRESH_AGENT_HANDOFF.md`
+
+Expected deliverables:
+
+- explicit state snapshot type or equivalent
+- derived evidence summary for lifecycle consumers
+- stable issue codes for future CLI/adapters
+- tests for incomplete, ready-to-advance, blocked, degraded, executed, and audited states
+- updated `packages/core/API.md`
+
+Status: complete. Closeout audit: `docs/audits/phase-1-core-authority-kernel/1d-core-lifecycle-state-api-closeout.md`.
+
+### Phase 1E: Core Developer/Module-Facing API
+
+Goal: polish the core package API so future Center CLI modules, adapters, and examples can consume one stable authority kernel without duplicating lifecycle, validation, state, or verification behavior.
+
+Expected deliverables:
+
+- clear module-facing exports from `packages/core/src/index.ts`
+- API documentation that distinguishes stable public primitives from internal helpers
+- developer examples or tests showing expected composition of validation, state snapshot, lifecycle advancement, and authority verification
+- focused tests for module-facing API ergonomics
+
+Status: ready to start.
 
 ## Phase 2: 0G Policy Memory and Audit Layer
 

@@ -6,6 +6,9 @@ All notable repo changes should be logged here.
 
 - Started Phase 1C by adding `packages/core/` with schema-backed contract validation, lifecycle transition helpers, lifecycle status/missing-evidence inspection, deterministic hashing, fail-closed authority verification, and focused `tests/core/` coverage.
 - Added `packages/core/API.md` to define the callable core API and avoid HTTP `GET`/`POST` ambiguity before CLI, webhook, or service wrappers exist.
+- Completed Phase 1C with additional fail-closed semantic checks for nonce, policy deadline window, value limit, risk decision/severity, human review, signature, lifecycle evidence mismatch, a closeout audit, and a Phase 1D fresh-session handoff prompt.
+- Expanded the Phase 1D handoff prompt and `packages/core/API.md` with explicit completion criteria and the target core state snapshot API.
+- Completed Phase 1D by adding the `deriveCoreStateSnapshot` API with evidence summaries, next-action codes, degraded-signal visibility, terminal-state handling, tests, and closeout routing.
 - Added implementation-facing repo-local skills for roadmap phase planning, feature implementation, contract fixture authoring, adapter scaffolding, repo doc routing, hackathon submission auditing, and pre-commit quality gates.
 - Added explicit repo-local skill discovery and maintenance guidance to `AGENTS.md`, root `README.md`, and `skills/README.md`.
 - Modernized root repo-local skills with YAML frontmatter, clearer trigger descriptions, skill-local templates, and a `core-enforcement` skill for the planned `packages/core/` implementation layer.

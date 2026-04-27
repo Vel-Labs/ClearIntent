@@ -17,6 +17,7 @@ import {
   advanceIntentLifecycle,
   assertLifecycleAdvance,
   createContractValidator,
+  deriveCoreStateSnapshot,
   hashAction,
   hashIntentPayload,
   hashPolicy,
@@ -129,6 +130,68 @@ Returns a copied intent with the next lifecycle state when required evidence is 
 
 This is the function future CLI wrappers should use before presenting an updated lifecycle state to a human or agent.
 
+## State Snapshot API
+
+The state snapshot API turns intent lifecycle plus available evidence into one machine-readable object future Center CLI, webhook, adapter, and demo layers can render.
+
+The state API must remain callable TypeScript. It must not define HTTP `GET`/`POST`, JSON-RPC, MCP, webhook, CLI, or GUI transport behavior.
+
+### `deriveCoreStateSnapshot(input)`
+
+Derives the current lifecycle state, evidence summary, missing evidence, blocking issues, next action, and degraded signals for an intent.
+
+Input:
+
+```ts
+{
+  intent: AgentIntent;
+  evidence?: LifecycleEvidence;
+}
+```
+
+Result:
+
+```ts
+type CoreStateSnapshot = {
+  intentId: string;
+  currentState: LifecycleState;
+  nextState?: LifecycleState;
+  canAdvance: boolean;
+  executionBlocked: boolean;
+  evidence: CoreStateEvidenceSummary;
+  missingEvidence: LifecycleEvidenceKey[];
+  blockingIssues: ResultIssue[];
+  nextAction?: CoreNextAction;
+  degradedSignals: string[];
+};
+
+type CoreStateEvidenceSummary = {
+  policy: "present" | "missing" | "mismatched";
+  riskReport: "present" | "missing" | "mismatched" | "blocked";
+  humanReview: "approved" | "missing" | "rejected" | "needs_changes" | "mismatched";
+  signature: "present" | "missing" | "mismatched";
+  verification: "present" | "missing" | "mismatched";
+  executionReceipt: "present" | "missing" | "submitted" | "executed" | "failed" | "degraded" | "mismatched";
+  auditBundle: "present" | "missing" | "audited" | "blocked" | "degraded" | "mismatched";
+};
+
+type CoreNextAction = {
+  code: string;
+  label: string;
+  requiredEvidence: LifecycleEvidenceKey[];
+};
+```
+
+Behavior:
+
+- reports `executionBlocked: true` until the intent has reached `verified`, unless terminal evidence shows clean completion
+- reports mismatched evidence through stable `blockingIssues` codes
+- keeps degraded execution and audit reasons visible in `degradedSignals`
+- returns a structured `nextAction` such as `load_policy`, `request_human_review`, `verify_authority`, `submit_execution`, or `write_audit_bundle`
+- treats `audited` as terminal with no next action
+
+This is the preferred core API for future CLI status rendering. CLI code should render this snapshot rather than re-deriving lifecycle rules.
+
 ## Hashing
 
 ### `stableStringify(value)`
@@ -176,7 +239,10 @@ Checks:
 - executor is allowed
 - signer is allowed
 - value limit does not exceed policy maximum
+- nonce is a valid unsigned integer
 - deadline has not expired
+- deadline is after `createdAt`
+- deadline does not exceed the policy `deadlineSeconds` window
 - intent has reached at least `human_approved`
 - required risk report exists and binds intent and policy hashes
 - risk decision and severity do not violate policy
@@ -234,4 +300,3 @@ When a future layer adds transport behavior, document it separately:
 - Webhook events belong in a notification/webhook contract.
 - Local OS notifications belong in a notification adapter contract.
 - HTTP APIs, if any, must map route behavior back to this core API and name the core function they wrap.
-

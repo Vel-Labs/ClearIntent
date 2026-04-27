@@ -4,11 +4,13 @@
 
 Governance scaffold exists. Phase 0 now includes `REPO_PROFILE.json`, `docs/agents/START_HERE.md`, repo-local agent skill templates, fresh-agent and closeout templates, scaffold validation, and minimal GitHub hygiene. Phase 1A contract authority baseline is complete under `contracts/`. Phase 1B validation tooling baseline is complete with repo-local Node/TypeScript validation, Vitest contract tests, shared `tests/` quality-gate docs, and a package-level `typecheck` command.
 
-Phase 1C has started. `packages/core/` now exists with initial schema-backed contract validation, lifecycle transition checks, lifecycle status/missing-evidence inspection, deterministic hashing helpers, fail-closed authority verification, and focused `tests/core/` coverage. It remains an initial kernel, not a completed contract/core stability handoff.
+Phase 1C is complete. `packages/core/` now exists with schema-backed contract validation, lifecycle transition checks, lifecycle status/missing-evidence inspection, deterministic hashing helpers, fail-closed authority verification, `packages/core/API.md`, and focused `tests/core/` coverage. The Phase 1C closeout audit is `docs/audits/phase-1-core-authority-kernel/1c-core-package-closeout.md`.
+
+Phase 1D is complete. `packages/core` now exposes `deriveCoreStateSnapshot` with machine-readable evidence summaries, next-action codes, blocking issue codes, degraded-signal visibility, and terminal `audited` handling. The Phase 1D closeout audit is `docs/audits/phase-1-core-authority-kernel/1d-core-lifecycle-state-api-closeout.md`.
 
 ## Immediate next action
 
-Continue the core implementation: expand `packages/core/` against the top-level contracts and keep it passing the Phase 1B validation gate plus focused core tests.
+Start Phase 1E: polish the core developer/module-facing API so future feature modules can consume the authority kernel cleanly without implementing CLI, provider adapters, or demo integration.
 
 Core implementation must consume:
 
@@ -20,6 +22,9 @@ Core implementation must consume:
 - `docs/governance/stability-handoff.md`
 - `packages/core/src/`
 - `tests/core/`
+- `packages/core/API.md`
+- `docs/audits/phase-1-core-authority-kernel/1c-core-package-closeout.md`
+- `docs/audits/phase-1-core-authority-kernel/1d-core-lifecycle-state-api-closeout.md`
 
 Before expanding core business logic, a fresh checkout should pass:
 

@@ -21,6 +21,7 @@ Root `DECISIONS.md` summarizes and routes. Dated files hold the detailed entries
 - `contracts/` is the canonical authority contract layer.
 - Human review is an explicit lifecycle gate and is not replaced by signing.
 - `contracts/` plus `packages/core/` gate downstream adapter and demo work.
+- `packages/core/API.md` is the callable authority API; transport layers must wrap it instead of defining authority semantics through ambiguous routes.
 - Root `ROADMAP.md` and `DECISIONS.md` are indexes; detailed roadmap and decision truth lives under `docs/`.
 
 ## Decision Logs

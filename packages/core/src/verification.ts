@@ -75,11 +75,31 @@ export function verifyAuthority(input: AuthorityVerificationInput): CoreResult<A
     });
   }
 
+  if (parseUnsignedBigInt(intent.authority.nonce) === undefined) {
+    issues.push({ code: "invalid_nonce", message: "Intent nonce is not a valid unsigned integer.", path: "authority.nonce" });
+  }
+
   const now = input.now === undefined ? new Date() : new Date(input.now);
-  if (!Number.isFinite(now.valueOf()) || !Number.isFinite(Date.parse(intent.authority.deadline))) {
+  const createdAtMs = Date.parse(intent.createdAt);
+  const deadlineMs = Date.parse(intent.authority.deadline);
+  if (!Number.isFinite(now.valueOf()) || !Number.isFinite(deadlineMs)) {
     issues.push({ code: "invalid_deadline", message: "Intent deadline or verification clock is invalid.", path: "authority.deadline" });
-  } else if (Date.parse(intent.authority.deadline) <= now.valueOf()) {
+  } else if (deadlineMs <= now.valueOf()) {
     issues.push({ code: "deadline_expired", message: "Intent deadline has expired.", path: "authority.deadline" });
+  }
+  if (!Number.isFinite(createdAtMs)) {
+    issues.push({ code: "invalid_created_at", message: "Intent createdAt timestamp is invalid.", path: "createdAt" });
+  } else if (Number.isFinite(deadlineMs)) {
+    const deadlineWindowMs = deadlineMs - createdAtMs;
+    if (deadlineWindowMs <= 0) {
+      issues.push({ code: "deadline_before_created_at", message: "Intent deadline is not after createdAt.", path: "authority.deadline" });
+    } else if (deadlineWindowMs > policy.limits.deadlineSeconds * 1000) {
+      issues.push({
+        code: "deadline_exceeds_policy_window",
+        message: "Intent deadline exceeds the policy deadline window.",
+        path: "authority.deadline"
+      });
+    }
   }
 
   if (!lifecycleHasReached(intent.lifecycleState, "human_approved")) {

@@ -84,7 +84,36 @@ Required before core work starts:
 
 The stability handoff is complete only when `contracts/` defines the authority truth and `packages/core/` enforces it through a reusable API that adapters can consume without redefining intent, policy, risk, review, receipt, or audit shapes.
 
-Status: started. `packages/core/` now contains initial schema-backed validation, lifecycle transition checks, lifecycle status/missing-evidence inspection, deterministic hashing helpers, fail-closed authority verification, and focused core tests. This is not yet the full closeout of Phase 1C.
+Status: complete. `packages/core/` contains schema-backed validation, lifecycle transition checks, lifecycle status/missing-evidence inspection, deterministic hashing helpers, fail-closed authority verification, callable API documentation, and focused core tests. Closeout audit: `docs/audits/phase-1-core-authority-kernel/1c-core-package-closeout.md`.
+
+### 1D Core lifecycle/state API
+
+Expand the initial lifecycle/status primitives into a stable state API that future Center CLI, webhook, adapter, and demo layers can consume without inventing lifecycle semantics.
+
+Required outputs:
+
+- explicit state snapshot type or equivalent
+- derived evidence summary for lifecycle consumers
+- stable issue codes for future CLI/adapters
+- tests for incomplete, ready-to-advance, blocked, degraded, executed, and audited states
+- updated `packages/core/API.md`
+
+Handoff prompt: `docs/roadmaps/phase-1d-core-lifecycle-state-api/FRESH_AGENT_HANDOFF.md`
+
+Status: complete. Closeout audit: `docs/audits/phase-1-core-authority-kernel/1d-core-lifecycle-state-api-closeout.md`.
+
+### 1E Core developer/module-facing API
+
+Polish the core package API so future Center CLI modules, adapters, and examples can consume one stable authority kernel without duplicating lifecycle, validation, state, or verification behavior.
+
+Required outputs:
+
+- clear module-facing exports from `packages/core/src/index.ts`
+- API documentation that distinguishes stable public primitives from internal helpers
+- developer examples or tests showing expected composition of validation, state snapshot, lifecycle advancement, and authority verification
+- focused tests for module-facing API ergonomics
+
+Status: ready to start.
 
 ### 1.1 Core schema implementation
 

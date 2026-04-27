@@ -9,6 +9,7 @@ import {
   advanceIntentLifecycle,
   assertLifecycleAdvance,
   createContractValidator,
+  deriveCoreStateSnapshot,
   hashAction,
   inspectLifecycle,
   stableStringify,
@@ -80,6 +81,70 @@ describe("ClearIntent core authority primitives", () => {
     );
   });
 
+  it("fails closed for nonce, deadline, value, risk, review, and signature violations", () => {
+    const result = verifyAuthority({
+      intent: {
+        ...(validIntent as AgentIntent),
+        createdAt: "2026-05-03T18:00:00Z",
+        action: {
+          ...(validIntent as AgentIntent).action,
+          valueLimit: "100000000000000001"
+        },
+        authority: {
+          ...(validIntent as AgentIntent).authority,
+          nonce: "not-a-number",
+          deadline: "2026-05-03T18:16:00Z"
+        }
+      },
+      policy: validPolicy as AgentPolicy,
+      riskReport: {
+        ...(validRiskReport as RiskReport),
+        decision: "block",
+        severity: "critical"
+      },
+      humanReview: {
+        ...(validReview as HumanReviewCheckpoint),
+        decision: "needs_changes"
+      },
+      signature: {
+        signer: "0x9999999999999999999999999999999999999999",
+        signature: ""
+      },
+      now: "2026-05-03T18:03:00Z"
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.ok ? [] : result.issues.map((issue) => issue.code)).toEqual(
+      expect.arrayContaining([
+        "value_limit_exceeds_policy",
+        "invalid_nonce",
+        "deadline_exceeds_policy_window",
+        "risk_report_blocks",
+        "risk_severity_too_high",
+        "human_review_not_approved",
+        "signature_signer_mismatch",
+        "signature_missing"
+      ])
+    );
+  });
+
+  it("rejects lifecycle evidence mismatches before advancing state", () => {
+    const reviewedIntent = {
+      ...(validIntent as AgentIntent),
+      lifecycleState: "reviewed"
+    } satisfies AgentIntent;
+
+    const result = advanceIntentLifecycle(reviewedIntent, {
+      humanReview: {
+        ...(validReview as HumanReviewCheckpoint),
+        approvedIntentHash: "0x9999999999999999999999999999999999999999999999999999999999999999"
+      }
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.ok ? [] : result.issues.map((issue) => issue.code)).toContain("lifecycle_evidence_mismatch");
+  });
+
   it("reports the next lifecycle evidence needed for machine-readable CLI wrappers", () => {
     const proposedIntent = {
       ...(validIntent as AgentIntent),
@@ -135,5 +200,150 @@ describe("ClearIntent core authority primitives", () => {
     });
     expect(audited.ok).toBe(true);
     expect(audited.ok ? audited.value.lifecycleState : undefined).toBe("audited");
+  });
+
+  it("derives an incomplete proposed state snapshot with missing policy evidence", () => {
+    const snapshot = deriveCoreStateSnapshot({
+      intent: {
+        ...(validIntent as AgentIntent),
+        lifecycleState: "proposed"
+      }
+    });
+
+    expect(snapshot.intentId).toBe((validIntent as AgentIntent).intentId);
+    expect(snapshot.currentState).toBe("proposed");
+    expect(snapshot.nextState).toBe("policy_checked");
+    expect(snapshot.executionBlocked).toBe(true);
+    expect(snapshot.evidence.policy).toBe("missing");
+    expect(snapshot.missingEvidence).toEqual(["policy"]);
+    expect(snapshot.nextAction?.code).toBe("load_policy");
+  });
+
+  it("derives a ready-to-advance policy state snapshot", () => {
+    const intent = {
+      ...(validIntent as AgentIntent),
+      lifecycleState: "proposed"
+    } satisfies AgentIntent;
+    const snapshot = deriveCoreStateSnapshot({
+      intent,
+      evidence: { policy: { policyHash: intent.policy.policyHash } }
+    });
+
+    expect(snapshot.canAdvance).toBe(true);
+    expect(snapshot.blockingIssues).toEqual([]);
+    expect(snapshot.evidence.policy).toBe("present");
+  });
+
+  it("derives stable blocked-state issue codes for mismatched evidence", () => {
+    const snapshot = deriveCoreStateSnapshot({
+      intent: {
+        ...(validIntent as AgentIntent),
+        lifecycleState: "proposed"
+      },
+      evidence: {
+        policy: {
+          policyHash: "0x9999999999999999999999999999999999999999999999999999999999999999"
+        }
+      }
+    });
+
+    expect(snapshot.canAdvance).toBe(false);
+    expect(snapshot.executionBlocked).toBe(true);
+    expect(snapshot.evidence.policy).toBe("mismatched");
+    expect(snapshot.blockingIssues.map((issue) => issue.code)).toContain("lifecycle_evidence_mismatch");
+  });
+
+  it("identifies human review as the next action for reviewed intents", () => {
+    const snapshot = deriveCoreStateSnapshot({
+      intent: {
+        ...(validIntent as AgentIntent),
+        lifecycleState: "reviewed"
+      }
+    });
+
+    expect(snapshot.nextState).toBe("human_approved");
+    expect(snapshot.nextAction?.code).toBe("request_human_review");
+    expect(snapshot.missingEvidence).toEqual(["human_review"]);
+  });
+
+  it("identifies verification as the next action for signed intents", () => {
+    const snapshot = deriveCoreStateSnapshot({
+      intent: {
+        ...(validIntent as AgentIntent),
+        lifecycleState: "signed"
+      }
+    });
+
+    expect(snapshot.nextState).toBe("verified");
+    expect(snapshot.nextAction?.code).toBe("verify_authority");
+    expect(snapshot.missingEvidence).toEqual(["verification"]);
+  });
+
+  it("identifies submission as the next action for verified but unsubmitted intents", () => {
+    const snapshot = deriveCoreStateSnapshot({
+      intent: {
+        ...(validIntent as AgentIntent),
+        lifecycleState: "verified"
+      }
+    });
+
+    expect(snapshot.nextState).toBe("submitted");
+    expect(snapshot.nextAction?.code).toBe("submit_execution");
+    expect(snapshot.executionBlocked).toBe(false);
+    expect(snapshot.missingEvidence).toEqual(["submission_receipt"]);
+  });
+
+  it("keeps degraded execution and audit signals visible", () => {
+    const snapshot = deriveCoreStateSnapshot({
+      intent: {
+        ...(validIntent as AgentIntent),
+        lifecycleState: "verified"
+      },
+      evidence: {
+        executionReceipt: {
+          ...(validReceipt as ExecutionReceipt),
+          status: "degraded",
+          degradedReason: "audit write delayed"
+        },
+        auditBundle: {
+          ...(validAuditBundle as AuditBundle),
+          finalStatus: "degraded",
+          degradedReasons: ["execution receipt stored locally only"]
+        }
+      }
+    });
+
+    expect(snapshot.evidence.executionReceipt).toBe("degraded");
+    expect(snapshot.evidence.auditBundle).toBe("degraded");
+    expect(snapshot.degradedSignals).toEqual(
+      expect.arrayContaining(["audit write delayed", "audit_degraded", "execution receipt stored locally only"])
+    );
+  });
+
+  it("points executed intents toward audit bundle creation", () => {
+    const snapshot = deriveCoreStateSnapshot({
+      intent: {
+        ...(validIntent as AgentIntent),
+        lifecycleState: "executed"
+      }
+    });
+
+    expect(snapshot.nextState).toBe("audited");
+    expect(snapshot.nextAction?.code).toBe("write_audit_bundle");
+    expect(snapshot.missingEvidence).toEqual(["audit_bundle"]);
+  });
+
+  it("treats audited state as terminal", () => {
+    const snapshot = deriveCoreStateSnapshot({
+      intent: {
+        ...(validIntent as AgentIntent),
+        lifecycleState: "audited"
+      }
+    });
+
+    expect(snapshot.nextState).toBeUndefined();
+    expect(snapshot.nextAction).toBeUndefined();
+    expect(snapshot.canAdvance).toBe(false);
+    expect(snapshot.executionBlocked).toBe(false);
   });
 });

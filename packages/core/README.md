@@ -7,6 +7,7 @@ It consumes the canonical contracts in `contracts/` and exposes small reusable p
 - schema-backed contract validation
 - lifecycle transition checks
 - lifecycle status and missing-evidence inspection
+- machine-readable core state snapshots
 - deterministic hashing helpers
 - fail-closed authority verification
 

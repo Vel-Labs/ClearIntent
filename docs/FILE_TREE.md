@@ -54,6 +54,8 @@ docs/audits/README.md
 docs/audits/phase-0.9-governance-closeout.md
 docs/audits/phase-1-core-authority-kernel/1a-contract-authority-baseline-closeout.md
 docs/audits/phase-1-core-authority-kernel/1b-contract-validation-tooling-closeout.md
+docs/audits/phase-1-core-authority-kernel/1c-core-package-closeout.md
+docs/audits/phase-1-core-authority-kernel/1d-core-lifecycle-state-api-closeout.md
 docs/decisions/2026-04-25.md
 docs/decisions/2026-04-26.md
 docs/decisions/README.md
@@ -95,6 +97,7 @@ docs/repo-truth/source-material/provider-source-intake.md
 docs/roadmaps/CURRENT_STATE_AND_NEXT.md
 docs/roadmaps/README.md
 docs/roadmaps/ROADMAP.md
+docs/roadmaps/phase-1d-core-lifecycle-state-api/FRESH_AGENT_HANDOFF.md
 docs/roadmaps/features/feature-01-core-authority-kernel.md
 docs/roadmaps/features/feature-02-zerog-policy-memory-audit.md
 docs/roadmaps/features/feature-03-ens-agent-identity.md
@@ -118,6 +121,7 @@ packages/core/src/hash.ts
 packages/core/src/index.ts
 packages/core/src/lifecycle.ts
 packages/core/src/schema-validation.ts
+packages/core/src/state.ts
 packages/core/src/status.ts
 packages/core/src/types.ts
 packages/core/src/verification.ts
