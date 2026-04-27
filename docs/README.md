@@ -22,6 +22,7 @@ docs/
 Root-level `skills/` contains repo-local scaffold skills. They live at root for agent/tool discoverability and are not globally installed unless an operator imports them.
 Root `ROADMAP.md` and `DECISIONS.md` are high-visibility indexes. Detailed roadmap scope lives under `roadmaps/`; dated decision entries live under `decisions/`.
 Top-level `contracts/` is also required reading. It is outside `docs/` because it is both human-readable governance and machine-checkable contract truth.
+Top-level `packages/core/API.md` documents the current callable authority API. It is a package API, not an HTTP route map.
 Top-level `REPO_PROFILE.json` is the machine-readable taxonomy for paths, commands, governance locks, and scaffold validation.
 For implementation sequencing, `governance/stability-handoff.md` explains why `contracts/` and `packages/core/` must stabilize before provider adapters or demos.
 

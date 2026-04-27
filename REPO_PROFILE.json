@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "repoName": "ClearIntent",
   "purpose": "Reusable authority layer for autonomous onchain agents. Agents produce bounded intents, humans approve through explicit review and readable signing flows, and executors act only after policy, nonce, deadline, and authority checks pass.",
-  "currentStatus": "Governance, contract authority, and validation baseline are present. The next implementation target is packages/core/, which is planned but not yet present in this checkout.",
+  "currentStatus": "Governance, contract authority, validation baseline, and initial packages/core authority primitives are present. The next implementation target is expanding packages/core through Phase 1C before provider adapters or demos begin.",
   "canonicalPaths": {
     "agentPolicy": "AGENTS.md",
     "repoProfile": "REPO_PROFILE.json",
@@ -20,6 +20,8 @@
     "contractSchemas": "contracts/schemas/",
     "contractExamples": "contracts/examples/",
     "contractValidationScript": "scripts/validate-contracts.ts",
+    "corePackage": "packages/core/",
+    "coreApi": "packages/core/API.md",
     "scaffoldValidationScript": "scripts/validate-scaffold.ts",
     "tests": "tests/",
     "contractTests": "tests/contracts/",
@@ -33,9 +35,7 @@
     "githubIssueConfig": ".github/ISSUE_TEMPLATE/config.yml",
     "githubQualityGate": ".github/workflows/quality-gate.yml"
   },
-  "plannedCanonicalPaths": {
-    "corePackage": "packages/core/"
-  },
+  "plannedCanonicalPaths": {},
   "readFirstFiles": [
     "AGENTS.md",
     "REPO_PROFILE.json",
@@ -111,6 +111,7 @@
     "contracts/",
     "contracts/schemas/",
     "contracts/examples/",
+    "packages/core/",
     "scripts/",
     "tests/",
     "tests/contracts/"

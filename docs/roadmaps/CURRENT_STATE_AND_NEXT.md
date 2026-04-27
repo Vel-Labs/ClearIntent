@@ -4,9 +4,11 @@
 
 Governance scaffold exists. Phase 0 now includes `REPO_PROFILE.json`, `docs/agents/START_HERE.md`, repo-local agent skill templates, fresh-agent and closeout templates, scaffold validation, and minimal GitHub hygiene. Phase 1A contract authority baseline is complete under `contracts/`. Phase 1B validation tooling baseline is complete with repo-local Node/TypeScript validation, Vitest contract tests, shared `tests/` quality-gate docs, and a package-level `typecheck` command.
 
+Phase 1C has started. `packages/core/` now exists with initial schema-backed contract validation, lifecycle transition checks, lifecycle status/missing-evidence inspection, deterministic hashing helpers, fail-closed authority verification, and focused `tests/core/` coverage. It remains an initial kernel, not a completed contract/core stability handoff.
+
 ## Immediate next action
 
-Start the core implementation: implement `packages/core/` against the top-level contracts and keep it passing the Phase 1B validation gate.
+Continue the core implementation: expand `packages/core/` against the top-level contracts and keep it passing the Phase 1B validation gate plus focused core tests.
 
 Core implementation must consume:
 
@@ -16,8 +18,10 @@ Core implementation must consume:
 - `scripts/validate-contracts.ts`
 - `tests/contracts/validate-contracts.test.ts`
 - `docs/governance/stability-handoff.md`
+- `packages/core/src/`
+- `tests/core/`
 
-Before writing core business logic, a fresh checkout should pass:
+Before expanding core business logic, a fresh checkout should pass:
 
 ```bash
 npm install

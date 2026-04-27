@@ -15,11 +15,13 @@ AI_USAGE.md
 CHANGELOG.md
 CONTRIBUTING.md
 DECISIONS.md
+DECISIONS 2.md
 FEEDBACK.md
 KEEPERHUB_FEEDBACK.md
 README.md
 REPO_PROFILE.json
 ROADMAP.md
+ROADMAP 2.md
 contracts/README.md
 contracts/authority-lifecycle.md
 contracts/examples/invalid-expired-deadline.json
@@ -37,6 +39,7 @@ contracts/schemas/audit-bundle.schema.json
 contracts/schemas/execution-receipt.schema.json
 contracts/schemas/human-review-checkpoint.schema.json
 contracts/schemas/risk-report.schema.json
+docs/FILE_TREE 2.md
 docs/FILE_TREE.md
 docs/README.md
 docs/agents/START_HERE.md
@@ -109,6 +112,15 @@ docs/templates/PHASE_PROMPT_TEMPLATE.md
 docs/templates/REPO_PERSONALIZATION_CHECKLIST.md
 package-lock.json
 package.json
+packages/core/API.md
+packages/core/README.md
+packages/core/src/hash.ts
+packages/core/src/index.ts
+packages/core/src/lifecycle.ts
+packages/core/src/schema-validation.ts
+packages/core/src/status.ts
+packages/core/src/types.ts
+packages/core/src/verification.ts
 scripts/validate-contracts.ts
 scripts/validate-scaffold.ts
 skills/README.md
@@ -131,5 +143,6 @@ skills/roadmap-phase-planner/SKILL.md
 skills/roadmap-phase-planner/templates/phase-plan.md
 tests/README.md
 tests/contracts/validate-contracts.test.ts
+tests/core/core.test.ts
 tsconfig.json
 ```

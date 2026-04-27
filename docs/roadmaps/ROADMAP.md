@@ -65,6 +65,21 @@ Deliverables:
 
 Status: scaffolded.
 
+### Phase 1C: Core package implementation
+
+Goal: make `packages/core/` the executable authority kernel that consumes `contracts/` and exposes reusable primitives before downstream adapters or demos begin.
+
+Initial deliverables:
+
+- schema-backed contract validation loaded from `contracts/schemas/`
+- lifecycle transition helpers
+- lifecycle status and missing-evidence inspection for future CLI/adapters
+- deterministic hash helpers
+- fail-closed authority verification for policy, risk report, human review, deadline, signer, executor, identity, and value-limit checks
+- focused core tests under `tests/core/`
+
+Status: started. The current implementation is an initial kernel and does not yet close the full contract/core stability handoff.
+
 ## Phase 2: 0G Policy Memory and Audit Layer
 
 Goal: store policy, intent, risk report, and execution receipts on 0G.

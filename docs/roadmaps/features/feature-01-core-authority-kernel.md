@@ -84,6 +84,8 @@ Required before core work starts:
 
 The stability handoff is complete only when `contracts/` defines the authority truth and `packages/core/` enforces it through a reusable API that adapters can consume without redefining intent, policy, risk, review, receipt, or audit shapes.
 
+Status: started. `packages/core/` now contains initial schema-backed validation, lifecycle transition checks, lifecycle status/missing-evidence inspection, deterministic hashing helpers, fail-closed authority verification, and focused core tests. This is not yet the full closeout of Phase 1C.
+
 ### 1.1 Core schema implementation
 
 Implement TypeScript types and validators from the top-level contract schemas.

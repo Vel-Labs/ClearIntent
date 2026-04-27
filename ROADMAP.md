@@ -19,10 +19,11 @@ Completed baseline:
 - Phase 0 governance and documentation scaffold
 - Phase 1A contract authority baseline under `contracts/`
 - Phase 1B validation tooling baseline with TypeScript/Node validation and Vitest contract checks
+- Phase 1C initial `packages/core/` authority primitives with schema-backed validation, lifecycle checks/status inspection, hashing helpers, fail-closed verification, and focused tests
 
 Immediate next action:
 
-- Implement `packages/core/` against `contracts/` without redefining authority semantics.
+- Continue `packages/core/` toward the full contract/core stability handoff without redefining authority semantics.
 
 ## Feature Order
 

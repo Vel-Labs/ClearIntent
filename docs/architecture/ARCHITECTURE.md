@@ -39,6 +39,8 @@ Rule: the intent contract is the boundary between agent reasoning and executable
 
 `contracts/` is the canonical source of authority truth. `packages/core/` must implement and enforce it. Provider adapters may translate to vendor-specific requests, but they must not replace the shared contracts.
 
+Current implementation note: `packages/core/` now provides the first executable authority primitives for schema-backed validation, lifecycle transitions/status inspection, deterministic hashing, and fail-closed verification. It remains adapter-neutral and must continue to consume `contracts/` rather than becoming a parallel contract layer.
+
 ### 2. Agent framework plane
 
 Expected paths:
