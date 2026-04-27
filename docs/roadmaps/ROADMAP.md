@@ -109,7 +109,33 @@ Expected deliverables:
 - developer examples or tests showing expected composition of validation, state snapshot, lifecycle advancement, and authority verification
 - focused tests for module-facing API ergonomics
 
-Status: ready to start.
+Status: complete. Closeout audit: `docs/audits/phase-1-core-authority-kernel/1e-core-developer-module-api-closeout.md`.
+
+### Phase 1F: Contract/Core Stability Handoff
+
+Goal: close Phase 1 by confirming `contracts/` plus `packages/core/` are stable enough for the next product layer to consume.
+
+Deliverables:
+
+- Phase 1F closeout audit
+- validation evidence from `npm run check`
+- roadmap/current-state routing update
+- explicit deferred-scope list for provider adapters, demo integration, live signer behavior, and transport surfaces
+
+Status: complete. Closeout audit: `docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md`.
+
+### Phase 1.5: Center CLI Skeleton
+
+Goal: build the CLI-first product center over the stable core authority API before provider adapters or demo integration.
+
+Expected deliverables:
+
+- CLI command skeleton over `packages/core`
+- module registration or command contract scaffold
+- terminal-first human status/readout path
+- no provider-specific behavior
+
+Status: recommended next phase.
 
 ## Phase 2: 0G Policy Memory and Audit Layer
 

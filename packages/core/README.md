@@ -8,6 +8,7 @@ It consumes the canonical contracts in `contracts/` and exposes small reusable p
 - lifecycle transition checks
 - lifecycle status and missing-evidence inspection
 - machine-readable core state snapshots
+- module-facing authority evaluation
 - deterministic hashing helpers
 - fail-closed authority verification
 
@@ -17,4 +18,4 @@ See `API.md` for the current callable API. It documents function-level behavior 
 
 ## Current scope
 
-Phase 1C starts with local TypeScript modules and tests. The implementation is intentionally dependency-light and fixture-backed so future features can slot into the same authority surface.
+Phase 1 closes with local TypeScript modules and tests. The implementation is intentionally dependency-light and fixture-backed so future features can slot into the same authority surface.

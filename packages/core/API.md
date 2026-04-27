@@ -18,6 +18,7 @@ import {
   assertLifecycleAdvance,
   createContractValidator,
   deriveCoreStateSnapshot,
+  evaluateCoreAuthority,
   hashAction,
   hashIntentPayload,
   hashPolicy,
@@ -26,6 +27,22 @@ import {
   verifyAuthority
 } from "./packages/core/src";
 ```
+
+Stable public primitives:
+
+- `createContractValidator`
+- `assertLifecycleAdvance`
+- `inspectLifecycle`
+- `advanceIntentLifecycle`
+- `deriveCoreStateSnapshot`
+- `evaluateCoreAuthority`
+- `verifyAuthority`
+- `stableStringify`
+- `hashAction`
+- `hashIntentPayload`
+- `hashPolicy`
+
+Everything else should be treated as implementation detail unless this document explicitly promotes it.
 
 ## Contract Validation
 
@@ -191,6 +208,62 @@ Behavior:
 - treats `audited` as terminal with no next action
 
 This is the preferred core API for future CLI status rendering. CLI code should render this snapshot rather than re-deriving lifecycle rules.
+
+## Module-Facing Evaluation API
+
+### `evaluateCoreAuthority(input)`
+
+Composes the core primitives most future modules need:
+
+- derives a `CoreStateSnapshot`
+- attempts the next lifecycle advancement when one exists
+- runs fail-closed authority verification when a loaded `AgentPolicy` is supplied
+- returns stable issue codes in one list
+
+Input:
+
+```ts
+{
+  intent: AgentIntent;
+  evidence?: LifecycleEvidence;
+  policy?: AgentPolicy;
+  now?: Date | string;
+}
+```
+
+Result:
+
+```ts
+type CoreAuthorityEvaluation = {
+  snapshot: CoreStateSnapshot;
+  lifecycleAdvance?: CoreResult<AgentIntent>;
+  authorityVerification?: CoreResult<AuthorityVerification>;
+  issues: ResultIssue[];
+};
+```
+
+Usage:
+
+```ts
+const evaluation = evaluateCoreAuthority({
+  intent,
+  policy,
+  evidence: {
+    riskReport,
+    humanReview,
+    signature
+  },
+  now: new Date()
+});
+```
+
+Module guidance:
+
+- Use `snapshot` for human or agent-facing status.
+- Use `lifecycleAdvance` only when persisting a one-step lifecycle update.
+- Use `authorityVerification` before privileged execution.
+- Use `issues[].code`, not `issues[].message`, for programmatic routing.
+- Do not reimplement lifecycle, review, signer, executor, deadline, or audit rules in downstream modules.
 
 ## Hashing
 

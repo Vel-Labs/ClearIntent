@@ -113,7 +113,20 @@ Required outputs:
 - developer examples or tests showing expected composition of validation, state snapshot, lifecycle advancement, and authority verification
 - focused tests for module-facing API ergonomics
 
-Status: ready to start.
+Status: complete. Closeout audit: `docs/audits/phase-1-core-authority-kernel/1e-core-developer-module-api-closeout.md`.
+
+### 1F Contract/core stability handoff
+
+Close Phase 1 by confirming that `contracts/` plus `packages/core/` are stable enough for the next product layer to consume.
+
+Required outputs:
+
+- closeout audit stating whether the contract/core stability handoff is complete
+- roadmap/current-state routing update
+- validation evidence from `npm run check`
+- explicit deferred-scope list for provider adapters, demo integration, live signer behavior, and transport surfaces
+
+Status: complete. Closeout audit: `docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md`.
 
 ### 1.1 Core schema implementation
 
@@ -162,3 +175,5 @@ Audit target: core can be consumed by adapters without vendor-specific assumptio
 - stable human review checkpoint fixture
 - failure cases documented
 - adapters can start without inventing their own schema
+
+Status: met for the local contract/core stability handoff. Live provider behavior remains deferred.

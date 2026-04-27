@@ -8,9 +8,13 @@ Phase 1C is complete. `packages/core/` now exists with schema-backed contract va
 
 Phase 1D is complete. `packages/core` now exposes `deriveCoreStateSnapshot` with machine-readable evidence summaries, next-action codes, blocking issue codes, degraded-signal visibility, and terminal `audited` handling. The Phase 1D closeout audit is `docs/audits/phase-1-core-authority-kernel/1d-core-lifecycle-state-api-closeout.md`.
 
+Phase 1E is complete. `packages/core` now exposes `evaluateCoreAuthority` for module-facing composition of state snapshots, lifecycle advancement, and authority verification. The Phase 1E closeout audit is `docs/audits/phase-1-core-authority-kernel/1e-core-developer-module-api-closeout.md`.
+
+Phase 1F is complete. The contract/core stability handoff is closed for local authority behavior. The Phase 1F closeout audit is `docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md`.
+
 ## Immediate next action
 
-Start Phase 1E: polish the core developer/module-facing API so future feature modules can consume the authority kernel cleanly without implementing CLI, provider adapters, or demo integration.
+Start Phase 1.5: build the Center CLI skeleton over `packages/core` without implementing provider adapters, demo integration, live signer behavior, or transport-specific webhook/OS notification delivery.
 
 Core implementation must consume:
 
@@ -25,6 +29,8 @@ Core implementation must consume:
 - `packages/core/API.md`
 - `docs/audits/phase-1-core-authority-kernel/1c-core-package-closeout.md`
 - `docs/audits/phase-1-core-authority-kernel/1d-core-lifecycle-state-api-closeout.md`
+- `docs/audits/phase-1-core-authority-kernel/1e-core-developer-module-api-closeout.md`
+- `docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md`
 
 Before expanding core business logic, a fresh checkout should pass:
 
@@ -40,7 +46,7 @@ npm run check
 
 ## Recommended parallelization
 
-After Phase 1 contracts and `packages/core/` are stable:
+After the Center CLI skeleton is stable:
 
 - one agent can build ENS resolver scaffolding
 - one agent can build 0G storage scaffolding

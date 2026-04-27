@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "repoName": "ClearIntent",
   "purpose": "Reusable authority layer for autonomous onchain agents. Agents produce bounded intents, humans approve through explicit review and readable signing flows, and executors act only after policy, nonce, deadline, and authority checks pass.",
-  "currentStatus": "Governance, contract authority, validation baseline, Phase 1C packages/core authority primitives, and Phase 1D core lifecycle/state API are complete. The next implementation target is Phase 1E core developer/module-facing API polish before CLI, provider adapters, or demos begin.",
+  "currentStatus": "Governance, contract authority, validation baseline, and Phase 1 contract/core stability handoff are complete. The next implementation target is a Phase 1.5 Center CLI skeleton over packages/core before provider adapters or demos begin.",
   "canonicalPaths": {
     "agentPolicy": "AGENTS.md",
     "repoProfile": "REPO_PROFILE.json",

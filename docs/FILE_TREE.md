@@ -56,6 +56,8 @@ docs/audits/phase-1-core-authority-kernel/1a-contract-authority-baseline-closeou
 docs/audits/phase-1-core-authority-kernel/1b-contract-validation-tooling-closeout.md
 docs/audits/phase-1-core-authority-kernel/1c-core-package-closeout.md
 docs/audits/phase-1-core-authority-kernel/1d-core-lifecycle-state-api-closeout.md
+docs/audits/phase-1-core-authority-kernel/1e-core-developer-module-api-closeout.md
+docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md
 docs/decisions/2026-04-25.md
 docs/decisions/2026-04-26.md
 docs/decisions/README.md
@@ -120,6 +122,7 @@ packages/core/README.md
 packages/core/src/hash.ts
 packages/core/src/index.ts
 packages/core/src/lifecycle.ts
+packages/core/src/module-api.ts
 packages/core/src/schema-validation.ts
 packages/core/src/state.ts
 packages/core/src/status.ts
@@ -148,5 +151,7 @@ skills/roadmap-phase-planner/templates/phase-plan.md
 tests/README.md
 tests/contracts/validate-contracts.test.ts
 tests/core/core.test.ts
+tests/core/module-api.test.ts
+tests/core/state.test.ts
 tsconfig.json
 ```

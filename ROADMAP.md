@@ -21,10 +21,12 @@ Completed baseline:
 - Phase 1B validation tooling baseline with TypeScript/Node validation and Vitest contract checks
 - Phase 1C `packages/core/` authority primitives with schema-backed validation, lifecycle checks/status inspection, hashing helpers, fail-closed verification, callable API docs, focused tests, and closeout audit
 - Phase 1D core lifecycle/state API with machine-readable state snapshots, evidence summaries, next-action codes, degraded-signal visibility, terminal-state handling, tests, and closeout audit
+- Phase 1E core developer/module-facing API with stable public exports, `evaluateCoreAuthority`, and composition tests
+- Phase 1F contract/core stability handoff closeout
 
 Immediate next action:
 
-- Start Phase 1E core developer/module-facing API polish without implementing CLI, provider adapters, or demo integration.
+- Start Phase 1.5 Center CLI skeleton over `packages/core` without implementing provider adapters or demo integration.
 
 ## Feature Order
 
