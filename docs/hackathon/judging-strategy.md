@@ -61,7 +61,7 @@ The memorable moment is:
 1. agent proposes action
 2. policy and risk report appear
 3. human approves readable bounded intent
-4. hardware signer signs
+4. wallet or hardware signer signs
 5. KeeperHub executes
 6. audit receipt is visible
 

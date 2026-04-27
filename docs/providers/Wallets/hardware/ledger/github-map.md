@@ -1,5 +1,7 @@
 # Ledger GitHub Map
 
+Parent wallet note: [README.md](README.md).
+
 Sources: [LedgerHQ GitHub organization](https://github.com/LedgerHQ), [Clear Signing registry](https://github.com/LedgerHQ/clear-signing-erc7730-registry). Snapshot gathered 2026-04-25 from the GitHub API.
 
 ## Repositories most relevant to ClearIntent

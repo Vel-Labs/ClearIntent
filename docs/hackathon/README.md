@@ -13,7 +13,7 @@ ENS identity
   -> 0G policy memory and audit trail
   -> typed agent intent
   -> human-readable approval
-  -> hardware-backed signature
+  -> wallet or hardware-backed signature
   -> KeeperHub execution
   -> auditable receipt
 ```
@@ -35,7 +35,7 @@ A successful MVP proves:
 - 0G stores policy, risk, intent, or receipt artifacts
 - a bounded EIP-712 intent is created
 - a human-readable approval view is shown
-- a hardware signer or signer adapter signs the intent
+- a software wallet, WalletConnect wallet, smart account, or hardware signer adapter signs the intent
 - KeeperHub executes or meaningfully orchestrates the approved workflow
 - the final result is auditable
 

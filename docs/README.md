@@ -64,7 +64,16 @@ For implementation sequencing, `governance/stability-handoff.md` explains why `c
 3. `hackathon/rules.md`
 4. `hackathon/judging-strategy.md`
 5. `hackathon/demo-plan.md`
-6. `hackathon/submission-checklist.md`
+6. `hackathon/wallet-demo-strategy.md`
+7. `hackathon/submission-checklist.md`
+
+### Wallet and signer planning
+
+1. `providers/Wallets/README.md`
+2. `providers/Wallets/compatibility-levels.md`
+3. `providers/Wallets/generic/eip712.md`
+4. `providers/Wallets/generic/erc7730.md`
+5. relevant software, WalletConnect, smart-account, or hardware wallet provider note
 
 ## Documentation rule
 

@@ -48,6 +48,7 @@ No package, adapter, or demo may silently replace these shapes with local varian
 - hardware or wallet connection
 - EIP-712 signing
 - display metadata status
+- wallet class and capability-level reporting
 - user rejection handling
 - timeout and device error handling
 
@@ -81,6 +82,8 @@ No package, adapter, or demo may silently replace these shapes with local varian
 - interactive walkthrough
 - local configuration
 - human-readable lifecycle display
+- ClearIntent-rendered signing preview
+- side-by-side wallet demo composition when available
 
 ## What the demo app does not own
 
@@ -88,6 +91,7 @@ No package, adapter, or demo may silently replace these shapes with local varian
 - canonical signature truth
 - canonical onchain verification truth
 - audit truth
+- secure-screen display truth unless that signer path is actually tested
 
 ## Fold-in rule
 

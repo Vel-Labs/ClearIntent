@@ -11,7 +11,8 @@ Create local Markdown provider documentation funnels for:
 - 0G: website, docs, and GitHub organization.
 - ENS: AI-building docs and GitHub organization.
 - KeeperHub: website, docs, and GitHub repository.
-- Ledger: Clear Signing developer docs.
+- Wallets and signers: EIP-712, ERC-7730, WalletConnect, injected wallet, smart-account, and hardware wallet docs.
+- Ledger: Clear Signing developer docs and provider approval path.
 
 The requested output is taxonomy-driven, provider-specific, source-cited, and explicitly audit-oriented.
 
@@ -21,7 +22,7 @@ The requested output is taxonomy-driven, provider-specific, source-cited, and ex
 - `docs/providers/0G/`
 - `docs/providers/ENS/`
 - `docs/providers/KeeperHub/`
-- `docs/providers/Ledger/`
+- `docs/providers/Wallets/`
 
 ## Repo-truth implication
 

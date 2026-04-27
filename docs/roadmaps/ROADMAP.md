@@ -212,9 +212,9 @@ Key deliverables:
 - execution receipt capture
 - `KEEPERHUB_FEEDBACK.md`
 
-## Phase 5: Hardware Signer and Human-Readable Approval
+## Phase 5: Wallet Signer Adapters and Human-Readable Approval
 
-Goal: provide a signer adapter that signs EIP-712 intents and surfaces readable approval status.
+Goal: provide signer adapters that sign EIP-712 intents and surface readable approval status across software wallets, WalletConnect wallets, smart accounts, and hardware-backed wallets where practical.
 
 Primary file: `docs/roadmaps/features/feature-05-hardware-signer-readable-approval.md`
 
@@ -225,8 +225,9 @@ Dependencies:
 
 Key deliverables:
 
-- `packages/signer-hardware/`
+- `packages/signer-hardware/` or future wallet signer packages
 - EIP-712 signing flow
+- software wallet and WalletConnect paths where practical
 - readable preview UI
 - ERC-7730 metadata output if feasible
 - blind-signing/degraded display warning
@@ -245,7 +246,7 @@ Key deliverables:
 
 - `examples/guardian-agent/`
 - planner + critic + executor roles
-- demo script
+- demo script with progressive wallet surface comparison
 - live demo link or reproducible local demo
 
 ## Phase 7: Stretch Standards and Monetization

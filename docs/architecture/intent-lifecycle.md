@@ -61,7 +61,7 @@ The framework creates a typed intent with:
 
 ## 7. Human-readable approval
 
-The user sees a clear preview. If a hardware signer is used, display limitations or blind-signing fallback must be visible.
+The user sees a clear ClearIntent preview. If a wallet or hardware signer is used, display limitations, wallet-rendered typed-data status, secure-device display status, or blind-signing fallback must be visible.
 
 Expected output:
 

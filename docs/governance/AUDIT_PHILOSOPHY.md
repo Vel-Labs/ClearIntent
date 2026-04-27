@@ -12,7 +12,7 @@ The repo must not claim maturity it does not have.
 
 Examples:
 
-- A signer adapter is not full Clear Signing.
+- A signer adapter is not official secure-screen Clear Signing unless the wallet path is provider-approved and tested.
 - An ENS display name is not ENS-based identity.
 - A local JSON file is not 0G-backed policy memory.
 - A KeeperHub placeholder is not execution integration.

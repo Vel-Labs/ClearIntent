@@ -4,6 +4,10 @@ ClearIntent is an authority layer for autonomous onchain agents.
 
 The project goal is to let agents reason, plan, and coordinate without giving them unchecked execution authority. Agents produce bounded intents. Humans and approved operators review those intents through readable signing flows. Onchain contracts verify the authority, policy, nonce, deadline, and execution bounds before KeeperHub or any other executor can act.
 
+ClearIntent supports signer adapters across injected wallets, WalletConnect wallets, smart wallets, and hardware-backed wallets. The baseline integration target is EIP-712 typed intent signing plus ClearIntent's own human-readable approval metadata. Wallet-specific rendering and secure-screen guarantees are reported separately by tested capability level.
+
+ClearIntent is not betting on one wallet. It makes agent authority portable across wallet surfaces, while reporting the assurance level honestly.
+
 ## Current Repository State
 
 This scaffold is documentation, contracts, and validation tooling first. Phase 1A established the canonical `contracts/` authority layer. Phase 1B established repo-local TypeScript/Node validation and Vitest contract checks. The immediate next build step is `packages/core/`, which must implement and enforce `contracts/` without redefining authority shapes.
@@ -14,7 +18,7 @@ The first implementation target is a working example agent that demonstrates:
 2. 0G-backed policy memory, audit storage, and risk reflection.
 3. Bounded EIP-712 intent generation.
 4. Human-readable approval metadata.
-5. Hardware-backed signing as a signer adapter, not a product identity.
+5. Software wallet, WalletConnect, smart-account, or hardware-backed signing through explicit signer adapters.
 6. KeeperHub execution after policy and signature verification.
 
 ## What this repo should become
@@ -24,6 +28,7 @@ ClearIntent
   -> framework primitive
   -> example Guardian Agent
   -> reusable adapters
+  -> wallet-neutral signer support
   -> audit-first open-source project
 ```
 
@@ -167,7 +172,7 @@ Read in this order:
 
 ## Naming posture
 
-ClearIntent should stay vendor-neutral. Ledger hardware, ENS, 0G, KeeperHub, ERC-7730, EIP-712, ERC-8004, ERC-7857, and x402 are integrations or standards, not the product identity.
+ClearIntent should stay vendor-neutral. Ledger hardware, Trezor, Tangem, MetaMask, WalletConnect, Rainbow, ENS, 0G, KeeperHub, ERC-7730, EIP-712, ERC-8004, ERC-7857, and x402 are integrations or standards, not the product identity.
 
 ## Status
 

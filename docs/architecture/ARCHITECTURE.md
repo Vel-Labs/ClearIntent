@@ -102,6 +102,7 @@ Rule: if a privileged decision cannot be inspected later, it was not properly re
 Expected path:
 
 - `packages/signer-hardware/`
+- future wallet signer packages or adapters
 
 Responsibilities:
 
@@ -111,8 +112,14 @@ Responsibilities:
 - ERC-7730-compatible metadata output where practical
 - signer status reporting
 - blind-signing or degraded display warnings
+- software wallet support where practical
+- WalletConnect support where practical
+- smart-account signer support where practical
+- hardware-backed signing where practical
 
-Rule: signer integrations are adapters. ClearIntent should not be branded as a single hardware vendor product.
+Rule: signer integrations are adapters. ClearIntent should not be branded as a single hardware vendor product or as a single wallet product.
+
+ClearIntent's baseline signer claim is clear-signing-ready typed intents plus ClearIntent-rendered human-readable approval metadata. Wallet-rendered previews, secure-device display, and vendor-approved Clear Signing are separate capability levels that must be tested and documented per wallet path.
 
 ### 6. Execution plane
 
@@ -157,7 +164,7 @@ User goal
   -> Risk critic evaluates the proposed action
   -> Intent builder creates bounded EIP-712 intent
   -> Human reviews readable intent and creates HumanReviewCheckpoint
-  -> Hardware signer signs bounded intent
+  -> Wallet or hardware signer signs bounded intent
   -> Verifier checks signature, policy hash, nonce, deadline, executor, and bounds
   -> KeeperHub executes approved workflow
   -> Execution receipt and audit bundle are written to 0G
@@ -181,7 +188,7 @@ User goal
 ## Standards posture
 
 - EIP-712 is the typed intent signing primitive.
-- ERC-7730 is the human-readable display metadata direction.
+- ERC-7730 is the human-readable display metadata direction for clear-signing-ready wallet support.
 - ENS is the identity and discovery layer.
 - ERC-8004 is a stretch identity/reputation registry alignment.
 - ERC-7857 is a stretch private agent payload or iNFT alignment.

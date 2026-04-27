@@ -2,6 +2,14 @@
 
 All notable repo changes should be logged here.
 
+## 2026-04-27
+
+- Added `docs/providers/Wallets/` as the signer strategy center with software wallet, WalletConnect, hardware wallet, smart-account, and generic standards subtrees.
+- Reframed ClearIntent signing posture around wallet-neutral signer adapters, clear-signing-ready EIP-712 intents, ClearIntent human-readable approval metadata, and wallet capability levels.
+- Updated roadmap, architecture, provider, and hackathon demo docs to treat software wallets and WalletConnect as first-class paths while keeping official secure-screen Clear Signing as wallet/vendor-specific proof.
+- Normalized wallet provider docs into per-wallet folders with GitHub maps for MetaMask, Rabby, Coinbase Wallet, Rainbow, WalletConnect, Trust Wallet, Tangem, Trezor, Safe, Base Account, and Privy.
+- Removed stale duplicate `DECISIONS 2.md`, `ROADMAP 2.md`, and `docs/FILE_TREE 2.md`; moved wallet demo strategy from providers to hackathon ownership.
+
 ## 2026-04-26
 
 - Started Phase 1C by adding `packages/core/` with schema-backed contract validation, lifecycle transition helpers, lifecycle status/missing-evidence inspection, deterministic hashing, fail-closed authority verification, and focused `tests/core/` coverage.

@@ -1,5 +1,7 @@
 # Ledger Source Notes
 
+Parent wallet note: [README.md](README.md).
+
 ## Sources reviewed
 
 - [Ledger Clear Signing overview](https://developers.ledger.com/docs/clear-signing/overview)
@@ -15,11 +17,12 @@
 - EVM Clear Signing is tied to ERC-7730 metadata.
 - Metadata can cover contract calls and EIP-712 messages.
 - Submission is through a GitHub pull request to the registry after validation.
-- ClearIntent should keep full Clear Signing as a proven claim, not a planning claim.
+- ClearIntent should keep official secure-screen Clear Signing as a proven claim, not a planning claim.
+- ClearIntent may claim clear-signing-ready typed intents and human-readable metadata when those artifacts exist and are validated.
 
 ## Claims to verify during implementation
 
 - Whether ClearIntent's EIP-712 schema fits ERC-7730 display requirements without custom plugin work.
 - Whether Ledger tooling can validate the generated metadata in CI.
 - Whether any actual Ledger signer in the demo displays the intended fields.
-- Whether registry submission is necessary for hackathon evidence or a local validated file is enough.
+- Whether registry submission or another provider approval path is available for hackathon evidence.

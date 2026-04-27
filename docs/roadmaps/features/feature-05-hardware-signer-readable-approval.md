@@ -1,8 +1,8 @@
-# Feature 05: Hardware Signer and Readable Approval
+# Feature 05: Wallet Signer Adapters and Readable Approval
 
 ## Purpose
 
-Provide a signer adapter that lets humans approve bounded EIP-712 intents with hardware-backed signing where available.
+Provide signer adapters that let humans approve bounded EIP-712 intents across software wallets, WalletConnect wallets, smart accounts, and hardware-backed wallets where practical.
 
 ## Dependencies
 
@@ -13,15 +13,16 @@ Provide a signer adapter that lets humans approve bounded EIP-712 intents with h
 
 - generate EIP-712 typed data
 - show readable approval preview
-- connect signer adapter
+- connect signer adapters
 - sign intent
 - report display status honestly
+- report wallet capability level honestly
 - optionally emit ERC-7730-compatible metadata
 
 ## Non-goals
 
 - branding ClearIntent as a Ledger product
-- claiming full Clear Signing without proof
+- claiming official secure-screen Clear Signing without provider approval and proof
 - hiding blind-signing fallback
 
 ## Subphases
@@ -34,31 +35,39 @@ Define typed data domain and message.
 
 Render action, policy, executor, deadline, and value bounds.
 
-### 5.3 Signer adapter
+### 5.3 Software wallet adapter
 
-Implement hardware/wallet signer interface.
+Implement the first low-friction injected wallet path where practical.
 
-### 5.4 Signature fixture
+### 5.4 WalletConnect adapter
+
+Scaffold or implement WalletConnect signing where practical.
+
+### 5.5 Hardware signer adapter
+
+Implement hardware signer interface where available. Ledger, Trezor, and Tangem remain adapter-specific paths with capability reporting.
+
+### 5.6 Signature fixture
 
 Add deterministic or mocked signature verification fixture.
 
-### 5.5 Midpoint audit
+### 5.7 Midpoint audit
 
 Audit target: signing claims match actual signer behavior.
 
-### 5.6 ERC-7730 metadata
+### 5.8 ERC-7730 metadata
 
 Generate metadata if feasible.
 
-### 5.7 Degraded display warnings
+### 5.9 Degraded display warnings
 
 Expose blind-signing or limited-display warnings.
 
-### 5.8 Demo polish
+### 5.10 Demo polish
 
-Make the approval moment clear and honest.
+Make the approval moment clear and honest. Preferred visual: show the same intent through ClearIntent app preview, software wallet signing, WalletConnect where available, and hardware wallet display where available.
 
-### 5.9 Closeout audit
+### 5.11 Closeout audit
 
 Audit target: the signer flow enforces bounded human approval.
 
@@ -68,3 +77,4 @@ Audit target: the signer flow enforces bounded human approval.
 - signed intent can be verified
 - user-facing preview is clear
 - display limitations are documented
+- wallet-specific capability level is documented

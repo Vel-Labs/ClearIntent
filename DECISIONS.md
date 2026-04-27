@@ -10,7 +10,8 @@ Root `DECISIONS.md` summarizes and routes. Dated files hold the detailed entries
 
 ## Current Decision Summary
 
-- ClearIntent is vendor-neutral. Integrations such as Ledger, ENS, 0G, KeeperHub, ERC-7730, ERC-8004, ERC-7857, and x402 are adapters or standards, not the product identity.
+- ClearIntent is vendor-neutral. Integrations such as Ledger, Trezor, Tangem, MetaMask, WalletConnect, Rainbow, ENS, 0G, KeeperHub, ERC-7730, ERC-8004, ERC-7857, and x402 are adapters or standards, not the product identity.
+- Signer support is wallet-neutral. ClearIntent supports clear-signing-ready EIP-712 typed intents and human-readable approval metadata, while reporting wallet-rendered and secure-screen guarantees by tested capability level.
 - The authority lifecycle is the product. Guardian Agent is the working example, not the whole system.
 - ENS is the canonical agent identity layer for the hackathon build.
 - 0G owns policy memory and audit trail for the hackathon build.
@@ -29,6 +30,7 @@ Root `DECISIONS.md` summarizes and routes. Dated files hold the detailed entries
 
 - `docs/decisions/2026-04-25.md`
 - `docs/decisions/2026-04-26.md`
+- `docs/decisions/2026-04-27.md`
 
 ## Open Decision Questions
 

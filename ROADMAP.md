@@ -35,7 +35,7 @@ Immediate next action:
 2. 0G Policy Memory and Audit Layer: `docs/roadmaps/features/feature-02-zerog-policy-memory-audit.md`
 3. ENS Agent Identity Layer: `docs/roadmaps/features/feature-03-ens-agent-identity.md`
 4. KeeperHub Execution Adapter: `docs/roadmaps/features/feature-04-keeperhub-execution-adapter.md`
-5. Hardware Signer and Human-Readable Approval: `docs/roadmaps/features/feature-05-hardware-signer-readable-approval.md`
+5. Wallet Signer Adapters and Human-Readable Approval: `docs/roadmaps/features/feature-05-hardware-signer-readable-approval.md`
 6. Guardian Agent Example: `docs/roadmaps/features/feature-06-guardian-agent-example.md`
 7. Stretch Standards and Monetization: `docs/roadmaps/features/feature-07-stretch-standards.md`
 

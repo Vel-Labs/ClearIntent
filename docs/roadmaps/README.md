@@ -17,7 +17,7 @@ features/
   feature-02-zerog-policy-memory-audit.md
   feature-03-ens-agent-identity.md
   feature-04-keeperhub-execution-adapter.md
-  feature-05-hardware-signer-readable-approval.md
+  feature-05-hardware-signer-readable-approval.md  (Wallet Signer Adapters and Readable Approval)
   feature-06-guardian-agent-example.md
   feature-07-stretch-standards.md
 ```

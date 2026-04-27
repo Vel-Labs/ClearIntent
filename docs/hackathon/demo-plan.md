@@ -38,13 +38,15 @@ Prompt the agent. Show:
 - risk/reflection report
 - intent hash
 
-### 1:55-2:20: Human approval
+### 1:55-2:25: Human approval
 
-Show readable signing payload and hardware-backed signer flow.
+Show the readable signing payload and at least one signer flow.
 
-Be precise about what is shown on-device versus in-app.
+Preferred visual: start with the ClearIntent approval preview, then show the same EIP-712 intent in a software wallet such as MetaMask. If time and implementation allow, progressively split the screen with a WalletConnect/mobile path, then end with a full-screen hardware-wallet approval moment.
 
-### 2:20-2:40: KeeperHub execution
+Be precise about what is shown in-app, what is rendered by the wallet, what is rendered on a secure device, and what is vendor-approved Clear Signing.
+
+### 2:25-2:40: KeeperHub execution
 
 Show workflow execution and receipt.
 
@@ -59,6 +61,7 @@ Show 0G audit artifact and final message:
 - long setup footage
 - unexplained standards soup
 - claiming stretch features that are not shown
+- claiming official secure-screen Clear Signing without provider approval and tested device evidence
 - AI voiceover
-- mobile phone screen recording
+- shaky mobile phone screen recording
 - videos under 720p

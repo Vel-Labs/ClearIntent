@@ -53,6 +53,8 @@
 - [ ] repo link
 - [ ] demo video link
 - [ ] live demo link if available
+- [ ] wallet capability levels are documented for every signing path shown
+- [ ] demo distinguishes ClearIntent app preview, wallet-rendered preview, secure-device display, and vendor-approved Clear Signing
 - [ ] team member names
 - [ ] Telegram and X contact info
 - [ ] partner selections: 0G, ENS, KeeperHub
