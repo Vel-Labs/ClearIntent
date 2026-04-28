@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "repoName": "ClearIntent",
   "purpose": "Reusable authority layer for autonomous onchain agents. Agents produce bounded intents, humans approve through explicit review and readable signing flows, and executors act only after policy, nonce, deadline, and authority checks pass.",
-  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, and Phase 1.5 Center CLI skeleton are complete locally. The next implementation target may begin provider adapter scaffolding through the Center boundary.",
+  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, and Phase 1.5 Center CLI skeleton are complete locally. The current implementation target is Phase 2A local 0G policy memory and audit scaffolding through the Center boundary.",
   "canonicalPaths": {
     "agentPolicy": "AGENTS.md",
     "repoProfile": "REPO_PROFILE.json",
@@ -36,7 +36,11 @@
     "githubIssueConfig": ".github/ISSUE_TEMPLATE/config.yml",
     "githubQualityGate": ".github/workflows/quality-gate.yml"
   },
-  "plannedCanonicalPaths": {},
+  "plannedCanonicalPaths": {
+    "zerogMemoryPackage": "packages/zerog-memory/",
+    "zerogMemoryTests": "tests/zerog-memory/",
+    "phase2AuditDirectory": "docs/audits/phase-2-zerog-policy-memory-audit/"
+  },
   "readFirstFiles": [
     "AGENTS.md",
     "REPO_PROFILE.json",
@@ -88,7 +92,7 @@
     "CHANGELOG.md"
   ],
   "downstreamOrOutOfScopeAreas": [
-    "provider adapter implementation",
+    "live provider adapter implementation",
     "demo integration",
     "deployment",
     "UI/product surfaces",
@@ -100,7 +104,6 @@
   ],
   "forbiddenEarlyScopeDirectories": [
     "packages/ens-identity",
-    "packages/zerog-memory",
     "packages/zerog-compute",
     "packages/keeperhub-adapter",
     "packages/signer-hardware",

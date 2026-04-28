@@ -4,6 +4,8 @@ All notable repo changes should be logged here.
 
 ## 2026-04-27
 
+- Tightened Phase 2A acceptance criteria around SDK-shaped local 0G memory semantics, dual human/JSON CLI output, visually distinct degraded-state reporting, and end-to-end CLI tests before live 0G replacement in Phase 2B.
+- Updated `REPO_PROFILE.json` to authorize Phase 2A local `packages/zerog-memory/` scaffolding while keeping live 0G provider integration deferred to Phase 2B.
 - Clarified the two risk-tolerance lanes for ClearIntent: default full human-in-the-loop review on every transaction, and optional power-user conditional autonomy with threshold-triggered human intervention while preserving per-transaction audit/replay evidence.
 - Added roadmap scope for conditional human-review gates: routine autonomous actions can remain automatic inside policy bounds, while thresholded or degraded actions escalate to visible human approval before signing or execution.
 - Documented the Phase 6 Next.js Agent Audit dashboard as the wallet-gated human proof surface for the Guardian Agent demo, with Reown authentication, ENS/0G/Alchemy/onchain/KeeperHub evidence reads, and no traditional database authority source.

@@ -20,6 +20,7 @@ ClearIntent should operate like a verifiable ledger of authority evidence: indiv
 - loudly distinguish blocked, degraded, local-only, write-only, write-read, and write-read-verified states
 - generate audit bundle links over individual artifact refs
 - expose local and 0G-backed memory status through the Center CLI module surface
+- expose both human-readable and deterministic JSON Center CLI output for memory/audit operations
 - document exact 0G surfaces used for hackathon eligibility
 
 ## Non-goals
@@ -41,7 +42,7 @@ Every Phase 2 artifact and CLI readout should name its claim level:
 - `0g-write-read`: upload and retrieval work
 - `0g-write-read-verified`: upload, retrieval, and content/proof verification work
 
-Do not claim stronger 0G usage than the evidence proves.
+Do not claim stronger 0G usage than the evidence proves. Phase 2A may be SDK-shaped, but it remains `local-adapter` until live 0G write/read evidence exists.
 
 ## Artifact strategy
 
@@ -119,14 +120,16 @@ Required outputs:
 - missing/mismatched artifact tests
 - local audit bundle generation over individual artifact refs
 - Center CLI module status/readout for local memory/audit
+- Center CLI local memory commands that exercise write/read/hash/audit behavior in human-readable and JSON modes
 - docs that clearly label `local-adapter` claim level
 - midpoint and closeout audits for 2A
 
 Stop point:
 
-- Do not import 0G SDKs in 2A unless the phase is explicitly widened.
+- Do not call live 0G endpoints in 2A.
 - Do not require live credentials in 2A.
 - Do not create provider claims beyond local scaffold.
+- Keep the local adapter compatible with the intended 0G Storage SDK-backed implementation so Phase 2B can swap backends, not rewrite semantics.
 
 Status: recommended next phase.
 
@@ -179,7 +182,8 @@ Status: deferred. Do not include in 2A/2B unless explicitly planned.
 - artifact hashes are deterministic and validated
 - mismatched or missing artifacts produce explicit blocked/degraded results
 - audit bundle rolls up individual artifact refs
-- Center CLI reports local memory/audit status honestly
+- Center CLI reports local memory/audit status honestly in both human-readable and JSON modes
+- human-readable Center CLI output uses visually distinct pass/fail/degraded/local-only status markers with plain-text fallbacks
 - `npm run check` passes
 
 ### 2B success

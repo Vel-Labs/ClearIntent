@@ -9,6 +9,8 @@ Build ClearIntent memory and audit persistence in two layers:
 
 This split keeps authority semantics deterministic while 0G credentials, SDK setup, endpoints, and proof capabilities are verified.
 
+Phase 2A should be SDK-shaped even though it remains local. The local adapter should align payload, metadata, hash, and result semantics with the official 0G TypeScript SDK surface where practical, so Phase 2B can replace the local backend with live 0G calls instead of rewriting artifact semantics.
+
 ## Phase 2A: Local Policy Memory and Audit Scaffold
 
 ### Objective
@@ -30,6 +32,9 @@ Create the local adapter surface that future 0G integration must satisfy.
 - artifact envelope type
 - artifact ref type
 - storage result type with blocked/degraded states
+- provider mode type:
+  - `local`
+  - `live`
 - claim level type:
   - `local-fixture`
   - `local-adapter`
@@ -44,6 +49,9 @@ Create the local adapter surface that future 0G integration must satisfy.
 - validate content hash on read
 - generate audit bundle over individual artifact refs
 - return loud degraded states for missing storage, missing readback, mismatched hash, missing proof, or incomplete audit write
+- expose both human-readable and JSON Center CLI output for memory status, write/read checks, hash validation, audit bundle generation, and degraded states
+- render visually distinct human statuses for pass, fail, blocked, degraded, and local-only states, with color or symbols where supported and plain-text fallbacks when not
+- keep local adapter shapes close to the 0G Storage SDK concepts, while preventing network calls in Phase 2A
 - keep all behavior local and deterministic
 
 ### Tests
@@ -52,19 +60,24 @@ Create the local adapter surface that future 0G integration must satisfy.
 - all required artifact families can be stored independently
 - audit bundle contains refs to individual artifacts
 - hash mismatch blocks or degrades
-- missing artifact is loud and machine-readable
-- Center CLI module doctor reports local memory status
+- missing artifact is loud in both human-readable output and machine-readable JSON
+- Center CLI module doctor reports local memory status, provider mode, claim level, and degraded reasons
+- Center CLI local memory commands exercise write, read, hash validation, and audit-bundle generation end to end
+- human-readable output includes clear visual status markers and JSON output remains deterministic and parse-safe
 - no live credentials required
 
 ### Stop conditions
 
 Stop and document before proceeding if implementation pressure would:
 
-- import live 0G SDKs
+- call live 0G network endpoints
 - require credentials
 - hard-code live artifact URIs or root hashes
 - redefine contract schemas in the adapter
+- make the local adapter diverge from the intended 0G-backed interface
 - hide degraded audit persistence as success
+
+Importing or type-checking the official 0G TypeScript SDK may be allowed in Phase 2A only if it does not require credentials, does not perform network calls, and is used to preserve Phase 2B compatibility. If official SDK imports are unstable or undocumented during 2A, document the gap and keep the local interface SDK-shaped until Phase 2B verification.
 
 ## Phase 2B: Live 0G Storage Integration
 
@@ -128,5 +141,7 @@ Each phase closeout must state:
 - local vs live evidence
 - commands run
 - artifacts written/read
+- CLI human output checked
+- CLI JSON output checked
 - degraded gaps
 - whether downstream ENS/KeeperHub/signer work may consume the memory layer
