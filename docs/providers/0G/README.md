@@ -11,6 +11,15 @@ Current ClearIntent claim level: `Planned`.
 3. [0G GitHub organization](https://github.com/0gfoundation) - open-source repositories for storage, DA, compute serving, SDKs, starter kits, and docs.
 4. [0G website](https://0g.ai/) - product-level positioning. Use docs and GitHub for implementation truth.
 
+Recommended starter kits and examples:
+
+- [0G Storage Web Starter Kit](https://github.com/0gfoundation/0g-storage-web-starter-kit) - upload/download, wallet connection, Standard/Turbo mode, and browser app patterns.
+- [0G Compute TypeScript Starter Kit](https://github.com/0gfoundation/0g-compute-ts-starter-kit) - broker, provider, ledger/funding, AI query, and TEE verification patterns.
+- [0G Deployment Scripts](https://github.com/0gfoundation/0g-deployment-scripts) - Foundry, Hardhat, and Truffle deployment examples for 0G Galileo Testnet.
+- [Agentic ID Examples](https://github.com/0gfoundation/agenticID-examples) - ERC-7857 / Agentic ID examples for agent NFTs, encrypted intelligent data, authorization, delegation, and marketplace flows.
+
+Starter-kit rule: use these as provider references and implementation accelerators, not as architecture owners. ClearIntent contracts, core authority behavior, Center CLI semantics, and audit claim levels remain repo-owned.
+
 ## ClearIntent fit
 
 | ClearIntent need | 0G surface | Implementation note |
@@ -20,6 +29,48 @@ Current ClearIntent claim level: `Planned`.
 | Optional risk critic | 0G Compute inference | Useful only if outputs are persisted and tied to the intent/policy hash. |
 | Optional onchain deployment | 0G Chain, contracts-on-0G docs | Not required unless the demo deploys ClearIntent contracts to 0G. |
 | Optional stretch | INFT / ERC-7857 | Stretch only; do not claim until minted, linked, and inspectable. |
+
+## ClearIntent Phase 2 layering
+
+ClearIntent will use 0G in layers:
+
+### Phase 2A: local adapter semantics
+
+No live 0G credentials are required. This phase proves the artifact model locally:
+
+- individual artifact writes and reads
+- content hash validation
+- missing/mismatched/degraded storage states
+- audit bundle rollup over individual artifact refs
+- Center CLI status for local memory/audit
+
+Claim level: `local-adapter`.
+
+### Phase 2B: live 0G Storage
+
+Credentials and network configuration are required. This phase connects the Phase 2A interfaces to real 0G Storage:
+
+- upload artifacts
+- capture returned root hash / transaction evidence
+- retrieve artifacts
+- validate retrieved content hash
+- use proof-enabled retrieval when available and practical
+
+Target claim level: `0g-write-read-verified`.
+
+Fallback claim level: `0g-write-read` with proof verification documented as degraded or deferred.
+
+### Phase 2C: optional 0G Compute
+
+Compute is not part of the first storage/audit implementation. It is a later optional risk/reflection layer. Any compute output must be persisted as a hash-bound artifact through the memory/audit layer.
+
+## Claim levels
+
+- `local-fixture`: static fixture only
+- `local-adapter`: deterministic local write/read adapter
+- `0g-write-only`: 0G upload works, but retrieval/hash verification is not proven
+- `0g-write-read`: upload and retrieval work
+- `0g-write-read-verified`: upload, retrieval, and content/proof verification work
 
 ## Taxonomy
 
@@ -37,7 +88,7 @@ Sources: [0G docs](https://docs.0g.ai/), [0G AI coding context](https://docs.0g.
 
 ClearIntent usage: make `packages/zerog-memory/` the narrow adapter that uploads and retrieves typed artifacts. The adapter should return explicit degraded states when storage or retrieval proof is missing.
 
-Sources: [Storage SDK](https://docs.0g.ai/docs/developer-hub/building-on-0g/storage/sdk), [Storage CLI](https://docs.0g.ai/docs/developer-hub/building-on-0g/storage/storage-cli).
+Sources: [Storage SDK](https://docs.0g.ai/docs/developer-hub/building-on-0g/storage/sdk), [Storage CLI](https://docs.0g.ai/docs/developer-hub/building-on-0g/storage/storage-cli), [Storage Web Starter Kit](https://github.com/0gfoundation/0g-storage-web-starter-kit).
 
 ### Compute
 
@@ -45,7 +96,7 @@ Sources: [Storage SDK](https://docs.0g.ai/docs/developer-hub/building-on-0g/stor
 
 ClearIntent usage: optional risk/reflection critic. Do not make this a global brain. Persist any compute output as a risk report artifact.
 
-Sources: [Compute overview](https://docs.0g.ai/docs/developer-hub/building-on-0g/compute-network/overview), [Inference docs](https://docs.0g.ai/docs/developer-hub/building-on-0g/compute-network/inference).
+Sources: [Compute overview](https://docs.0g.ai/docs/developer-hub/building-on-0g/compute-network/overview), [Inference docs](https://docs.0g.ai/docs/developer-hub/building-on-0g/compute-network/inference), [Compute TypeScript Starter Kit](https://github.com/0gfoundation/0g-compute-ts-starter-kit).
 
 ### Data availability
 
@@ -61,7 +112,7 @@ Sources: [0G DA concept](https://docs.0g.ai/docs/concepts/da), [DA integration](
 
 ClearIntent usage: stretch standard only. It can align with private agent payloads or tokenized agent ownership after the MVP lifecycle is proven.
 
-Sources: [INFT overview](https://docs.0g.ai/docs/developer-hub/building-on-0g/inft/inft-overview), [ERC-7857 standard docs](https://docs.0g.ai/docs/developer-hub/building-on-0g/inft/erc7857).
+Sources: [INFT overview](https://docs.0g.ai/docs/developer-hub/building-on-0g/inft/inft-overview), [ERC-7857 standard docs](https://docs.0g.ai/docs/developer-hub/building-on-0g/inft/erc7857), [Agentic ID Examples](https://github.com/0gfoundation/agenticID-examples).
 
 ## Implementation cautions
 

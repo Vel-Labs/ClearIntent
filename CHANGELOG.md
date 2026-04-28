@@ -4,6 +4,10 @@ All notable repo changes should be logged here.
 
 ## 2026-04-27
 
+- Documented the Phase 6 Next.js Agent Audit dashboard as the wallet-gated human proof surface for the Guardian Agent demo, with Reown authentication, ENS/0G/Alchemy/onchain/KeeperHub evidence reads, and no traditional database authority source.
+- Split Phase 2 planning into Phase 2A local policy memory/audit scaffold, Phase 2B live 0G Storage integration, and deferred Phase 2C 0G Compute risk/reflection.
+- Added `docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md` with artifact strategy, claim levels, stop conditions, and closeout requirements.
+- Expanded 0G provider routing to include the recommended Storage Web, Compute TypeScript, Deployment Scripts, and Agentic ID starter/example repositories, with an explicit starter-kit posture.
 - Completed Phase 1.5 by adding `packages/center-cli/` with fixture-backed `center status`, `center inspect`, `intent validate`, `intent state`, `authority evaluate`, `module list`, and `module doctor` command routing over `packages/core`.
 - Added Center CLI tests for command routing, human-readable output, deterministic JSON output, missing-evidence fail-closed behavior, authority evaluation issue codes, module doctor deferred-adapter reporting, fixture-scope metadata, and the bare CLI landing path.
 - Added a no-dependency human Center menu for bare `npm run clearintent` in interactive terminals, while preserving explicit command/`--json` usage for AI-readable automation.

@@ -27,7 +27,7 @@ Completed baseline:
 
 Immediate next action:
 
-- Begin provider adapter scaffolding only through the Center/module boundary. Start with the next roadmap-selected adapter package, keep it narrow, and preserve the CLI as the product center instead of letting adapters define their own operator surfaces.
+- Start Phase 2A local 0G policy memory and audit scaffold before live 0G integration. Use `docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md`.
 - Completed Phase 1.5 package: `docs/roadmaps/phase-1.5-center-cli-skeleton/`
 
 ## Feature Order
@@ -37,7 +37,7 @@ Immediate next action:
 3. ENS Agent Identity Layer: `docs/roadmaps/features/feature-03-ens-agent-identity.md`
 4. KeeperHub Execution Adapter: `docs/roadmaps/features/feature-04-keeperhub-execution-adapter.md`
 5. Wallet Signer Adapters and Human-Readable Approval: `docs/roadmaps/features/feature-05-hardware-signer-readable-approval.md`
-6. Guardian Agent Example: `docs/roadmaps/features/feature-06-guardian-agent-example.md`
+6. Guardian Agent Example and Agent Audit Dashboard: `docs/roadmaps/features/feature-06-guardian-agent-example.md`
 7. Stretch Standards and Monetization: `docs/roadmaps/features/feature-07-stretch-standards.md`
 
 ## Roadmap Rule

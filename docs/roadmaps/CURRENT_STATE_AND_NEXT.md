@@ -16,18 +16,24 @@ Phase 1.5 is complete. `packages/center-cli/` now provides the fixture-backed Ce
 
 ## Immediate next action
 
-Start the first provider adapter scaffold only after assigning a bounded workstream. Adapter work may begin next because the CLI/module boundary now exists, but it must plug into the Center/core authority route instead of defining its own lifecycle, review, signer, executor, deadline, or audit rules.
+Start Phase 2A: local 0G policy memory and audit scaffold. Phase 2 is split intentionally:
 
-Completed Phase 1.5 package:
+- Phase 2A proves local deterministic artifact storage, hash validation, audit bundle rollup, degraded-state semantics, and Center CLI memory status without live credentials.
+- Phase 2B connects the same interfaces to real 0G Storage after credentials, SDK imports, endpoints, and proof level are verified.
+- Phase 2C is optional 0G Compute risk/reflection and remains deferred until storage persistence is proven.
+
+Relevant phase packages:
 
 - `docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md`
 - `docs/roadmaps/phase-1.5-center-cli-skeleton/EXECUTION_PROMPT.md`
+- `docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md`
 
 Rationale for the next route:
 
 - Phase 1 proved local contract/core authority behavior.
 - Phase 1.5 proved a local Center CLI can render core state and authority evaluation without becoming an authority source.
-- Future ENS, 0G, KeeperHub, signer, notification, and demo layers should plug into the Center/module shape instead of creating fragmented operator surfaces.
+- Phase 2A should establish the memory/audit adapter shape before other provider modules depend on storage truth.
+- Future ENS, KeeperHub, signer, notification, and demo layers should plug into the Center/module shape instead of creating fragmented operator surfaces.
 
 Structure for usage:
 
@@ -53,12 +59,13 @@ Phase 1.5 implementation consumed:
 - `docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md`
 - `docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md`
 
-Before starting provider adapter work, a fresh checkout should pass:
+Before starting Phase 2A or provider adapter work, a fresh checkout should pass:
 
 ```bash
 npm install
 npm run validate:scaffold
 npm run validate:contracts
+npm run validate:center-cli
 npm run test:contracts
 npm test
 npm run typecheck
@@ -81,6 +88,7 @@ Now that the Center CLI skeleton is stable:
 - demo integration
 - webhook delivery
 - local OS notification delivery
+- Agent Audit dashboard implementation before the onchain, 0G, ENS, KeeperHub, and signer evidence sources exist
 - ERC-7857 iNFTs
 - zk proofs
 - auto-rotating ENS addresses

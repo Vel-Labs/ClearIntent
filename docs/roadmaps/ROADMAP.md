@@ -163,6 +163,8 @@ Goal: store policy, intent, risk report, and execution receipts on 0G.
 
 Primary file: `docs/roadmaps/features/feature-02-zerog-policy-memory-audit.md`
 
+Implementation plan: `docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md`
+
 Dependencies:
 
 - Phase 1 intent and policy schema
@@ -174,6 +176,12 @@ Key deliverables:
 - policy loader
 - example stored artifacts
 - 0G usage explanation for prize eligibility
+
+Layering:
+
+- Phase 2A: local deterministic policy memory and audit scaffold with full artifact semantics and Center CLI status.
+- Phase 2B: live 0G Storage write/read integration behind the Phase 2A interfaces.
+- Phase 2C: optional 0G Compute risk/reflection, deferred until storage persistence is proven.
 
 ## Phase 3: ENS Agent Identity Layer
 
@@ -232,9 +240,9 @@ Key deliverables:
 - ERC-7730 metadata output if feasible
 - blind-signing/degraded display warning
 
-## Phase 6: Guardian Agent Example
+## Phase 6: Guardian Agent Example and Agent Audit Dashboard
 
-Goal: ship the working example agent required to prove the framework.
+Goal: ship the working example agent and a narrow wallet-gated Agent Audit dashboard that proves the framework through a clear chain of intent.
 
 Primary file: `docs/roadmaps/features/feature-06-guardian-agent-example.md`
 
@@ -245,9 +253,23 @@ Dependencies:
 Key deliverables:
 
 - `examples/guardian-agent/`
+- `apps/web/` Next.js Agent Audit dashboard
 - planner + critic + executor roles
 - demo script with progressive wallet surface comparison
 - live demo link or reproducible local demo
+- Reown wallet authentication and signing session entrypoint
+- ENS-derived identity and metadata display
+- 0G policy/audit artifact reads
+- Alchemy-backed onchain authority contract reads and event display
+- KeeperHub execution receipt display
+
+Dashboard scope:
+
+- The dashboard is an audit viewer, not an admin console or backend authority service.
+- Reown gates access by wallet session and bridges human approval/signing.
+- The dashboard reconstructs state from wallet identity, ENS records, 0G-stored evidence, onchain contract state/events through Alchemy, and KeeperHub receipts.
+- No traditional database is required for the MVP; private backend records must not become the authority source.
+- The first screen should show the chain of intent: proposed intent, policy check, risk report, human review checkpoint, signature, onchain verification, execution, and audit evidence.
 
 ## Phase 7: Stretch Standards and Monetization
 

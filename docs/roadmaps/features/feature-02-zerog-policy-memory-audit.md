@@ -2,67 +2,190 @@
 
 ## Purpose
 
-Use 0G as the persistence layer for policy, intent, risk, and receipt artifacts.
+Use 0G as the persistence and audit layer for ClearIntent policy, intent, risk, review, signature, execution, and audit artifacts.
+
+ClearIntent should operate like a verifiable ledger of authority evidence: individual artifacts are independently inspectable, hash-bound, replayable, and then rolled up into audit bundles.
 
 ## Dependencies
 
-- Feature 01 schema draft
+- Phase 1 contract/core stability handoff
+- Phase 1.5 Center CLI skeleton
+- Current 0G SDK/API verification before live integration
 
 ## Goals
 
-- store policy artifacts
-- store intent artifacts
-- store risk reports
-- store execution receipts
-- retrieve latest policy by pointer
-- generate audit bundle links
+- define storage and audit adapter interfaces without redefining authority contracts
+- store individual policy, intent, risk report, human review, signature evidence, execution receipt, and audit bundle artifacts
+- validate content hashes on readback
+- loudly distinguish blocked, degraded, local-only, write-only, write-read, and write-read-verified states
+- generate audit bundle links over individual artifact refs
+- expose local and 0G-backed memory status through the Center CLI module surface
+- document exact 0G surfaces used for hackathon eligibility
 
 ## Non-goals
 
 - full long-term memory product
-- iNFT embedded memory
+- 0G Compute risk/reflection integration in Phase 2A or 2B
+- iNFT / ERC-7857 embedded memory
 - production-grade storage migration
+- browser UI or hosted service
+- hiding storage failures behind success states
+
+## Claim levels
+
+Every Phase 2 artifact and CLI readout should name its claim level:
+
+- `local-fixture`: static fixture only
+- `local-adapter`: deterministic local write/read implementation
+- `0g-write-only`: artifact upload works, but readback/hash verification is not proven
+- `0g-write-read`: upload and retrieval work
+- `0g-write-read-verified`: upload, retrieval, and content/proof verification work
+
+Do not claim stronger 0G usage than the evidence proves.
+
+## Artifact strategy
+
+Store individual artifacts first, then roll them up:
+
+- policy artifact
+- intent artifact
+- risk report artifact
+- human review checkpoint artifact
+- signature evidence artifact
+- execution receipt artifact
+- audit bundle artifact
+
+Reason: a single blob is easier, but it weakens replayability. Individual artifacts let humans and agents identify exactly which evidence is missing, mismatched, degraded, or unverified.
+
+## Failure and degraded-state posture
+
+- Missing policy blocks execution.
+- Missing intent, review, signature, or authority evidence blocks the relevant lifecycle gate.
+- Missing or mismatched storage hash blocks a claim that storage is verified.
+- Missing audit write after execution is a loud degraded state, not success.
+- Degraded states must explain exactly which artifact, write, read, hash, proof, or provider operation failed.
+
+## 0G surface alignment
+
+### Storage
+
+Primary Phase 2 target. Use 0G Storage for policy, intent, risk, review, signature, execution receipt, and audit bundle artifacts.
+
+Official docs currently describe:
+
+- TypeScript SDK package `@0gfoundation/0g-ts-sdk`
+- `ethers` peer dependency
+- `Indexer`, `ZgFile`, and `MemData`
+- file and in-memory upload
+- Merkle root/hash generation
+- proof-enabled download
+- KV storage
+- browser upload caveats
+- optional encryption/decryption paths
+
+### Compute
+
+Deferred from Phase 2A/2B. 0G Compute is useful later for risk/reflection critics, but only after storage can persist and replay outputs.
+
+When introduced, Compute should produce a risk/reflection artifact that is stored and hash-bound like every other artifact. It must not become the global authority brain.
+
+### Chain
+
+Only needed if ClearIntent deploys contracts or executes demo transactions on 0G Chain. Not required for Phase 2A. Phase 2B may need 0G testnet credentials/tokens if the selected Storage path requires signer-backed upload.
+
+### Data Availability
+
+Deferred. DA is not needed for the first policy/audit artifact implementation.
+
+### INFT / ERC-7857
+
+Stretch only. Do not claim until minted, linked, and inspectable.
 
 ## Subphases
 
-### 2.1 Adapter interface
+### Phase 2A: Local Policy Memory and Audit Scaffold
 
-Define `MemoryAdapter` and `AuditStore` interfaces.
+Goal: prove the complete memory/audit semantics locally before live provider integration.
 
-### 2.2 Local fixture backend
+Required outputs:
 
-Create a local backend so tests can run without network dependency.
+- `packages/zerog-memory/` local-first package
+- `MemoryAdapter` interface
+- `AuditStore` interface
+- artifact envelope and artifact ref types
+- deterministic local backend for tests
+- local write/read round trip for each required artifact family
+- content hash validation
+- missing/mismatched artifact tests
+- local audit bundle generation over individual artifact refs
+- Center CLI module status/readout for local memory/audit
+- docs that clearly label `local-adapter` claim level
+- midpoint and closeout audits for 2A
 
-### 2.3 0G write path
+Stop point:
 
-Implement artifact upload/write flow.
+- Do not import 0G SDKs in 2A unless the phase is explicitly widened.
+- Do not require live credentials in 2A.
+- Do not create provider claims beyond local scaffold.
 
-### 2.4 0G read path
+Status: recommended next phase.
 
-Implement artifact retrieval and validation.
+### Phase 2B: Live 0G Storage Integration
 
-### 2.5 Midpoint audit
+Goal: connect the Phase 2A interfaces to real 0G Storage and prove actual provider-backed artifact persistence.
 
-Audit target: artifacts are typed and missing storage is handled honestly.
+Required before starting:
 
-### 2.6 Audit bundle
+- 0G credentials and testnet/mainnet target selected
+- current SDK package/import paths verified from official 0G docs
+- RPC/indexer endpoints selected from official network docs
+- decision on standard vs turbo storage mode
+- decision on proof level: write-only, write-read, or write-read-verified
 
-Create a single bundle that links prompt, policy, risk, intent, signature, and receipt.
+Required outputs:
 
-### 2.7 Demo visibility
+- 0G-backed implementation behind the Phase 2A interfaces
+- config-driven credentials/endpoints with no hard-coded secrets or artifact URIs
+- upload result with root hash / transaction evidence
+- retrieval path
+- content hash validation
+- proof-enabled retrieval if available and practical
+- degraded states for unavailable provider, failed upload, failed retrieval, hash mismatch, missing proof, or wrong encryption key
+- Center CLI module status/readout that distinguishes local from 0G-backed claim levels
+- docs and audit evidence for actual 0G use
+- closeout audit stating exact claim level reached
 
-Expose artifact links for the demo console.
+Status: planned after 2A.
 
-### 2.8 Docs and examples
+### Phase 2C: Optional 0G Compute Risk Reflection
 
-Document 0G protocol features used.
+Goal: use 0G Compute for optional risk/reflection output only after storage persistence is proven.
 
-### 2.9 Closeout audit
+Candidate outputs:
 
-Audit target: 0G is doing real persistence work, not cosmetic storage.
+- compute adapter interface
+- provider/model selection metadata
+- request/response hash binding
+- risk/reflection artifact persisted through Phase 2 storage
+- Center CLI readout showing compute claim level
+
+Status: deferred. Do not include in 2A/2B unless explicitly planned.
 
 ## Success criteria
 
-- policy artifact exists
-- risk or audit artifact exists
-- demo can show artifact link or proof
+### 2A success
+
+- local memory adapter writes and reads all required artifact families
+- artifact hashes are deterministic and validated
+- mismatched or missing artifacts produce explicit blocked/degraded results
+- audit bundle rolls up individual artifact refs
+- Center CLI reports local memory/audit status honestly
+- `npm run check` passes
+
+### 2B success
+
+- at least one policy or audit artifact is actually uploaded to 0G Storage
+- artifact is retrievable from 0G Storage
+- retrieved content validates against expected hash
+- provider failures and missing proof are visible as degraded states
+- docs and audit evidence support the exact claim level
