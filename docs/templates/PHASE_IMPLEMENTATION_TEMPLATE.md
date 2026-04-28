@@ -44,6 +44,16 @@ Define terms that must stay separate, such as:
 
 Describe what is meaningfully usable when the phase is done.
 
+## Human and agent surfaces
+
+If the phase adds or changes Center CLI behavior, plan all three layers:
+
+- Direct human commands, such as `npm run clearintent -- <command>`
+- Agent-readable JSON commands, such as `npm run --silent clearintent -- <command> --json`
+- Guided bare-wizard journey through `npm run clearintent`
+
+The guided wizard is not optional polish when a feature is meant to be operator-facing. The phase plan must say whether the wizard gains menu entries, status routing, audit-log browsing, or a documented deferred gap. Do not call the human CLI layer complete if the only access path is a direct command that is absent from the wizard.
+
 ## Milestone cadence
 
 - `<x>.1` through `<x>.4`: build stops
@@ -56,6 +66,7 @@ Describe what is meaningfully usable when the phase is done.
 - implementation notes
 - contracts, schemas, or interfaces
 - tests or validation output
+- Center CLI command output, JSON output, and wizard journey evidence when CLI behavior changes
 - midpoint audit at `<x>.5`
 - closeout audit at `<x>.9`
 - final phase closeout summary
@@ -92,6 +103,7 @@ Describe what is meaningfully usable when the phase is done.
 **Audit target:**
 
 - describe what closeout must prove
+- include human direct-command, agent JSON, and bare-wizard evidence when CLI behavior changed
 - include whether blocking findings remain before any commit or push
 
 ## Touchpoints
@@ -99,5 +111,6 @@ Describe what is meaningfully usable when the phase is done.
 - docs to update
 - contracts or schemas likely affected
 - runtime modules likely affected
+- Center CLI direct commands, JSON lane, and guided wizard likely affected
 - demo surfaces likely affected
 - audit artifacts likely affected

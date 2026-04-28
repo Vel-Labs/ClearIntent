@@ -131,7 +131,21 @@ Stop point:
 - Do not create provider claims beyond local scaffold.
 - Keep the local adapter compatible with the intended 0G Storage SDK-backed implementation so Phase 2B can swap backends, not rewrite semantics.
 
-Status: recommended next phase.
+Status: complete locally at claim level `local-adapter`.
+
+Evidence:
+
+- midpoint audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.5-midpoint-audit.md`
+- closeout audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md`
+- local package: `packages/zerog-memory/`
+- focused tests: `tests/zerog-memory/`
+- Center CLI commands: `memory status`, `memory check`, `memory audit-bundle`, and `module doctor`
+
+Current claim posture:
+
+- Phase 2A may only claim `local-adapter` after local write/read, hash validation, audit-bundle generation, degraded states, and Center CLI memory output are proven.
+- Phase 2A must not claim live 0G upload, readback, proof verification, or provider-backed persistence.
+- Phase 2B remains the live 0G Storage replacement behind the same interfaces.
 
 ### Phase 2B: Live 0G Storage Integration
 
@@ -158,7 +172,7 @@ Required outputs:
 - docs and audit evidence for actual 0G use
 - closeout audit stating exact claim level reached
 
-Status: planned after 2A.
+Status: next planned phase after 2A closeout.
 
 ### Phase 2C: Optional 0G Compute Risk Reflection
 

@@ -59,6 +59,8 @@ docs/audits/phase-1-core-authority-kernel/1e-core-developer-module-api-closeout.
 docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md
 docs/audits/phase-1.5-center-cli-skeleton/1.5.5-midpoint-audit.md
 docs/audits/phase-1.5-center-cli-skeleton/1.5.9-closeout-audit.md
+docs/audits/phase-2-zerog-policy-memory-audit/2a.5-midpoint-audit.md
+docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md
 docs/decisions/2026-04-25.md
 docs/decisions/2026-04-26.md
 docs/decisions/2026-04-27.md
@@ -166,6 +168,7 @@ packages/center-cli/README.md
 packages/center-cli/src/cli.ts
 packages/center-cli/src/commands.ts
 packages/center-cli/src/fixtures.ts
+packages/center-cli/src/memory-status.ts
 packages/center-cli/src/modules.ts
 packages/center-cli/src/output.ts
 packages/center-cli/src/wizard.ts
@@ -180,6 +183,13 @@ packages/core/src/state.ts
 packages/core/src/status.ts
 packages/core/src/types.ts
 packages/core/src/verification.ts
+packages/zerog-memory/README.md
+packages/zerog-memory/src/audit-store.ts
+packages/zerog-memory/src/doctor.ts
+packages/zerog-memory/src/hash.ts
+packages/zerog-memory/src/index.ts
+packages/zerog-memory/src/local-memory-adapter.ts
+packages/zerog-memory/src/types.ts
 scripts/validate-contracts.ts
 scripts/validate-center-cli.ts
 scripts/validate-scaffold.ts
@@ -208,5 +218,6 @@ tests/contracts/validate-contracts.test.ts
 tests/core/core.test.ts
 tests/core/module-api.test.ts
 tests/core/state.test.ts
+tests/zerog-memory/zerog-memory.test.ts
 tsconfig.json
 ```

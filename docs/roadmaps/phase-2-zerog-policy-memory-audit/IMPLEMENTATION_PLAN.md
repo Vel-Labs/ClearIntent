@@ -145,3 +145,13 @@ Each phase closeout must state:
 - CLI JSON output checked
 - degraded gaps
 - whether downstream ENS/KeeperHub/signer work may consume the memory layer
+
+## Audit Routing
+
+Phase 2A midpoint audit:
+
+- `docs/audits/phase-2-zerog-policy-memory-audit/2a.5-midpoint-audit.md`
+
+The midpoint audit is intentionally factual and updateable while implementation agents finish package and Center CLI work. It records `local-adapter` as the Phase 2A target claim level and records no live 0G usage.
+
+Before Phase 2A closeout, update the audit evidence or create a `2a.9-closeout-audit.md` with exact results for scaffold validation, Center CLI memory commands in human-readable and JSON modes, local write/read/hash/audit-bundle behavior, and confirmation that Phase 2A required no live 0G credentials or network calls.

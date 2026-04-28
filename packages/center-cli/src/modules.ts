@@ -1,16 +1,19 @@
+import { getCenterMemoryStatus, type CenterMemoryStatus } from "./memory-status";
+
 export type CenterModuleStatus = "ready" | "deferred";
 
 export type CenterModule = {
   id: string;
   label: string;
   status: CenterModuleStatus;
-  scope: "core" | "future-adapter" | "future-surface";
+  scope: "core" | "local-adapter" | "future-adapter" | "future-surface";
   reason: string;
 };
 
 export type ModuleDoctorResult = {
   ok: boolean;
   modules: CenterModule[];
+  memory: CenterMemoryStatus;
   issues: {
     code: string;
     message: string;
@@ -31,21 +34,21 @@ const modules: CenterModule[] = [
     label: "ENS identity",
     status: "deferred",
     scope: "future-adapter",
-    reason: "Provider adapter work starts after the Center CLI skeleton."
+    reason: "ENS identity adapter remains deferred until its roadmap phase."
   },
   {
     id: "zerog",
     label: "0G policy memory and audit",
-    status: "deferred",
-    scope: "future-adapter",
-    reason: "Storage and compute integration remain out of Phase 1.5 scope."
+    status: "ready",
+    scope: "local-adapter",
+    reason: "Local memory and audit adapter is ready at local-adapter claim level; live 0G Storage remains deferred to Phase 2B."
   },
   {
     id: "keeperhub",
     label: "KeeperHub execution",
     status: "deferred",
     scope: "future-adapter",
-    reason: "Execution adapter behavior is deferred until after Center CLI."
+    reason: "KeeperHub execution adapter remains deferred until its roadmap phase."
   },
   {
     id: "signer",
@@ -67,19 +70,29 @@ export function listCenterModules(): CenterModule[] {
   return modules.map((module) => ({ ...module }));
 }
 
-export function runModuleDoctor(): ModuleDoctorResult {
+export async function runModuleDoctor(): Promise<ModuleDoctorResult> {
+  return buildModuleDoctorResult(await getCenterMemoryStatus());
+}
+
+export function buildModuleDoctorResult(memory: CenterMemoryStatus): ModuleDoctorResult {
   const checked = listCenterModules();
-  const issues = checked
+  const moduleIssues = checked
     .filter((module) => module.status === "deferred")
     .map((module) => ({
       code: "module_deferred",
       message: module.reason,
       moduleId: module.id
     }));
+  const memoryIssues = memory.degradedReasons.map((reason) => ({
+    code: "memory_degraded",
+    message: reason,
+    moduleId: "zerog"
+  }));
 
   return {
-    ok: true,
+    ok: memory.ok,
     modules: checked,
-    issues
+    memory,
+    issues: [...moduleIssues, ...memoryIssues]
   };
 }

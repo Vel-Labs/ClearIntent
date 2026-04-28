@@ -28,6 +28,9 @@ List new artifacts, fixtures, deployed addresses, logs, screenshots, demo output
 
 - exact commands run
 - exact inspections performed
+- human direct-command CLI checks, if CLI behavior changed
+- agent-readable JSON CLI checks, if CLI behavior changed
+- bare `npm run clearintent` guided wizard checks, if CLI behavior changed
 - schema checks
 - deterministic checks
 - authority bypass checks
@@ -55,6 +58,9 @@ Use practical severity:
 ## Verification evidence
 
 - commands run
+- direct human CLI output
+- agent JSON output
+- guided wizard output or documented deferred gap
 - schemas validated
 - signatures verified
 - receipts inspected

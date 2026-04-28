@@ -6,6 +6,7 @@ import {
   type ResultIssue
 } from "../../core/src";
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
+import { getCenterMemoryStatus } from "./memory-status";
 import { listCenterModules, runModuleDoctor } from "./modules";
 import type { CliCommandResult } from "./output";
 import { renderLanding } from "./wizard";
@@ -55,13 +56,13 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
       mode: "fixture-only",
       fixtureSource: "contracts/examples/",
       liveProvider: false,
-      summary: "Center module registry is local and provider adapters are deferred.",
+      summary: "Center module registry reports local-ready modules and deferred live provider adapters.",
       data: { modules: listCenterModules() },
       issues: []
     };
   }
   if (group === "module" && command === "doctor") {
-    const doctor = runModuleDoctor();
+    const doctor = await runModuleDoctor();
     return {
       command: "module doctor",
       ok: doctor.ok,
@@ -70,12 +71,35 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
       mode: "fixture-only",
       fixtureSource: "contracts/examples/",
       liveProvider: false,
-      summary: "Module doctor checked local skeleton metadata only.",
+      summary: doctor.memory.ok
+        ? "Module doctor checked local skeleton metadata and local memory adapter status."
+        : "Module doctor found degraded local memory adapter status. No live provider was used.",
       data: { doctor },
       issues: doctor.issues.map((issue) => ({
         code: issue.code,
         message: issue.message,
         path: issue.moduleId
+      }))
+    };
+  }
+  if (group === "memory" && (command === "status" || command === "check" || command === "audit-bundle")) {
+    const memory = await getCenterMemoryStatus();
+    return {
+      command: `memory ${command}`,
+      ok: memory.ok,
+      commandOk: true,
+      authorityOk: memory.ok,
+      mode: "local-memory",
+      liveProvider: false,
+      summary:
+        command === "audit-bundle"
+          ? "Local memory audit-bundle check ran without live 0G provider usage."
+          : "Local memory checks ran without live 0G provider usage.",
+      data: { memory },
+      issues: memory.degradedReasons.map((reason) => ({
+        code: "memory_degraded",
+        message: reason,
+        path: "zerog"
       }))
     };
   }
@@ -85,7 +109,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
     ok: false,
     commandOk: false,
     authorityOk: false,
-    summary: "Unknown command. Expected center, intent, authority, or module command family.",
+    summary: "Unknown command. Expected center, intent, authority, module, or memory command family.",
     data: {
       usage: [
         "center status",
@@ -94,7 +118,10 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "intent state",
         "authority evaluate",
         "module list",
-        "module doctor"
+        "module doctor",
+        "memory status",
+        "memory check",
+        "memory audit-bundle"
       ]
     },
     issues: [{ code: "unknown_command", message: parsed.positionals.join(" ") || "No command provided." }]

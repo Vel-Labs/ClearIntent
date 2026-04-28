@@ -40,6 +40,8 @@ Verification requirements:
 - Run focused tests during each wave.
 - Validate changed schemas.
 - Validate fixtures.
+- If Center CLI behavior changed, verify direct human commands, agent-readable `--json` commands, and the bare `npm run clearintent` guided wizard path.
+- If audit logs or artifacts are operator-facing, verify their access path from the guided wizard or document the gap as deferred scope.
 - For signing or execution work, prove nonce, deadline, signer, and executor checks.
 - Before finalizing, run the broadest responsible verification.
 - Do not claim completion without concrete verification output.
@@ -49,6 +51,7 @@ Required final summary:
 - what audits found and how findings were closed
 - what is now proven
 - exact verification run
+- human CLI, agent JSON, and wizard evidence when CLI behavior changed
 - commit hash, branch, and push target if pushed
 - deferred gaps
 - remaining tasks

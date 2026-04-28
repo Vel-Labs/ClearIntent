@@ -1,5 +1,6 @@
 import { stableStringify, type ResultIssue } from "../../core/src";
 import type { CenterModule, ModuleDoctorResult } from "./modules";
+import type { CenterMemoryStatus, MemoryCheckStatus } from "./memory-status";
 
 export type CliCommandResult = {
   command: string;
@@ -7,7 +8,7 @@ export type CliCommandResult = {
   commandOk?: boolean;
   authorityOk?: boolean;
   fixture?: string;
-  mode?: "fixture-only";
+  mode?: "fixture-only" | "local-memory";
   fixtureSource?: string;
   liveProvider?: false;
   summary: string;
@@ -51,6 +52,11 @@ export function renderHuman(result: CliCommandResult): string {
     for (const module of explicit.data.doctor.modules) {
       lines.push(`- ${module.id}: ${module.status} - ${module.reason}`);
     }
+    lines.push(...renderMemoryStatus(explicit.data.doctor.memory));
+  }
+
+  if (isMemoryData(explicit.data)) {
+    lines.push(...renderMemoryStatus(explicit.data.memory));
   }
 
   if (explicit.issues.length > 0) {
@@ -99,4 +105,34 @@ function isModuleData(data: Record<string, unknown>): data is { modules: CenterM
 
 function isDoctorData(data: Record<string, unknown>): data is { doctor: ModuleDoctorResult } {
   return typeof data.doctor === "object" && data.doctor !== null;
+}
+
+function isMemoryData(data: Record<string, unknown>): data is { memory: CenterMemoryStatus } {
+  return typeof data.memory === "object" && data.memory !== null;
+}
+
+function renderMemoryStatus(memory: CenterMemoryStatus): string[] {
+  return [
+    `Memory provider mode: ${memory.providerMode}`,
+    `Memory claim level: ${memory.claimLevel}`,
+    `Memory live provider: ${memory.liveProvider ? "enabled" : "disabled"}`,
+    `Memory local marker: ${memory.localOnly ? "[LOCAL-ONLY] local-only" : "[PASS] live-capable"}`,
+    `Memory status: ${memory.ok ? "[PASS] ok" : "[DEGRADED] degraded"}`,
+    `Memory summary: ${memory.summary}`,
+    ...memory.checks.map((check) => `- ${check.label}: ${formatCheckStatus(check.status)} - ${check.detail}`),
+    `Memory degraded reasons: ${formatList(memory.degradedReasons)}`
+  ];
+}
+
+function formatCheckStatus(status: MemoryCheckStatus): string {
+  if (status === "pass") {
+    return "[PASS] pass";
+  }
+  if (status === "fail") {
+    return "[FAIL] fail";
+  }
+  if (status === "local-only") {
+    return "[LOCAL-ONLY] local-only";
+  }
+  return "[DEGRADED] degraded";
 }

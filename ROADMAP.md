@@ -12,7 +12,7 @@ This is the high-visibility roadmap index for ClearIntent. Detailed phase sequen
 
 ## Current Phase
 
-Phase 1.5: Center CLI Skeleton.
+Phase 2B: Live 0G Storage Integration.
 
 Completed baseline:
 
@@ -24,11 +24,13 @@ Completed baseline:
 - Phase 1E core developer/module-facing API with stable public exports, `evaluateCoreAuthority`, and composition tests
 - Phase 1F contract/core stability handoff closeout
 - Phase 1.5 Center CLI skeleton with fixture-backed command routing, human-readable terminal output, deterministic `--json` output, and local module doctor metadata
+- Phase 2A local 0G policy memory and audit scaffold with deterministic `packages/zerog-memory/`, local write/read/hash validation, audit-bundle rollup, Center CLI memory commands, and `local-adapter` claim level
 
 Immediate next action:
 
-- Start Phase 2A local 0G policy memory and audit scaffold before live 0G integration. Use `docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md`.
+- Start Phase 2B live 0G Storage integration behind the Phase 2A interfaces. Use `docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md`.
 - Completed Phase 1.5 package: `docs/roadmaps/phase-1.5-center-cli-skeleton/`
+- Completed Phase 2A closeout audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md`
 
 ## Feature Order
 

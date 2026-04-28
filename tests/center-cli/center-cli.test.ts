@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { runCli } from "../../packages/center-cli/src/cli";
 import { runCenterCommand } from "../../packages/center-cli/src/commands";
+import { buildModuleDoctorResult } from "../../packages/center-cli/src/modules";
+import { renderHuman } from "../../packages/center-cli/src/output";
 
 describe("ClearIntent Center CLI skeleton", () => {
   it("routes center status to a human-readable snapshot", async () => {
@@ -85,15 +87,133 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(parsed.issues.map((issue) => issue.code)).toEqual(expect.arrayContaining(["deadline_expired"]));
   });
 
-  it("reports module doctor deferred adapters without failing the local skeleton", async () => {
+  it("reports local memory status without implying live provider usage", async () => {
     const result = await runCli(["module", "doctor", "--json"]);
-    const parsed = JSON.parse(result.stdout) as { commandOk: boolean; authorityOk: boolean; ok: boolean; issues: { code: string; path: string }[] };
+    const parsed = JSON.parse(result.stdout) as {
+      commandOk: boolean;
+      authorityOk: boolean;
+      ok: boolean;
+      liveProvider: boolean;
+      data: {
+        doctor: {
+          memory: {
+            ok: boolean;
+            providerMode: string;
+            claimLevel: string;
+            liveProvider: boolean;
+            localOnly: boolean;
+            checks: { id: string; status: string }[];
+            degradedReasons: string[];
+          };
+        };
+      };
+      issues: { code: string; path: string }[];
+    };
 
     expect(result.exitCode).toBe(0);
     expect(parsed.commandOk).toBe(true);
     expect(parsed.authorityOk).toBe(true);
     expect(parsed.ok).toBe(true);
+    expect(parsed.liveProvider).toBe(false);
+    expect(parsed.data.doctor.memory).toMatchObject({
+      ok: true,
+      providerMode: "local",
+      claimLevel: "local-adapter",
+      liveProvider: false,
+      localOnly: true
+    });
+    expect(parsed.data.doctor.memory.checks.map((check) => check.id)).toEqual(["write", "read", "hash", "audit-bundle", "proof"]);
+    expect(parsed.data.doctor.memory.checks.slice(0, 4).every((check) => check.status === "pass")).toBe(true);
+    expect(parsed.data.doctor.memory.checks[4]?.status).toBe("local-only");
+    expect(parsed.data.doctor.memory.degradedReasons).toEqual(
+      expect.arrayContaining(["missing_proof", "live_provider_disabled"])
+    );
     expect(parsed.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code: "module_deferred", path: "ens" })]));
+    expect(parsed.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code: "memory_degraded", path: "zerog" })]));
+  });
+
+  it("renders local memory checks with plain-text status markers", async () => {
+    const result = await runCli(["module", "doctor"]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("Memory provider mode: local");
+    expect(result.stdout).toContain("Memory claim level: local-adapter");
+    expect(result.stdout).toContain("Memory live provider: disabled");
+    expect(result.stdout).toContain("[LOCAL-ONLY] local-only");
+    expect(result.stdout).toContain("Write check: [PASS] pass");
+    expect(result.stdout).toContain("Read check: [PASS] pass");
+    expect(result.stdout).toContain("Hash validation: [PASS] pass");
+    expect(result.stdout).toContain("Audit bundle: [PASS] pass");
+    expect(result.stdout).toContain("Proof check: [LOCAL-ONLY] local-only");
+  });
+
+  it("exposes deterministic memory command JSON for local checks", async () => {
+    const result = await runCli(["memory", "check", "--json"]);
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      mode: string;
+      liveProvider: boolean;
+      data: { memory: { providerMode: string; claimLevel: string; checks: { id: string; status: string }[] } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.startsWith("{")).toBe(true);
+    expect(parsed.command).toBe("memory check");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(true);
+    expect(parsed.mode).toBe("local-memory");
+    expect(parsed.liveProvider).toBe(false);
+    expect(parsed.data.memory.providerMode).toBe("local");
+    expect(parsed.data.memory.claimLevel).toBe("local-adapter");
+    expect(parsed.data.memory.checks.map((check) => check.id)).toEqual(["write", "read", "hash", "audit-bundle", "proof"]);
+  });
+
+  it("renders memory audit-bundle checks in human mode", async () => {
+    const result = await runCli(["memory", "audit-bundle"]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("ClearIntent memory audit-bundle");
+    expect(result.stdout).toContain("Mode: local-memory");
+    expect(result.stdout).toContain("Audit bundle: [PASS] pass");
+    expect(result.stdout).toContain("Memory live provider: disabled");
+  });
+
+  it("renders successful local memory adapter status when the integration API provides it", () => {
+    const doctor = buildModuleDoctorResult({
+      ok: true,
+      providerMode: "local",
+      claimLevel: "local-adapter",
+      liveProvider: false,
+      localOnly: true,
+      summary: "Local adapter wrote, read, hash-validated, and bundled audit artifacts.",
+      checks: [
+        { id: "write", label: "Write check", status: "pass", detail: "Stored policy artifact locally." },
+        { id: "read", label: "Read check", status: "pass", detail: "Read policy artifact locally." },
+        { id: "hash", label: "Hash validation", status: "pass", detail: "Content hash matched on readback." },
+        { id: "audit-bundle", label: "Audit bundle", status: "local-only", detail: "Generated local audit bundle refs." }
+      ],
+      degradedReasons: []
+    });
+    const human = renderHuman({
+      command: "module doctor",
+      ok: doctor.ok,
+      commandOk: true,
+      authorityOk: doctor.ok,
+      mode: "fixture-only",
+      fixtureSource: "contracts/examples/",
+      liveProvider: false,
+      summary: "Module doctor checked local skeleton metadata and local memory adapter status.",
+      data: { doctor },
+      issues: doctor.issues.map((issue) => ({ code: issue.code, message: issue.message, path: issue.moduleId }))
+    });
+
+    expect(doctor.ok).toBe(true);
+    expect(human).toContain("Memory status: [PASS] ok");
+    expect(human).toContain("Write check: [PASS] pass");
+    expect(human).toContain("Audit bundle: [LOCAL-ONLY] local-only");
+    expect(human).toContain("Memory degraded reasons: none");
   });
 
   it("rejects unknown command families", async () => {

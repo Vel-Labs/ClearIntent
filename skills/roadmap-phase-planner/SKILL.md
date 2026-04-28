@@ -24,9 +24,10 @@ Roadmap phase planning converts roadmap intent into a concrete, bounded work pac
 2. Separate implemented, documented-only, planned, and explicitly deferred work.
 3. Name dependencies and upstream contract truth.
 4. Define workstreams with likely file ownership.
-5. Include midpoint and closeout audit expectations.
-6. Include validation commands from `REPO_PROFILE.json`.
-7. Route downstream work into deferred scope instead of expanding the phase.
+5. For any Center CLI behavior, require direct human command, agent JSON command, and bare `npm run clearintent` wizard coverage, or explicitly document the wizard gap as deferred.
+6. Include midpoint and closeout audit expectations.
+7. Include validation commands from `REPO_PROFILE.json`.
+8. Route downstream work into deferred scope instead of expanding the phase.
 
 ## Output
 

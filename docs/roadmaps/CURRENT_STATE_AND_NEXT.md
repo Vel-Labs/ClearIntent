@@ -14,13 +14,23 @@ Phase 1F is complete. The contract/core stability handoff is closed for local au
 
 Phase 1.5 is complete. `packages/center-cli/` now provides the fixture-backed Center CLI skeleton over `packages/core`, with command routing for Center status/inspect, intent validation/state, authority evaluation, and module list/doctor. Human-readable terminal output is the default. Agent-readable output is available through `--json`; use `npm run --silent clearintent -- <command> --json` when consuming via npm so npm's banner does not precede the JSON payload. The midpoint audit is `docs/audits/phase-1.5-center-cli-skeleton/1.5.5-midpoint-audit.md`; closeout audit is `docs/audits/phase-1.5-center-cli-skeleton/1.5.9-closeout-audit.md`.
 
+Phase 2A is complete locally. `packages/zerog-memory/` now provides the local deterministic memory/audit adapter with `MemoryAdapter`, `AuditStore`, artifact envelope/ref types, storage results with blocked/degraded states, stable payload hashing, local write/read validation, audit-bundle rollup, and a Center-facing local memory doctor. `packages/center-cli/` exposes `module doctor`, `memory status`, `memory check`, and `memory audit-bundle` in human-readable and deterministic JSON modes. The reached claim level is `local-adapter`; live 0G proof remains explicitly absent as `missing_proof` / `live_provider_disabled`. The closeout audit is `docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md`.
+
 ## Immediate next action
 
-Start Phase 2A: local 0G policy memory and audit scaffold. Phase 2 is split intentionally:
+Start Phase 2B: live 0G Storage integration behind the Phase 2A interfaces. Phase 2 is split intentionally:
 
-- Phase 2A proves local deterministic artifact storage, hash validation, audit bundle rollup, degraded-state semantics, and Center CLI memory status without live credentials.
+- Phase 2A proved local deterministic artifact storage, hash validation, audit bundle rollup, degraded-state semantics, and Center CLI memory status without live credentials.
 - Phase 2B connects the same interfaces to real 0G Storage after credentials, SDK imports, endpoints, and proof level are verified.
 - Phase 2C is optional 0G Compute risk/reflection and remains deferred until storage persistence is proven.
+
+Current Phase 2A documentation state:
+
+- midpoint audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.5-midpoint-audit.md`
+- closeout audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md`
+- documented claim level: `local-adapter`
+- live 0G claim: none
+- Phase 2B requirement: replace the local backend with real 0G write/read behavior without changing artifact semantics, and record the exact claim level reached.
 
 Relevant phase packages:
 
@@ -59,7 +69,7 @@ Phase 1.5 implementation consumed:
 - `docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md`
 - `docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md`
 
-Before starting Phase 2A or provider adapter work, a fresh checkout should pass:
+Before starting Phase 2B or adjacent provider adapter work, a fresh checkout should pass:
 
 ```bash
 npm install
