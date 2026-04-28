@@ -18,6 +18,7 @@ Provide signer adapters that let humans approve bounded EIP-712 intents across s
 - report display status honestly
 - report wallet capability level honestly
 - optionally emit ERC-7730-compatible metadata
+- support policy-triggered human review prompts for thresholded autonomy modes
 
 ## Non-goals
 
@@ -34,6 +35,10 @@ Define typed data domain and message.
 ### 5.2 Human-readable preview
 
 Render action, policy, executor, deadline, and value bounds.
+
+### 5.2A Conditional review prompt semantics
+
+Define how signer and approval surfaces explain why an otherwise autonomous action escalated to human review. Examples include value threshold, large order, new executor, high risk severity, degraded audit write, or policy change.
 
 ### 5.3 Software wallet adapter
 
@@ -67,6 +72,8 @@ Expose blind-signing or limited-display warnings.
 
 Make the approval moment clear and honest. Preferred visual: show the same intent through ClearIntent app preview, software wallet signing, WalletConnect where available, and hardware wallet display where available.
 
+If conditional review gates are included in the demo, show one routine action that stays automatic inside policy bounds and one thresholded action that stops for human approval before signing/execution.
+
 ### 5.11 Closeout audit
 
 Audit target: the signer flow enforces bounded human approval.
@@ -78,3 +85,4 @@ Audit target: the signer flow enforces bounded human approval.
 - user-facing preview is clear
 - display limitations are documented
 - wallet-specific capability level is documented
+- conditional review prompts explain the trigger before requesting approval

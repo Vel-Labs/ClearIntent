@@ -37,6 +37,8 @@ contracts/schemas/audit-bundle.schema.json
 contracts/schemas/execution-receipt.schema.json
 contracts/schemas/human-review-checkpoint.schema.json
 contracts/schemas/risk-report.schema.json
+clearintent_banner.png
+clearintent_logo.png
 docs/FILE_TREE.md
 docs/README.md
 docs/agents/START_HERE.md

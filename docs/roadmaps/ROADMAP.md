@@ -237,6 +237,7 @@ Key deliverables:
 - EIP-712 signing flow
 - software wallet and WalletConnect paths where practical
 - readable preview UI
+- conditional human-review prompts for policy-triggered escalation
 - ERC-7730 metadata output if feasible
 - blind-signing/degraded display warning
 
@@ -270,6 +271,9 @@ Dashboard scope:
 - The dashboard reconstructs state from wallet identity, ENS records, 0G-stored evidence, onchain contract state/events through Alchemy, and KeeperHub receipts.
 - No traditional database is required for the MVP; private backend records must not become the authority source.
 - The first screen should show the chain of intent: proposed intent, policy check, risk report, human review checkpoint, signature, onchain verification, execution, and audit evidence.
+- Conditional human-review gates should be displayed as explicit policy outcomes when autonomy is allowed for routine actions but thresholds require human review.
+- Default mode should require human review for every transaction. Conditional-autonomy mode is an optional power-user lane, not a replacement for the safer default.
+- Both modes must preserve per-transaction audit trails and replayability through the dashboard and/or CLI transaction logs.
 
 ## Phase 7: Stretch Standards and Monetization
 

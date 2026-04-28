@@ -89,6 +89,7 @@ Now that the Center CLI skeleton is stable:
 - webhook delivery
 - local OS notification delivery
 - Agent Audit dashboard implementation before the onchain, 0G, ENS, KeeperHub, and signer evidence sources exist
+- conditional human-review/autonomy mode implementation before the policy contract extension is designed and tested
 - ERC-7857 iNFTs
 - zk proofs
 - auto-rotating ENS addresses

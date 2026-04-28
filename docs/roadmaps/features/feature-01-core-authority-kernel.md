@@ -195,3 +195,29 @@ Required outputs landed:
 - midpoint and closeout audits under `docs/audits/phase-1.5-center-cli-skeleton/`
 
 Status: complete. Provider adapter scaffolding may start next through the Center/module boundary.
+
+## Follow-on Conditional Human Review Gates
+
+ClearIntent should support policy-defined autonomy modes where routine actions can proceed automatically, but specified thresholds escalate to human review before signing or execution.
+
+Default build mode remains human-in-the-loop for every transaction. This serves users who want maximum control, explicit approval, and a clear signing moment before any onchain action.
+
+Conditional review is a separate power-user lane for higher-autonomy workflows such as trading bots, automation agents, or recurring operations. It serves users with a different risk tolerance: they may allow routine actions inside strict policy bounds, but still want human intervention for fringe or high-impact cases.
+
+Both lanes must preserve the same audit standard. Every transaction should expose intent, policy result, verification evidence, execution receipt, and replayability through the dashboard and/or CLI transaction logs.
+
+Example:
+
+- auto-approve routine bot actions inside policy bounds
+- require human review for large orders
+- require human review for orders over a value threshold
+- require human review for new counterparties, unknown executors, policy-hash changes, high severity risk reports, degraded audit writes, or unusual frequency
+
+This is a contract-level feature, not a UI-only alert. The policy schema should eventually distinguish:
+
+- actions that are fully blocked
+- actions that are allowed automatically inside strict bounds
+- actions that are allowed only after a `HumanReviewCheckpoint`
+- actions that are degraded and require visible warning or manual override
+
+Until this contract is revised and tested, the existing privileged execution rule remains: missing human review blocks execution.
