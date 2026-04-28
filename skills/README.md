@@ -23,6 +23,7 @@ These skills are scaffold assets. They are not globally installed automatically.
 | `contract-steward` | Preserve `contracts/` as canonical authority truth while updating schemas, fixtures, lifecycle rules, and validation. | None |
 | `contract-fixture-author` | Add or update contract schemas, valid fixtures, invalid fixtures, and contract validation tests. | None |
 | `core-enforcement` | Implement planned `packages/core/` enforcement logic against canonical contracts without drifting into adapters or demos. | None |
+| `center-cli-operator` | Operate, extend, test, or document the Center CLI human lane and AI-readable command lane. | None |
 | `adapter-scaffold` | Isolate provider behavior behind typed adapter boundaries for ENS, 0G, KeeperHub, signer, OpenCleaw, or x402 work. | None |
 | `phase-closeout-audit` | Close phases or scaffold passes with scope, evidence, findings, follow-up, and decision/changelog routing. | `templates/closeout-audit.md` |
 | `pre-commit-quality-gate` | Check commit, push, handoff, or merge readiness and proactively catch regressions. | `templates/quality-gate-report.md` |

@@ -178,6 +178,7 @@ packages/core/src/status.ts
 packages/core/src/types.ts
 packages/core/src/verification.ts
 scripts/validate-contracts.ts
+scripts/validate-center-cli.ts
 scripts/validate-scaffold.ts
 skills/README.md
 skills/adapter-scaffold/SKILL.md
@@ -186,6 +187,7 @@ skills/agent-assignment-writer/templates/agent-assignment.md
 skills/agent-assignment-writer/templates/fresh-agent-handoff.md
 skills/contract-fixture-author/SKILL.md
 skills/contract-steward/SKILL.md
+skills/center-cli-operator/SKILL.md
 skills/core-enforcement/SKILL.md
 skills/feature-implementation-runner/SKILL.md
 skills/hackathon-submission-auditor/SKILL.md

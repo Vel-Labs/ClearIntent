@@ -8,8 +8,9 @@
     "center": "npm run clearintent -- center",
     "typecheck": "tsc --noEmit",
     "validate:scaffold": "tsx scripts/validate-scaffold.ts",
+    "validate:center-cli": "tsx scripts/validate-center-cli.ts",
     "validate:contracts": "tsx scripts/validate-contracts.ts",
-    "check": "npm run validate:scaffold && npm run validate:contracts && npm run test:contracts && npm test && npm run typecheck",
+    "check": "npm run validate:scaffold && npm run validate:contracts && npm run validate:center-cli && npm run test:contracts && npm test && npm run typecheck",
     "test": "vitest run",
     "test:contracts": "vitest run tests/contracts"
   },

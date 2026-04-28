@@ -63,6 +63,7 @@
     "install": "npm install",
     "validateScaffold": "npm run validate:scaffold",
     "validateContracts": "npm run validate:contracts",
+    "validateCenterCli": "npm run validate:center-cli",
     "focusedTests": "npm run test:contracts",
     "allTests": "npm test",
     "centerCli": "npm run clearintent",
@@ -139,6 +140,7 @@
   "knownQualityGates": [
     "npm run validate:scaffold",
     "npm run validate:contracts",
+    "npm run validate:center-cli",
     "npm run test:contracts",
     "npm test",
     "npm run typecheck",
