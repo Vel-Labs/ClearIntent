@@ -24,6 +24,7 @@ Root `DECISIONS.md` summarizes and routes. Dated files hold the detailed entries
 - `contracts/` plus `packages/core/` gate downstream adapter and demo work.
 - `packages/core/API.md` is the callable authority API; transport layers must wrap it instead of defining authority semantics through ambiguous routes.
 - The next product layer after Phase 1 is a Center CLI skeleton over `packages/core`, before provider adapters or demo integration.
+- The Center CLI is the local product center and output boundary. It consumes `packages/core`, defaults to human-readable terminal output, and exposes parse-safe JSON only through explicit `--json` usage.
 - Root `ROADMAP.md` and `DECISIONS.md` are indexes; detailed roadmap and decision truth lives under `docs/`.
 
 ## Decision Logs

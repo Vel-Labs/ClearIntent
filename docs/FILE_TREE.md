@@ -55,6 +55,8 @@ docs/audits/phase-1-core-authority-kernel/1c-core-package-closeout.md
 docs/audits/phase-1-core-authority-kernel/1d-core-lifecycle-state-api-closeout.md
 docs/audits/phase-1-core-authority-kernel/1e-core-developer-module-api-closeout.md
 docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md
+docs/audits/phase-1.5-center-cli-skeleton/1.5.5-midpoint-audit.md
+docs/audits/phase-1.5-center-cli-skeleton/1.5.9-closeout-audit.md
 docs/decisions/2026-04-25.md
 docs/decisions/2026-04-26.md
 docs/decisions/2026-04-27.md
@@ -157,6 +159,13 @@ docs/templates/PHASE_PROMPT_TEMPLATE.md
 docs/templates/REPO_PERSONALIZATION_CHECKLIST.md
 package-lock.json
 package.json
+packages/center-cli/README.md
+packages/center-cli/src/cli.ts
+packages/center-cli/src/commands.ts
+packages/center-cli/src/fixtures.ts
+packages/center-cli/src/modules.ts
+packages/center-cli/src/output.ts
+packages/center-cli/src/wizard.ts
 packages/core/API.md
 packages/core/README.md
 packages/core/src/hash.ts
@@ -189,6 +198,7 @@ skills/repo-orientation/SKILL.md
 skills/roadmap-phase-planner/SKILL.md
 skills/roadmap-phase-planner/templates/phase-plan.md
 tests/README.md
+tests/center-cli/center-cli.test.ts
 tests/contracts/validate-contracts.test.ts
 tests/core/core.test.ts
 tests/core/module-api.test.ts

@@ -155,7 +155,7 @@ Usage layering:
 - Core authority layer: command behavior derived from `packages/core`, not reimplemented in CLI code.
 - Future module layer: module metadata and doctor checks prepare ENS, 0G, KeeperHub, signer, notification, and demo modules to plug in later.
 
-Status: recommended next phase.
+Status: complete. The local CLI skeleton lives under `packages/center-cli/` and is runnable with `npm run clearintent -- <command>`. For parse-safe JSON, use `npm run --silent clearintent -- <command> --json`. Midpoint audit: `docs/audits/phase-1.5-center-cli-skeleton/1.5.5-midpoint-audit.md`. Closeout audit: `docs/audits/phase-1.5-center-cli-skeleton/1.5.9-closeout-audit.md`.
 
 ## Phase 2: 0G Policy Memory and Audit Layer
 

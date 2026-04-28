@@ -177,3 +177,21 @@ Audit target: core can be consumed by adapters without vendor-specific assumptio
 - adapters can start without inventing their own schema
 
 Status: met for the local contract/core stability handoff. Live provider behavior remains deferred.
+
+## Follow-on Center CLI Skeleton
+
+Phase 1.5 is complete as the product-center layer over the core authority kernel.
+
+Required outputs landed:
+
+- `packages/center-cli/`
+- `npm run clearintent -- <command>`
+- `center status` and `center inspect`
+- `intent validate` and `intent state`
+- `authority evaluate`
+- `module list` and `module doctor`
+- human-readable default output
+- deterministic `--json` output, with `npm run --silent clearintent -- <command> --json` documented for npm-based machine parsing
+- midpoint and closeout audits under `docs/audits/phase-1.5-center-cli-skeleton/`
+
+Status: complete. Provider adapter scaffolding may start next through the Center/module boundary.

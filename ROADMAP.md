@@ -12,7 +12,7 @@ This is the high-visibility roadmap index for ClearIntent. Detailed phase sequen
 
 ## Current Phase
 
-Phase 1: ClearIntent Core Authority Kernel.
+Phase 1.5: Center CLI Skeleton.
 
 Completed baseline:
 
@@ -23,11 +23,12 @@ Completed baseline:
 - Phase 1D core lifecycle/state API with machine-readable state snapshots, evidence summaries, next-action codes, degraded-signal visibility, terminal-state handling, tests, and closeout audit
 - Phase 1E core developer/module-facing API with stable public exports, `evaluateCoreAuthority`, and composition tests
 - Phase 1F contract/core stability handoff closeout
+- Phase 1.5 Center CLI skeleton with fixture-backed command routing, human-readable terminal output, deterministic `--json` output, and local module doctor metadata
 
 Immediate next action:
 
-- Start Phase 1.5 Center CLI skeleton over `packages/core` without implementing provider adapters or demo integration.
-- Phase package: `docs/roadmaps/phase-1.5-center-cli-skeleton/`
+- Begin provider adapter scaffolding only through the Center/module boundary. Start with the next roadmap-selected adapter package, keep it narrow, and preserve the CLI as the product center instead of letting adapters define their own operator surfaces.
+- Completed Phase 1.5 package: `docs/roadmaps/phase-1.5-center-cli-skeleton/`
 
 ## Feature Order
 

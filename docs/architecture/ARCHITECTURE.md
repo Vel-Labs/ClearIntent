@@ -141,18 +141,24 @@ Rule: execution adapters may submit only after policy and signature verification
 
 Expected paths:
 
+- `packages/center-cli/`
 - `apps/demo-console/`
 - `examples/guardian-agent/`
 - `docs/hackathon/`
 
 Responsibilities:
 
+- local Center CLI for human and AI-readable lifecycle inspection
+- fixture-backed command routing before provider adapters
+- module registry and doctor checks for future adapter readiness
 - show the full lifecycle
 - make the framework easy to understand
 - keep demo values configurable
 - produce a clean 2-4 minute submission video
 
 Rule: the demo must prove the framework. It should not fake the hard part.
+
+Current implementation note: `packages/center-cli/` is the product-center skeleton over `packages/core`. It renders core-derived state, validation, authority evaluation, and local module metadata, but it does not own authority rules and does not implement provider behavior.
 
 ## Critical lifecycle
 

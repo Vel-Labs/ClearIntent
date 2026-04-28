@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "clearintent": "tsx packages/center-cli/src/cli.ts",
+    "center": "npm run clearintent -- center",
     "typecheck": "tsc --noEmit",
     "validate:scaffold": "tsx scripts/validate-scaffold.ts",
     "validate:contracts": "tsx scripts/validate-contracts.ts",

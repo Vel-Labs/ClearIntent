@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "repoName": "ClearIntent",
   "purpose": "Reusable authority layer for autonomous onchain agents. Agents produce bounded intents, humans approve through explicit review and readable signing flows, and executors act only after policy, nonce, deadline, and authority checks pass.",
-  "currentStatus": "Governance, contract authority, validation baseline, and Phase 1 contract/core stability handoff are complete. The next implementation target is a Phase 1.5 Center CLI skeleton over packages/core before provider adapters or demos begin.",
+  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, and Phase 1.5 Center CLI skeleton are complete locally. The next implementation target may begin provider adapter scaffolding through the Center boundary.",
   "canonicalPaths": {
     "agentPolicy": "AGENTS.md",
     "repoProfile": "REPO_PROFILE.json",
@@ -22,6 +22,7 @@
     "contractValidationScript": "scripts/validate-contracts.ts",
     "corePackage": "packages/core/",
     "coreApi": "packages/core/API.md",
+    "centerCliPackage": "packages/center-cli/",
     "scaffoldValidationScript": "scripts/validate-scaffold.ts",
     "tests": "tests/",
     "contractTests": "tests/contracts/",
@@ -64,6 +65,7 @@
     "validateContracts": "npm run validate:contracts",
     "focusedTests": "npm run test:contracts",
     "allTests": "npm test",
+    "centerCli": "npm run clearintent",
     "typecheck": "npm run typecheck",
     "fullQualityGate": "npm run check"
   },
@@ -112,6 +114,7 @@
     "contracts/schemas/",
     "contracts/examples/",
     "packages/core/",
+    "packages/center-cli/",
     "scripts/",
     "tests/",
     "tests/contracts/"

@@ -28,6 +28,20 @@ No package, adapter, or demo may silently replace these shapes with local varian
 - adapter contracts
 - local deterministic test fixtures
 
+## What the Center CLI owns
+
+- local command routing for humans and AI agents
+- human-readable lifecycle and authority status output
+- deterministic `--json` output over the same core-derived result object
+- fixture-backed status, validation, authority evaluation, and module health checks
+- module registry shape for future adapter plug-ins
+
+## What the Center CLI does not own
+
+- canonical lifecycle, policy, signer, executor, deadline, or audit rules
+- ENS, 0G, KeeperHub, signer, webhook, OS notification, browser UI, hosted service, or demo integration behavior
+- provider-specific truth or live execution claims
+
 ## What ENS adapter owns
 
 - ENS name resolution

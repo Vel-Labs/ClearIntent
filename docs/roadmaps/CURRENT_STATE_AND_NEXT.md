@@ -12,20 +12,22 @@ Phase 1E is complete. `packages/core` now exposes `evaluateCoreAuthority` for mo
 
 Phase 1F is complete. The contract/core stability handoff is closed for local authority behavior. The Phase 1F closeout audit is `docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md`.
 
+Phase 1.5 is complete. `packages/center-cli/` now provides the fixture-backed Center CLI skeleton over `packages/core`, with command routing for Center status/inspect, intent validation/state, authority evaluation, and module list/doctor. Human-readable terminal output is the default. Agent-readable output is available through `--json`; use `npm run --silent clearintent -- <command> --json` when consuming via npm so npm's banner does not precede the JSON payload. The midpoint audit is `docs/audits/phase-1.5-center-cli-skeleton/1.5.5-midpoint-audit.md`; closeout audit is `docs/audits/phase-1.5-center-cli-skeleton/1.5.9-closeout-audit.md`.
+
 ## Immediate next action
 
-Start Phase 1.5: build the Center CLI skeleton over `packages/core` without implementing provider adapters, demo integration, live signer behavior, or transport-specific webhook/OS notification delivery.
+Start the first provider adapter scaffold only after assigning a bounded workstream. Adapter work may begin next because the CLI/module boundary now exists, but it must plug into the Center/core authority route instead of defining its own lifecycle, review, signer, executor, deadline, or audit rules.
 
-Phase package:
+Completed Phase 1.5 package:
 
 - `docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md`
 - `docs/roadmaps/phase-1.5-center-cli-skeleton/EXECUTION_PROMPT.md`
 
-Rationale:
+Rationale for the next route:
 
-- Phase 1 proved local contract/core authority behavior, but humans and AI agents still need a single product center to inspect state, missing evidence, next actions, and blocked/degraded conditions.
-- Building provider adapters before the Center CLI would push UX and authority-routing choices into adapter code.
-- The CLI skeleton should become the shared local surface that later ENS, 0G, KeeperHub, signer, notification, and demo layers plug into.
+- Phase 1 proved local contract/core authority behavior.
+- Phase 1.5 proved a local Center CLI can render core state and authority evaluation without becoming an authority source.
+- Future ENS, 0G, KeeperHub, signer, notification, and demo layers should plug into the Center/module shape instead of creating fragmented operator surfaces.
 
 Structure for usage:
 
@@ -34,7 +36,7 @@ Structure for usage:
 - Core authority layer: all commands consume `packages/core` public primitives such as `deriveCoreStateSnapshot` and `evaluateCoreAuthority`.
 - Module layer: `module list` and `module doctor` establish a registration/health-check shape for future feature modules without loading real providers yet.
 
-Phase 1.5 implementation must consume:
+Phase 1.5 implementation consumed:
 
 - `contracts/authority-lifecycle.md`
 - `contracts/schemas/*.schema.json`
@@ -51,7 +53,7 @@ Phase 1.5 implementation must consume:
 - `docs/audits/phase-1-core-authority-kernel/1f-contract-core-stability-handoff-closeout.md`
 - `docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md`
 
-Before expanding CLI skeleton behavior, a fresh checkout should pass:
+Before starting provider adapter work, a fresh checkout should pass:
 
 ```bash
 npm install
@@ -65,7 +67,7 @@ npm run check
 
 ## Recommended parallelization
 
-After the Center CLI skeleton is stable:
+Now that the Center CLI skeleton is stable:
 
 - one agent can build ENS resolver scaffolding
 - one agent can build 0G storage scaffolding

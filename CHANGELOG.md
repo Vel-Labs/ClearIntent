@@ -4,6 +4,10 @@ All notable repo changes should be logged here.
 
 ## 2026-04-27
 
+- Completed Phase 1.5 by adding `packages/center-cli/` with fixture-backed `center status`, `center inspect`, `intent validate`, `intent state`, `authority evaluate`, `module list`, and `module doctor` command routing over `packages/core`.
+- Added Center CLI tests for command routing, human-readable output, deterministic JSON output, missing-evidence fail-closed behavior, authority evaluation issue codes, module doctor deferred-adapter reporting, fixture-scope metadata, and the bare CLI landing path.
+- Added a no-dependency human Center menu for bare `npm run clearintent` in interactive terminals, while preserving explicit command/`--json` usage for AI-readable automation.
+- Added Phase 1.5 midpoint and closeout audits, updated roadmap/current-state routing, and documented that provider adapter work may start next only through the Center/core boundary.
 - Added `docs/providers/Wallets/` as the signer strategy center with software wallet, WalletConnect, hardware wallet, smart-account, and generic standards subtrees.
 - Reframed ClearIntent signing posture around wallet-neutral signer adapters, clear-signing-ready EIP-712 intents, ClearIntent human-readable approval metadata, and wallet capability levels.
 - Updated roadmap, architecture, provider, and hackathon demo docs to treat software wallets and WalletConnect as first-class paths while keeping official secure-screen Clear Signing as wallet/vendor-specific proof.
