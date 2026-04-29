@@ -14,6 +14,12 @@ type CenterJson = {
   mode?: string;
   fixtureSource?: string;
   liveProvider?: boolean;
+  data?: {
+    identity?: {
+      claimLevel?: string;
+      liveProvider?: boolean;
+    };
+  };
 };
 
 async function main(): Promise<void> {
@@ -41,6 +47,19 @@ async function main(): Promise<void> {
     assertEqual("unknown fixture authorityOk", invalidJson.authorityOk, false, failures);
   }
 
+  const identity = await run(["run", "--silent", "clearintent", "--", "identity", "status", "--json"]);
+  assertExit("identity status exits 0 for blocked fixture readout", identity, 0, failures);
+  const identityJson = parseJson("identity status", identity.stdout, failures);
+  if (identityJson !== undefined) {
+    assertEqual("identity status command", identityJson.command, "identity status", failures);
+    assertEqual("identity status commandOk", identityJson.commandOk, true, failures);
+    assertEqual("identity status authorityOk", identityJson.authorityOk, false, failures);
+    assertEqual("identity status mode", identityJson.mode, "ens-local-fixture", failures);
+    assertEqual("identity status liveProvider", identityJson.liveProvider, false, failures);
+    assertEqual("identity status claimLevel", identityJson.data?.identity?.claimLevel, "ens-local-fixture", failures);
+    assertEqual("identity status data liveProvider", identityJson.data?.identity?.liveProvider, false, failures);
+  }
+
   const landing = await run(["run", "--silent", "clearintent"]);
   assertExit("bare clearintent landing exits 0", landing, 0, failures);
   if (!landing.stdout.includes("Human lane:") || !landing.stdout.includes("AI lane:")) {
@@ -58,6 +77,7 @@ async function main(): Promise<void> {
   console.log("PASS center inspect JSON starts with JSON and exits 0 for blocked readout");
   console.log("PASS center inspect separates commandOk from authorityOk");
   console.log("PASS CLI errors remain parseable JSON and exit nonzero");
+  console.log("PASS identity status preserves ens-local-fixture and disabled live provider claims");
   console.log("PASS bare clearintent exposes human and AI lanes");
   console.log("center cli validation ok");
 }

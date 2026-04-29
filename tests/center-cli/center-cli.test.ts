@@ -128,7 +128,6 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(parsed.data.doctor.memory.degradedReasons).toEqual(
       expect.arrayContaining(["missing_proof", "live_provider_disabled"])
     );
-    expect(parsed.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code: "module_deferred", path: "ens" })]));
     expect(parsed.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code: "memory_degraded", path: "zerog" })]));
   });
 
@@ -206,6 +205,61 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(parsed.data.memory.degradedReasons).toEqual(
       expect.arrayContaining(["missing_credentials", "live_writes_disabled", "missing_tokens", "live_write_unverified"])
     );
+  });
+
+  it("exposes parse-safe identity status without authority or live-provider claims", async () => {
+    const result = await runCli(["identity", "status", "--json"]);
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      ok: boolean;
+      mode: string;
+      liveProvider: boolean;
+      data: {
+        identity: {
+          ok: boolean;
+          ensName?: string;
+          claimLevel: string;
+          liveProvider: boolean;
+          degradedReasons: string[];
+          blockingReasons: string[];
+        };
+      };
+      issues: { code: string; path: string }[];
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.startsWith("{")).toBe(true);
+    expect(parsed.command).toBe("identity status");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.mode).toBe("ens-local-fixture");
+    expect(parsed.liveProvider).toBe(false);
+    expect(parsed.data.identity.ok).toBe(true);
+    expect(parsed.data.identity.ensName).toBe("guardian.clearintent.eth");
+    expect(parsed.data.identity.claimLevel).toBe("ens-local-fixture");
+    expect(parsed.data.identity.liveProvider).toBe(false);
+    expect(parsed.data.identity.degradedReasons).toEqual(expect.arrayContaining(["live_ens_disabled", "live_0g_not_claimed"]));
+    expect(parsed.data.identity.blockingReasons).toEqual([]);
+    expect(parsed.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code: "identity_degraded", path: "ens" })]));
+  });
+
+  it("renders identity status with explicit fixture and no-live-claim language", async () => {
+    const result = await runCli(["identity", "status"]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("ClearIntent identity status");
+    expect(result.stdout).toContain("Authority: blocked");
+    expect(result.stdout).toContain("Mode: ens-local-fixture");
+    expect(result.stdout).toContain("Live provider: disabled");
+    expect(result.stdout).toContain("Identity claim level: ens-local-fixture");
+    expect(result.stdout).toContain("Identity status: [PASS] ok");
+    expect(result.stdout).toContain("Identity authority approval: no");
+    expect(result.stdout).toContain("Live ENS claim: no");
+    expect(result.stdout).toContain("Live 0G claim: no");
+    expect(result.stdout).toContain("Identity blocking reasons: none");
   });
 
   it("exposes a blocked live smoke command until credentials and funds are present", async () => {

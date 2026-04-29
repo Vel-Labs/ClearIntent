@@ -29,7 +29,7 @@ Make ENS the canonical identity and discovery layer for ClearIntent agents.
 
 Phase 3 is intentionally split so local ENS shape can move now while live records wait for funded testnet evidence:
 
-- **Phase 3A: ENS Agent Identity Local Scaffold** defines the full local/mock shape and tests it deterministically.
+- **Phase 3A: ENS Agent Identity Local Scaffold** defines the full local/mock shape and tests it deterministically. Status: complete locally at `ens-local-fixture` claim level.
 - **Phase 3B: Live ENS Binding** reads live ENS/testnet records and binds ENS-derived identity or policy evidence after Phase 2B proves live 0G Storage persistence.
 
 Implementation plan: `../phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md`
@@ -71,6 +71,8 @@ Document local fixture semantics, record names, claim level, and 3B live-binding
 ### 3.9 Closeout audit
 
 Audit target: local ENS fixture resolution, policy pointer/hash extraction, audit pointer extraction, tests, claim boundaries, and remaining 3B gates.
+
+Status: complete. Midpoint audit: `../../audits/phase-3-ens-agent-identity/3a.5-midpoint-audit.md`. Closeout audit: `../../audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md`.
 
 ## Phase 3B: Live ENS Binding
 

@@ -78,6 +78,8 @@ Responsibilities:
 
 Rule: ENS must do real work. It should not be a cosmetic display name.
 
+Current implementation note: Phase 3A now provides `packages/ens-identity/` with local ENS text-record mapping, agent card validation, a local/mock resolver, a live-unavailable resolver, and `ens-local-fixture` tests. It proves the discovery shape locally only; live ENS resolution and ENS-bound authority flow remain Phase 3B.
+
 ### 4. Memory and audit plane
 
 Expected paths:

@@ -34,6 +34,11 @@ const wizardItems: WizardItem[] = [
     args: ["authority", "evaluate"]
   },
   {
+    label: "Identity status",
+    description: "Inspect the Phase 3A ENS identity fixture route.",
+    args: ["identity", "status"]
+  },
+  {
     label: "Module doctor",
     description: "Check local module readiness and deferred adapters.",
     args: ["module", "doctor"]
@@ -50,6 +55,7 @@ export function renderLanding(): string {
     "",
     "AI lane:",
     "  npm run --silent clearintent -- center inspect --json",
+    "  npm run --silent clearintent -- identity status --json",
     "  Emits deterministic JSON with no CLI prose.",
     "",
     "Common commands:",

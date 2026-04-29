@@ -12,7 +12,7 @@ This is the high-visibility roadmap index for ClearIntent. Detailed phase sequen
 
 ## Current Phase
 
-Phase 3A: ENS Agent Identity Local Scaffold.
+Phase 3A: ENS Agent Identity Local Scaffold is complete locally. The next gated implementation target is Phase 2B live 0G Storage closeout, followed by Phase 3B live ENS binding.
 
 Completed baseline:
 
@@ -26,13 +26,14 @@ Completed baseline:
 - Phase 1.5 Center CLI skeleton with fixture-backed command routing, human-readable terminal output, deterministic `--json` output, and local module doctor metadata
 - Phase 2A local 0G policy memory and audit scaffold with deterministic `packages/zerog-memory/`, local write/read/hash validation, audit-bundle rollup, Center CLI memory commands, and `local-adapter` claim level
 - Phase 2B readiness scaffold with 0G SDK import checks, live config/status output, and fail-closed smoke-test gating while testnet credentials and tokens are pending
+- Phase 3A ENS Agent Identity local scaffold with `packages/ens-identity/`, local/mock resolver, agent card validation, required ENS text-record mapping, fixture tests, Center CLI `identity status`, and `ens-local-fixture` claim level
 
 Immediate next action:
 
-- Start Phase 3A ENS Agent Identity local scaffold while Phase 2B live 0G smoke testing waits on local `.env` values and funded testnet tokens. Use `docs/roadmaps/phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md`.
-- After `.env` and tokens are in place, close Phase 2B with live 0G upload/readback/hash evidence, then proceed to Phase 3B live ENS binding.
+- After `.env` and tokens are in place, close Phase 2B with live 0G upload/readback/hash evidence, then proceed to Phase 3B live ENS binding. Use `docs/roadmaps/phase-2-zerog-policy-memory-audit/PHASE_2B_READINESS.md` before live smoke testing.
 - Completed Phase 1.5 package: `docs/roadmaps/phase-1.5-center-cli-skeleton/`
 - Completed Phase 2A closeout audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md`
+- Completed Phase 3A closeout audit: `docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md`
 
 ## Feature Order
 

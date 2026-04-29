@@ -62,6 +62,8 @@ docs/audits/phase-1.5-center-cli-skeleton/1.5.5-midpoint-audit.md
 docs/audits/phase-1.5-center-cli-skeleton/1.5.9-closeout-audit.md
 docs/audits/phase-2-zerog-policy-memory-audit/2a.5-midpoint-audit.md
 docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md
+docs/audits/phase-3-ens-agent-identity/3a.5-midpoint-audit.md
+docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md
 docs/decisions/2026-04-25.md
 docs/decisions/2026-04-26.md
 docs/decisions/2026-04-27.md
@@ -173,6 +175,7 @@ packages/center-cli/src/cli.ts
 packages/center-cli/src/commands.ts
 packages/center-cli/src/env.ts
 packages/center-cli/src/fixtures.ts
+packages/center-cli/src/identity-status.ts
 packages/center-cli/src/memory-status.ts
 packages/center-cli/src/modules.ts
 packages/center-cli/src/output.ts
@@ -188,6 +191,14 @@ packages/core/src/state.ts
 packages/core/src/status.ts
 packages/core/src/types.ts
 packages/core/src/verification.ts
+packages/ens-identity/src/agent-card.ts
+packages/ens-identity/src/fixtures.ts
+packages/ens-identity/src/index.ts
+packages/ens-identity/src/live-unavailable-resolver.ts
+packages/ens-identity/src/local-resolver.ts
+packages/ens-identity/src/record-keys.ts
+packages/ens-identity/src/resolve.ts
+packages/ens-identity/src/types.ts
 packages/zerog-memory/README.md
 packages/zerog-memory/src/audit-store.ts
 packages/zerog-memory/src/doctor.ts
@@ -225,6 +236,7 @@ tests/contracts/validate-contracts.test.ts
 tests/core/core.test.ts
 tests/core/module-api.test.ts
 tests/core/state.test.ts
+tests/ens-identity/ens-identity.test.ts
 tests/zerog-memory/live-config.test.ts
 tests/zerog-memory/zerog-memory.test.ts
 tsconfig.json

@@ -17,6 +17,8 @@ Make ENS the canonical identity and discovery layer for ClearIntent agents witho
 
 Goal: define and test the full ENS identity shape locally.
 
+Status: complete locally at `ens-local-fixture` claim level. Closeout audit: `../../audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md`.
+
 Allowed scope:
 
 - `packages/ens-identity/` scaffold

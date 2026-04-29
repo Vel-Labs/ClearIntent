@@ -4,6 +4,10 @@ All notable repo changes should be logged here.
 
 ## 2026-04-29
 
+- Completed Phase 3A by adding `packages/ens-identity/` with local ENS record constants, agent card validation, resolver interfaces, local/mock fixtures, explicit blocked/degraded issue codes, and `ens-local-fixture` claim level.
+- Added `tests/ens-identity/` coverage for successful local resolution, agent card pointer resolution, policy URI/hash extraction, audit/latest/version extraction, missing records, policy hash mismatch, and no-live-claim behavior.
+- Added Center CLI `identity status` in human-readable and parse-safe JSON modes, including wizard/landing exposure, while keeping identity discovery separate from authority approval.
+- Added Phase 3A midpoint and closeout audits and routed the next implementation recommendation to Phase 2B live 0G closeout before Phase 3B live ENS binding.
 - Split Phase 3 into Phase 3A local/mock ENS identity scaffold and Phase 3B live ENS binding, with Phase 3B gated on Phase 2B live 0G upload/readback/hash closeout evidence.
 - Added `docs/roadmaps/phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md` covering 3A and 3B scope, claim levels, audit points, Center CLI expectations, validation, and deferred boundaries.
 - Updated roadmap/current-state routing to allow Phase 3A to proceed while Phase 2B waits on local `.env` values, wallet credentials, live-write opt-in, and funded testnet tokens.

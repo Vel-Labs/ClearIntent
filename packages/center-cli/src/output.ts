@@ -1,4 +1,5 @@
 import { stableStringify, type ResultIssue } from "../../core/src";
+import type { CenterIdentityStatus } from "./identity-status";
 import type { CenterModule, ModuleDoctorResult } from "./modules";
 import type { CenterMemoryStatus, MemoryCheckStatus } from "./memory-status";
 
@@ -8,7 +9,7 @@ export type CliCommandResult = {
   commandOk?: boolean;
   authorityOk?: boolean;
   fixture?: string;
-  mode?: "fixture-only" | "local-memory" | "live-readiness";
+  mode?: "fixture-only" | "local-memory" | "live-readiness" | "ens-local-fixture";
   fixtureSource?: string;
   liveProvider?: boolean;
   summary: string;
@@ -57,6 +58,10 @@ export function renderHuman(result: CliCommandResult): string {
 
   if (isMemoryData(explicit.data)) {
     lines.push(...renderMemoryStatus(explicit.data.memory));
+  }
+
+  if (isIdentityData(explicit.data)) {
+    lines.push(...renderIdentityStatus(explicit.data.identity));
   }
 
   if (explicit.issues.length > 0) {
@@ -111,6 +116,10 @@ function isMemoryData(data: Record<string, unknown>): data is { memory: CenterMe
   return typeof data.memory === "object" && data.memory !== null;
 }
 
+function isIdentityData(data: Record<string, unknown>): data is { identity: CenterIdentityStatus } {
+  return typeof data.identity === "object" && data.identity !== null;
+}
+
 function renderMemoryStatus(memory: CenterMemoryStatus): string[] {
   return [
     `Memory provider mode: ${memory.providerMode}`,
@@ -133,6 +142,31 @@ function formatCheckStatus(status: MemoryCheckStatus): string {
   }
   if (status === "local-only") {
     return "[LOCAL-ONLY] local-only";
+  }
+  return "[DEGRADED] degraded";
+}
+
+function renderIdentityStatus(identity: CenterIdentityStatus): string[] {
+  return [
+    `Identity claim level: ${identity.claimLevel}`,
+    `Identity live provider: ${identity.liveProvider ? "enabled" : "disabled"}`,
+    `Identity status: ${identity.ok ? "[PASS] ok" : "[BLOCKED] blocked"}`,
+    "Identity authority approval: no",
+    "Live ENS claim: no",
+    "Live 0G claim: no",
+    `Identity summary: ${identity.summary}`,
+    ...identity.checks.map((check) => `- ${check.label}: ${formatIdentityCheckStatus(check.status)} - ${check.detail}`),
+    `Identity blocking reasons: ${formatList(identity.blockingReasons)}`,
+    `Identity degraded reasons: ${formatList(identity.degradedReasons)}`
+  ];
+}
+
+function formatIdentityCheckStatus(status: CenterIdentityStatus["checks"][number]["status"]): string {
+  if (status === "pass") {
+    return "[PASS] pass";
+  }
+  if (status === "blocking") {
+    return "[BLOCKED] blocking";
   }
   return "[DEGRADED] degraded";
 }

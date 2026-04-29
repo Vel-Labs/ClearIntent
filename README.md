@@ -10,7 +10,7 @@ ClearIntent is not betting on one wallet. It makes agent authority portable acro
 
 ## Current Repository State
 
-This scaffold is documentation, contracts, and validation tooling first. Phase 1A established the canonical `contracts/` authority layer. Phase 1B established repo-local TypeScript/Node validation and Vitest contract checks. The immediate next build step is `packages/core/`, which must implement and enforce `contracts/` without redefining authority shapes.
+This scaffold is documentation, contracts, and validation tooling first. Phase 1 established the canonical `contracts/` authority layer and executable `packages/core/` authority primitives. Phase 1.5 added the Center CLI. Phase 2A added local 0G policy memory/audit semantics. Phase 3A added the local ENS identity scaffold at `ens-local-fixture` claim level. Phase 2B live 0G proof and Phase 3B live ENS binding remain unproven.
 
 The first implementation target is a working example agent that demonstrates:
 
@@ -67,9 +67,15 @@ contracts/
   schemas/                        machine-checkable intent, policy, risk, review, receipt, and audit schemas
   examples/                       valid and invalid fixtures for contract-first implementation
 
-scripts/
+  scripts/
   validate-scaffold.ts            repo-local scaffold and taxonomy validation command
   validate-contracts.ts           repo-local contract validation command
+
+packages/
+  core/                           executable authority primitives
+  center-cli/                     local human/JSON operator surface
+  ens-identity/                   Phase 3A local ENS identity scaffold
+  zerog-memory/                   Phase 2A local 0G memory/audit scaffold
 
 tests/
   README.md                       shared local quality gate for humans and agents
@@ -115,7 +121,7 @@ Run the full local quality gate:
 npm run check
 ```
 
-Before `packages/core/` implementation begins, these commands should pass locally. Provider adapters and demo integrations are deferred until the core authority kernel consumes the contract layer cleanly.
+Before a phase closeout, these commands should pass locally. Live provider claims still require phase-specific live evidence; local scaffold tests are not live ENS, 0G, KeeperHub, or signer proof.
 
 ## Repo-local skills
 

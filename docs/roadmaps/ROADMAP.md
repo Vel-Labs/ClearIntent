@@ -209,7 +209,7 @@ Layering:
 - Phase 3A: local/mock ENS identity scaffold with agent card schema, resolver interface, text-record mapping, fixtures, tests, and honest `ens-local-fixture` claim level.
 - Phase 3B: live ENS/testnet record read and authority-flow binding after Phase 2B live 0G Storage smoke testing closes.
 
-Status: Phase 3A may proceed while Phase 2B waits on local `.env` values, wallet credentials, and funded testnet tokens. Phase 3B remains gated on Phase 2B closeout evidence.
+Status: Phase 3A is complete locally with `packages/ens-identity/`, fixture-backed tests, Center CLI `identity status`, and `ens-local-fixture` claim level. Phase 3B remains gated on Phase 2B closeout evidence.
 
 ## Phase 4: KeeperHub Execution Adapter
 

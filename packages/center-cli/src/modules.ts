@@ -32,9 +32,9 @@ const modules: CenterModule[] = [
   {
     id: "ens",
     label: "ENS identity",
-    status: "deferred",
-    scope: "future-adapter",
-    reason: "ENS identity adapter remains deferred until its roadmap phase."
+    status: "ready",
+    scope: "local-adapter",
+    reason: "Phase 3A local ENS identity fixture is ready at ens-local-fixture claim level; live ENS remains deferred to Phase 3B."
   },
   {
     id: "zerog",

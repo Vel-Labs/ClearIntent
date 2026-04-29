@@ -6,6 +6,7 @@ import {
   type ResultIssue
 } from "../../core/src";
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
+import { getCenterIdentityStatus } from "./identity-status";
 import { getCenterMemoryStatus, getZeroGLiveReadinessStatus, getZeroGLiveSmokeStatus } from "./memory-status";
 import { listCenterModules, runModuleDoctor } from "./modules";
 import type { CliCommandResult } from "./output";
@@ -46,6 +47,26 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
   }
   if (group === "authority" && command === "evaluate") {
     return buildEvaluationResult(parsed.options.fixture);
+  }
+  if (group === "identity" && command === "status") {
+    const identity = await getCenterIdentityStatus();
+    return {
+      command: "identity status",
+      ok: false,
+      commandOk: true,
+      authorityOk: false,
+      mode: "ens-local-fixture",
+      liveProvider: false,
+      summary: identity.ok
+        ? "Local ENS identity fixture status is available. Identity discovery is not authority approval."
+        : "Local ENS identity fixture status is blocked or degraded. No live ENS or 0G claim is made.",
+      data: { identity },
+      issues: [...identity.blockingReasons, ...identity.degradedReasons].map((reason) => ({
+        code: identity.blockingReasons.includes(reason) ? "identity_blocked" : "identity_degraded",
+        message: reason,
+        path: "ens"
+      }))
+    };
   }
   if (group === "module" && command === "list") {
     return {
@@ -145,7 +166,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
     ok: false,
     commandOk: false,
     authorityOk: false,
-    summary: "Unknown command. Expected center, intent, authority, module, or memory command family.",
+    summary: "Unknown command. Expected center, intent, authority, identity, module, or memory command family.",
     data: {
       usage: [
         "center status",
@@ -153,6 +174,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "intent validate",
         "intent state",
         "authority evaluate",
+        "identity status",
         "module list",
         "module doctor",
         "memory status",
