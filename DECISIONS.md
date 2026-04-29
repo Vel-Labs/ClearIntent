@@ -17,6 +17,7 @@ Root `DECISIONS.md` summarizes and routes. Dated files hold the detailed entries
 - 0G owns policy memory and audit trail for the hackathon build.
 - Phase 2C 0G Compute is optional advisory scope and does not block ENS identity work.
 - Phase 3 is split into 3A local/mock ENS identity scaffold and 3B live ENS binding after Phase 2B live 0G closeout.
+- Phase 4 is split into 4A local/mock KeeperHub execution scaffold and 4B live KeeperHub/onchain execution after local adapter semantics and live credentials/evidence are ready.
 - KeeperHub is the first execution adapter.
 - EIP-712 is the MVP signing primitive.
 - ERC-7730 is a stretch-readable-display layer, not a blocker.

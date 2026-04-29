@@ -8,6 +8,8 @@ Use KeeperHub as the reliable execution layer for approved ClearIntent intents.
 
 - Feature 01 verified intent shape
 - Feature 02 receipt/audit shape
+- Phase 2B live 0G closeout before claiming live audit persistence
+- Phase 3B live ENS closeout before claiming ENS-bound execution identity
 
 ## Goals
 
@@ -25,44 +27,93 @@ Use KeeperHub as the reliable execution layer for approved ClearIntent intents.
 
 ## Subphases
 
-### 4.1 Adapter interface
+Phase 4 is intentionally split so local execution shape can move now while live KeeperHub/onchain execution waits for credentials, funding, and selected runtime path:
 
-Define `ExecutionAdapter`.
+- **Phase 4A: KeeperHub Execution Local Scaffold** defines the adapter interface, local workflow mapping, mock submit/monitor behavior, typed receipt conversion, blocked/degraded states, fixtures, tests, and honest `keeperhub-local-fixture` claim level.
+- **Phase 4B: Live KeeperHub / Onchain Execution** uses config-driven KeeperHub API/CLI/MCP or direct-execution integration, monitors a live run, captures receipt evidence, and updates feedback docs.
 
-### 4.2 Workflow mapping
+Implementation plan: `../phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md`
 
-Map verified intent fields to KeeperHub workflow inputs.
+## Phase 4A: KeeperHub Execution Local Scaffold
 
-### 4.3 Submit path
+### 4A.1 Adapter interface
 
-Implement submit or CLI/MCP workflow path.
+Define `ExecutionAdapter`, claim-level constants, status/result types, and issue codes.
 
-### 4.4 Monitor path
+### 4A.2 Workflow mapping
 
-Capture workflow status and result.
+Map verified intent fixtures to KeeperHub workflow/direct-execution request fixtures.
 
-### 4.5 Midpoint audit
+### 4A.3 Local submit/monitor
 
-Audit target: adapter cannot execute unsigned or unverifiable intents.
+Implement local/mock submit and monitor behavior without live KeeperHub calls.
 
-### 4.6 Receipt integration
+### 4A.4 Receipt integration
 
-Return typed `ExecutionReceipt`.
+Return typed `ExecutionReceipt` fixture output compatible with `contracts/`.
 
-### 4.7 Feedback documentation
+### 4A.5 Midpoint audit
 
-Create or update `KEEPERHUB_FEEDBACK.md`.
+Audit target: adapter cannot submit unsigned, unverified, expired, executor-mismatched, or otherwise unverifiable intents.
 
-### 4.8 Example wiring
+### 4A.6 Degraded states
 
-Connect to Guardian Agent example.
+Report missing verification, missing signature, unsupported executor, missing workflow ID, failed run, missing transaction evidence, missing receipt, and unavailable live provider explicitly.
 
-### 4.9 Closeout audit
+### 4A.7 Center CLI status or deferred gap
 
-Audit target: KeeperHub integration is meaningful and reusable.
+Add a thin execution/KeeperHub status route if it fits the Center CLI shape. If not, document the CLI gap in the audit.
+
+### 4A.8 Docs and hardening
+
+Document local fixture semantics, claim level, 4B prerequisites, custody boundaries, and receipt limitations.
+
+### 4A.9 Closeout audit
+
+Audit target: local workflow mapping, local submit/monitor simulation, typed receipt output, tests, claim boundaries, and remaining 4B gates.
+
+## Phase 4B: Live KeeperHub / Onchain Execution
+
+### 4B.1 Live configuration
+
+Use config-driven KeeperHub API/CLI/MCP or direct-execution path. Do not commit credentials or mutable live logs.
+
+### 4B.2 Live readiness
+
+Check credentials, selected project/workflow/direct-execution target, executor/custody model, and network funding without submitting.
+
+### 4B.3 Live submit
+
+Submit only a verified ClearIntent intent through the selected KeeperHub path.
+
+### 4B.4 Monitor path
+
+Capture run status, logs, transaction hash when applicable, timestamps, and error context.
+
+### 4B.5 Midpoint audit
+
+Audit target: live execution claim boundaries, custody/gas model, and no execution before ClearIntent verification.
+
+### 4B.6 Receipt conversion
+
+Convert live run/transaction evidence into canonical `ExecutionReceipt`.
+
+### 4B.7 Center CLI live readout
+
+Show local fixture, live readiness, degraded live lookup, and verified live execution states distinctly in human-readable and JSON modes if execution commands are added.
+
+### 4B.8 Feedback and demo prep
+
+Update `KEEPERHUB_FEEDBACK.md`, provider docs, and demo-prep notes with exact live behavior.
+
+### 4B.9 Closeout audit
+
+Audit target: KeeperHub integration is meaningful, reusable, and supported by live evidence for any live/onchain claims.
 
 ## Success criteria
 
 - execution path works or is demonstrably wired to KeeperHub workflow
 - feedback file is specific and actionable
 - receipt is included in audit bundle
+- local claims remain `keeperhub-local-fixture` until live run evidence exists
+- live execution claims identify the exact KeeperHub path, run evidence, receipt fields, and audit persistence level

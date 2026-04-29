@@ -153,6 +153,7 @@ docs/roadmaps/phase-1d-core-lifecycle-state-api/FRESH_AGENT_HANDOFF.md
 docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md
 docs/roadmaps/phase-2-zerog-policy-memory-audit/PHASE_2B_READINESS.md
 docs/roadmaps/phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md
+docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md
 docs/roadmaps/features/feature-01-core-authority-kernel.md
 docs/roadmaps/features/feature-02-zerog-policy-memory-audit.md
 docs/roadmaps/features/feature-03-ens-agent-identity.md

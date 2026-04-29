@@ -22,7 +22,9 @@ Phase 3A is complete locally. `packages/ens-identity/` now provides the local EN
 
 ## Immediate next action
 
-Close Phase 2B live 0G Storage once local `.env` values, wallet credentials, explicit live-write opt-in, and funded testnet tokens are available. Then proceed to Phase 3B live ENS binding against the proven Phase 2B artifact semantics.
+Start Phase 4A: KeeperHub Execution Local Scaffold. Phase 4A may proceed now because it can use local/mock KeeperHub fixtures, verified-intent fixtures, local submit/monitor simulation, and canonical `ExecutionReceipt` shape without claiming live KeeperHub or onchain execution.
+
+Close Phase 2B live 0G Storage once local `.env` values, wallet credentials, explicit live-write opt-in, and funded testnet tokens are available. Then proceed to Phase 3B live ENS binding and Phase 4B live KeeperHub/onchain execution against the proven live evidence.
 
 Phase 2 is split intentionally:
 
@@ -34,6 +36,11 @@ Phase 3 is split intentionally:
 
 - Phase 3A is complete and defines the local/mock ENS identity shape: agent card validation, resolver interface, text-record mapping, fixture records, tests, Center CLI identity status, and honest `ens-local-fixture` claim level.
 - Phase 3B performs live ENS/testnet reads and binds ENS-derived identity or policy evidence after Phase 2B live 0G closeout evidence exists.
+
+Phase 4 is split intentionally:
+
+- Phase 4A defines local/mock KeeperHub execution shape: execution adapter interface, workflow mapping, local submit/monitor simulation, receipt conversion, blocked/degraded states, tests, and honest `keeperhub-local-fixture` claim level.
+- Phase 4B performs live KeeperHub/API/CLI/MCP/direct-execution work, captures run or transaction evidence, returns typed `ExecutionReceipt`, and updates `KEEPERHUB_FEEDBACK.md`.
 
 Current Phase 2A documentation state:
 
@@ -51,6 +58,7 @@ Relevant phase packages:
 - `docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md`
 - `docs/roadmaps/phase-2-zerog-policy-memory-audit/PHASE_2B_READINESS.md`
 - `docs/roadmaps/phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md`
+- `docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md`
 - `docs/audits/phase-3-ens-agent-identity/3a.5-midpoint-audit.md`
 - `docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md`
 
@@ -60,7 +68,8 @@ Rationale for the next route:
 - Phase 1.5 proved a local Center CLI can render core state and authority evaluation without becoming an authority source.
 - Phase 2A established the memory/audit adapter shape before other provider modules depend on storage truth.
 - Phase 2B can finish quickly once testnet funds are available, but waiting on tokens should not block local ENS identity shape.
-- Phase 3A should make ENS identity fixture-driven and testable before live 3B binding or demo integration.
+- Phase 3A made ENS identity fixture-driven and testable before live 3B binding or demo integration.
+- Phase 4A should make execution fixture-driven and testable before live KeeperHub/onchain execution or Guardian Agent wiring.
 - Future ENS, KeeperHub, signer, notification, and demo layers should plug into the Center/module shape instead of creating fragmented operator surfaces.
 
 Structure for usage:
@@ -102,9 +111,11 @@ npm run check
 
 ## Recommended sequencing
 
-1. When `.env` values and tokens are available, close Phase 2B with live 0G upload/readback/hash evidence.
-2. Implement Phase 3B live ENS binding against the proven 2B artifact semantics.
-3. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
+1. Implement Phase 4A local KeeperHub execution scaffold.
+2. When `.env` values and tokens are available, close Phase 2B with live 0G upload/readback/hash evidence.
+3. Implement Phase 3B live ENS binding against the proven 2B artifact semantics.
+4. Implement Phase 4B live KeeperHub/onchain execution against the proven adapter semantics.
+5. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
 
 ## Recommended parallelization
 
@@ -112,13 +123,14 @@ Now that the Center CLI skeleton is stable:
 
 - one agent can build ENS resolver scaffolding for Phase 3A
 - one agent can prepare the funded-token Phase 2B smoke pass without committing secrets
-- one agent can build KeeperHub adapter scaffolding
+- one agent can build Phase 4A KeeperHub adapter scaffolding
 - one agent can build signer adapter scaffolding
 - one human should own integration and final demo truth
 
 ## Do not start yet
 
 - Phase 3B live ENS binding before Phase 2B live 0G closeout
+- Phase 4B live KeeperHub/onchain execution before Phase 4A local scaffold and required live credentials/evidence are ready
 - Phase 2C 0G Compute unless explicitly selected as a demo accelerator
 - demo integration
 - webhook delivery

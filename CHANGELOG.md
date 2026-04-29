@@ -4,6 +4,9 @@ All notable repo changes should be logged here.
 
 ## 2026-04-29
 
+- Split Phase 4 into Phase 4A KeeperHub Execution Local Scaffold and Phase 4B live KeeperHub/onchain execution, matching the local-first pattern from Phase 2A/2B and Phase 3A/3B.
+- Added `docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md` covering 4A and 4B scope, claim levels, audit points, Center CLI expectations, validation, custody boundaries, and deferred live execution conditions.
+- Updated roadmap/current-state routing so Phase 4A can proceed locally while Phase 2B, Phase 3B, and Phase 4B remain gated on credentials, funding, and live evidence.
 - Completed Phase 3A by adding `packages/ens-identity/` with local ENS record constants, agent card validation, resolver interfaces, local/mock fixtures, explicit blocked/degraded issue codes, and `ens-local-fixture` claim level.
 - Added `tests/ens-identity/` coverage for successful local resolution, agent card pointer resolution, policy URI/hash extraction, audit/latest/version extraction, missing records, policy hash mismatch, and no-live-claim behavior.
 - Added Center CLI `identity status` in human-readable and parse-safe JSON modes, including wizard/landing exposure, while keeping identity discovery separate from authority approval.

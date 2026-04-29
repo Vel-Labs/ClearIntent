@@ -12,7 +12,7 @@ This is the high-visibility roadmap index for ClearIntent. Detailed phase sequen
 
 ## Current Phase
 
-Phase 3A: ENS Agent Identity Local Scaffold is complete locally. The next gated implementation target is Phase 2B live 0G Storage closeout, followed by Phase 3B live ENS binding.
+Phase 3A: ENS Agent Identity Local Scaffold is complete locally. The current local implementation target is Phase 4A KeeperHub Execution Local Scaffold. Live-gated targets remain Phase 2B live 0G Storage closeout, Phase 3B live ENS binding, and Phase 4B live KeeperHub/onchain execution.
 
 Completed baseline:
 
@@ -30,7 +30,8 @@ Completed baseline:
 
 Immediate next action:
 
-- After `.env` and tokens are in place, close Phase 2B with live 0G upload/readback/hash evidence, then proceed to Phase 3B live ENS binding. Use `docs/roadmaps/phase-2-zerog-policy-memory-audit/PHASE_2B_READINESS.md` before live smoke testing.
+- Start Phase 4A KeeperHub Execution Local Scaffold using `docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md`.
+- When `.env` and tokens are in place, close Phase 2B with live 0G upload/readback/hash evidence, then proceed to Phase 3B live ENS binding and Phase 4B live KeeperHub/onchain execution.
 - Completed Phase 1.5 package: `docs/roadmaps/phase-1.5-center-cli-skeleton/`
 - Completed Phase 2A closeout audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md`
 - Completed Phase 3A closeout audit: `docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md`
