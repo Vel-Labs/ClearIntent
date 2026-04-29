@@ -19,6 +19,12 @@ type CenterJson = {
       claimLevel?: string;
       liveProvider?: boolean;
     };
+    execution?: {
+      claimLevel?: string;
+      liveProvider?: boolean;
+      liveExecutionProven?: boolean;
+      authorityApprovalProvidedByKeeperHub?: boolean;
+    };
   };
 };
 
@@ -60,9 +66,29 @@ async function main(): Promise<void> {
     assertEqual("identity status data liveProvider", identityJson.data?.identity?.liveProvider, false, failures);
   }
 
+  const execution = await run(["run", "--silent", "clearintent", "--", "execution", "status", "--json"]);
+  assertExit("execution status exits 0 for local fixture readout", execution, 0, failures);
+  const executionJson = parseJson("execution status", execution.stdout, failures);
+  if (executionJson !== undefined) {
+    assertEqual("execution status command", executionJson.command, "execution status", failures);
+    assertEqual("execution status commandOk", executionJson.commandOk, true, failures);
+    assertEqual("execution status authorityOk", executionJson.authorityOk, false, failures);
+    assertEqual("execution status mode", executionJson.mode, "keeperhub-local-fixture", failures);
+    assertEqual("execution status liveProvider", executionJson.liveProvider, false, failures);
+    assertEqual("execution status claimLevel", executionJson.data?.execution?.claimLevel, "keeperhub-local-fixture", failures);
+    assertEqual("execution status data liveProvider", executionJson.data?.execution?.liveProvider, false, failures);
+    assertEqual("execution status live proof", executionJson.data?.execution?.liveExecutionProven, false, failures);
+    assertEqual(
+      "execution status KeeperHub authority approval",
+      executionJson.data?.execution?.authorityApprovalProvidedByKeeperHub,
+      false,
+      failures
+    );
+  }
+
   const landing = await run(["run", "--silent", "clearintent"]);
   assertExit("bare clearintent landing exits 0", landing, 0, failures);
-  if (!landing.stdout.includes("Human lane:") || !landing.stdout.includes("AI lane:")) {
+  if (!landing.stdout.includes("Human lane:") || !landing.stdout.includes("AI lane:") || !landing.stdout.includes("execution status")) {
     failures.push("bare clearintent landing did not include both human and AI lane labels");
   }
 
@@ -78,6 +104,7 @@ async function main(): Promise<void> {
   console.log("PASS center inspect separates commandOk from authorityOk");
   console.log("PASS CLI errors remain parseable JSON and exit nonzero");
   console.log("PASS identity status preserves ens-local-fixture and disabled live provider claims");
+  console.log("PASS execution status preserves keeperhub-local-fixture and no live/onchain claims");
   console.log("PASS bare clearintent exposes human and AI lanes");
   console.log("center cli validation ok");
 }

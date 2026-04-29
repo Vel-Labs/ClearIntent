@@ -4,6 +4,10 @@ All notable repo changes should be logged here.
 
 ## 2026-04-29
 
+- Completed Phase 4A locally by adding `packages/keeperhub-adapter/` with a typed local KeeperHub execution adapter, deterministic workflow mapping, local submit/monitor simulation, canonical `ExecutionReceipt` conversion, explicit fail-closed issue codes, and `keeperhub-local-fixture` claim level.
+- Added `tests/keeperhub-adapter/` coverage for successful mapping, local submit/monitor, canonical receipt schema validation, missing verification, missing signature, unsupported executor, missing workflow ID, failed runs, missing transaction evidence, unavailable live provider, and no live/onchain claim behavior.
+- Added Center CLI `execution status` and `keeperhub status` in human-readable and parse-safe JSON modes, including wizard/landing exposure, while keeping execution status as inspection with `authorityOk: false`.
+- Added Phase 4A midpoint and closeout audits and routed the next implementation recommendation to Phase 2B live 0G closeout before Phase 3B and Phase 4B live evidence work.
 - Split Phase 4 into Phase 4A KeeperHub Execution Local Scaffold and Phase 4B live KeeperHub/onchain execution, matching the local-first pattern from Phase 2A/2B and Phase 3A/3B.
 - Added `docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md` covering 4A and 4B scope, claim levels, audit points, Center CLI expectations, validation, custody boundaries, and deferred live execution conditions.
 - Updated roadmap/current-state routing so Phase 4A can proceed locally while Phase 2B, Phase 3B, and Phase 4B remain gated on credentials, funding, and live evidence.

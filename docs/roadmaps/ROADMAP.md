@@ -234,7 +234,7 @@ Layering:
 - Phase 4A: local/mock KeeperHub execution scaffold with adapter interface, workflow mapping, local submit/monitor simulation, receipt fixtures, blocked/degraded states, tests, and honest `keeperhub-local-fixture` claim level.
 - Phase 4B: live KeeperHub/onchain execution after credentials, funding, selected execution path, and any required 0G/ENS live proof are available.
 
-Status: Phase 4A may proceed while Phase 2B and Phase 3B wait on live credentials/tokens/evidence. Phase 4B remains live-gated.
+Status: Phase 4A is complete locally with `packages/keeperhub-adapter/`, fixture-backed tests, Center CLI `execution status` / `keeperhub status`, and `keeperhub-local-fixture` claim level. Phase 4B remains live-gated.
 
 ## Phase 5: Wallet Signer Adapters and Human-Readable Approval
 

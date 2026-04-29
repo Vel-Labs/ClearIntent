@@ -20,9 +20,9 @@ Phase 2B is readiness-stubbed but not closed. The repo has live 0G SDK dependenc
 
 Phase 3A is complete locally. `packages/ens-identity/` now provides the local ENS identity scaffold with record constants for `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version`; an agent card validation shape; a resolver adapter interface; local/mock and live-unavailable resolvers; fixture-backed records; and explicit blocked/degraded issue codes. `tests/ens-identity/` proves local fixture resolution, record extraction, missing-record behavior, policy hash mismatch handling, and no-live-claim semantics. `packages/center-cli/` exposes `identity status` in human-readable and deterministic JSON modes. The reached claim level is `ens-local-fixture`; live ENS and live 0G-backed identity claims remain absent.
 
-## Immediate next action
+Phase 4A is complete locally. `packages/keeperhub-adapter/` now provides the local KeeperHub execution scaffold with a narrow `ExecutionAdapter` interface, `keeperhub-local-fixture` claim level, verified-intent-to-workflow mapping, local submit/monitor simulation, canonical `ExecutionReceipt` conversion, explicit blocked/degraded issue codes, and Center status helper. `tests/keeperhub-adapter/` proves local mapping, deterministic submit/monitor, canonical receipt validation, fail-closed unsafe submissions, failed/degraded run behavior, unavailable live provider status, and no live/onchain claim semantics. `packages/center-cli/` exposes `execution status` and `keeperhub status` in human-readable and deterministic JSON modes. Live KeeperHub/onchain execution remains absent.
 
-Start Phase 4A: KeeperHub Execution Local Scaffold. Phase 4A may proceed now because it can use local/mock KeeperHub fixtures, verified-intent fixtures, local submit/monitor simulation, and canonical `ExecutionReceipt` shape without claiming live KeeperHub or onchain execution.
+## Immediate next action
 
 Close Phase 2B live 0G Storage once local `.env` values, wallet credentials, explicit live-write opt-in, and funded testnet tokens are available. Then proceed to Phase 3B live ENS binding and Phase 4B live KeeperHub/onchain execution against the proven live evidence.
 
@@ -39,7 +39,7 @@ Phase 3 is split intentionally:
 
 Phase 4 is split intentionally:
 
-- Phase 4A defines local/mock KeeperHub execution shape: execution adapter interface, workflow mapping, local submit/monitor simulation, receipt conversion, blocked/degraded states, tests, and honest `keeperhub-local-fixture` claim level.
+- Phase 4A is complete and defines local/mock KeeperHub execution shape: execution adapter interface, workflow mapping, local submit/monitor simulation, receipt conversion, blocked/degraded states, tests, Center CLI status, and honest `keeperhub-local-fixture` claim level.
 - Phase 4B performs live KeeperHub/API/CLI/MCP/direct-execution work, captures run or transaction evidence, returns typed `ExecutionReceipt`, and updates `KEEPERHUB_FEEDBACK.md`.
 
 Current Phase 2A documentation state:
@@ -61,6 +61,8 @@ Relevant phase packages:
 - `docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md`
 - `docs/audits/phase-3-ens-agent-identity/3a.5-midpoint-audit.md`
 - `docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md`
+- `docs/audits/phase-4-keeperhub-execution-adapter/4a.5-midpoint-audit.md`
+- `docs/audits/phase-4-keeperhub-execution-adapter/4a.9-closeout-audit.md`
 
 Rationale for the next route:
 
@@ -69,7 +71,7 @@ Rationale for the next route:
 - Phase 2A established the memory/audit adapter shape before other provider modules depend on storage truth.
 - Phase 2B can finish quickly once testnet funds are available, but waiting on tokens should not block local ENS identity shape.
 - Phase 3A made ENS identity fixture-driven and testable before live 3B binding or demo integration.
-- Phase 4A should make execution fixture-driven and testable before live KeeperHub/onchain execution or Guardian Agent wiring.
+- Phase 4A made execution fixture-driven and testable before live KeeperHub/onchain execution or Guardian Agent wiring.
 - Future ENS, KeeperHub, signer, notification, and demo layers should plug into the Center/module shape instead of creating fragmented operator surfaces.
 
 Structure for usage:
@@ -111,19 +113,18 @@ npm run check
 
 ## Recommended sequencing
 
-1. Implement Phase 4A local KeeperHub execution scaffold.
-2. When `.env` values and tokens are available, close Phase 2B with live 0G upload/readback/hash evidence.
-3. Implement Phase 3B live ENS binding against the proven 2B artifact semantics.
-4. Implement Phase 4B live KeeperHub/onchain execution against the proven adapter semantics.
-5. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
+1. When `.env` values and tokens are available, close Phase 2B with live 0G upload/readback/hash evidence.
+2. Implement Phase 3B live ENS binding against the proven 2B artifact semantics.
+3. Implement Phase 4B live KeeperHub/onchain execution against the proven adapter semantics.
+4. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
 
 ## Recommended parallelization
 
 Now that the Center CLI skeleton is stable:
 
-- one agent can build ENS resolver scaffolding for Phase 3A
+- one agent can prepare Phase 3B live ENS binding after Phase 2B evidence is available
 - one agent can prepare the funded-token Phase 2B smoke pass without committing secrets
-- one agent can build Phase 4A KeeperHub adapter scaffolding
+- one agent can prepare Phase 4B live KeeperHub/onchain execution planning after Phase 2B and 3B evidence is available
 - one agent can build signer adapter scaffolding
 - one human should own integration and final demo truth
 

@@ -10,7 +10,7 @@ ClearIntent is not betting on one wallet. It makes agent authority portable acro
 
 ## Current Repository State
 
-This scaffold is documentation, contracts, and validation tooling first. Phase 1 established the canonical `contracts/` authority layer and executable `packages/core/` authority primitives. Phase 1.5 added the Center CLI. Phase 2A added local 0G policy memory/audit semantics. Phase 3A added the local ENS identity scaffold at `ens-local-fixture` claim level. Phase 2B live 0G proof and Phase 3B live ENS binding remain unproven.
+This scaffold is documentation, contracts, and validation tooling first. Phase 1 established the canonical `contracts/` authority layer and executable `packages/core/` authority primitives. Phase 1.5 added the Center CLI. Phase 2A added local 0G policy memory/audit semantics. Phase 3A added the local ENS identity scaffold at `ens-local-fixture` claim level. Phase 4A added the local KeeperHub execution scaffold at `keeperhub-local-fixture` claim level. Phase 2B live 0G proof, Phase 3B live ENS binding, and Phase 4B live KeeperHub/onchain execution remain unproven.
 
 The first implementation target is a working example agent that demonstrates:
 
@@ -75,6 +75,7 @@ packages/
   core/                           executable authority primitives
   center-cli/                     local human/JSON operator surface
   ens-identity/                   Phase 3A local ENS identity scaffold
+  keeperhub-adapter/              Phase 4A local KeeperHub execution scaffold
   zerog-memory/                   Phase 2A local 0G memory/audit scaffold
 
 tests/
@@ -182,4 +183,4 @@ ClearIntent should stay vendor-neutral. Ledger hardware, Trezor, Tangem, MetaMas
 
 ## Status
 
-Contract and validation baseline complete. Ready for `packages/core/` implementation against the Phase 1B quality gate; not ready to claim provider integration readiness.
+Local contract/core, Center CLI, 0G memory, ENS identity, and KeeperHub execution scaffolds are complete through Phase 4A. Live 0G, ENS, KeeperHub/onchain, signer, Guardian Agent, dashboard, and deployment claims remain gated on future phases and live evidence.

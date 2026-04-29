@@ -1,4 +1,5 @@
 import { stableStringify, type ResultIssue } from "../../core/src";
+import type { CenterExecutionStatus } from "./execution-status";
 import type { CenterIdentityStatus } from "./identity-status";
 import type { CenterModule, ModuleDoctorResult } from "./modules";
 import type { CenterMemoryStatus, MemoryCheckStatus } from "./memory-status";
@@ -9,7 +10,7 @@ export type CliCommandResult = {
   commandOk?: boolean;
   authorityOk?: boolean;
   fixture?: string;
-  mode?: "fixture-only" | "local-memory" | "live-readiness" | "ens-local-fixture";
+  mode?: "fixture-only" | "local-memory" | "live-readiness" | "ens-local-fixture" | "keeperhub-local-fixture";
   fixtureSource?: string;
   liveProvider?: boolean;
   summary: string;
@@ -62,6 +63,10 @@ export function renderHuman(result: CliCommandResult): string {
 
   if (isIdentityData(explicit.data)) {
     lines.push(...renderIdentityStatus(explicit.data.identity));
+  }
+
+  if (isExecutionData(explicit.data)) {
+    lines.push(...renderExecutionStatus(explicit.data.execution));
   }
 
   if (explicit.issues.length > 0) {
@@ -120,6 +125,10 @@ function isIdentityData(data: Record<string, unknown>): data is { identity: Cent
   return typeof data.identity === "object" && data.identity !== null;
 }
 
+function isExecutionData(data: Record<string, unknown>): data is { execution: CenterExecutionStatus } {
+  return typeof data.execution === "object" && data.execution !== null;
+}
+
 function renderMemoryStatus(memory: CenterMemoryStatus): string[] {
   return [
     `Memory provider mode: ${memory.providerMode}`,
@@ -167,6 +176,26 @@ function formatIdentityCheckStatus(status: CenterIdentityStatus["checks"][number
   }
   if (status === "blocking") {
     return "[BLOCKED] blocking";
+  }
+  return "[DEGRADED] degraded";
+}
+
+function renderExecutionStatus(execution: CenterExecutionStatus): string[] {
+  return [
+    `Execution claim level: ${execution.claimLevel}`,
+    `Execution local fixture: ${execution.localFixtureAvailable ? "available" : "unavailable"}`,
+    `Execution live provider: ${execution.liveProvider ? "enabled" : "disabled"}`,
+    `Execution live proof: ${execution.liveExecutionProven ? "yes" : "no"}`,
+    `KeeperHub authority approval: ${execution.authorityApprovalProvidedByKeeperHub ? "yes" : "no"}`,
+    `Execution summary: ${execution.summary}`,
+    ...execution.checks.map((check) => `- ${check.label}: ${formatExecutionCheckStatus(check.status)} - ${check.detail}`),
+    `Execution degraded reasons: ${formatList(execution.degradedReasons)}`
+  ];
+}
+
+function formatExecutionCheckStatus(status: CenterExecutionStatus["checks"][number]["status"]): string {
+  if (status === "pass") {
+    return "[PASS] pass";
   }
   return "[DEGRADED] degraded";
 }

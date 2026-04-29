@@ -27,6 +27,7 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(result.stdout).toContain("Human lane:");
     expect(result.stdout).toContain("AI lane:");
     expect(result.stdout).toContain("Current mode: fixture-only");
+    expect(result.stdout).toContain("execution status");
   });
 
   it("emits deterministic JSON with no leading prose", async () => {
@@ -260,6 +261,57 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(result.stdout).toContain("Live ENS claim: no");
     expect(result.stdout).toContain("Live 0G claim: no");
     expect(result.stdout).toContain("Identity blocking reasons: none");
+  });
+
+  it("exposes parse-safe execution status without authority or live execution claims", async () => {
+    const result = await runCli(["execution", "status", "--json"]);
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      ok: boolean;
+      mode: string;
+      liveProvider: boolean;
+      data: {
+        execution: {
+          ok: boolean;
+          claimLevel: string;
+          liveProvider: boolean;
+          liveExecutionProven: boolean;
+          authorityApprovalProvidedByKeeperHub: boolean;
+          degradedReasons: string[];
+        };
+      };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.startsWith("{")).toBe(true);
+    expect(parsed.command).toBe("execution status");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.mode).toBe("keeperhub-local-fixture");
+    expect(parsed.liveProvider).toBe(false);
+    expect(parsed.data.execution.ok).toBe(true);
+    expect(parsed.data.execution.claimLevel).toBe("keeperhub-local-fixture");
+    expect(parsed.data.execution.liveProvider).toBe(false);
+    expect(parsed.data.execution.liveExecutionProven).toBe(false);
+    expect(parsed.data.execution.authorityApprovalProvidedByKeeperHub).toBe(false);
+    expect(parsed.data.execution.degradedReasons).toEqual(expect.arrayContaining(["live_provider_unavailable"]));
+  });
+
+  it("renders execution status with explicit local fixture and no-live-claim language", async () => {
+    const result = await runCli(["keeperhub", "status"]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("ClearIntent keeperhub status");
+    expect(result.stdout).toContain("Authority: blocked");
+    expect(result.stdout).toContain("Mode: keeperhub-local-fixture");
+    expect(result.stdout).toContain("Live provider: disabled");
+    expect(result.stdout).toContain("Execution claim level: keeperhub-local-fixture");
+    expect(result.stdout).toContain("Execution local fixture: available");
+    expect(result.stdout).toContain("Execution live proof: no");
+    expect(result.stdout).toContain("KeeperHub authority approval: no");
   });
 
   it("exposes a blocked live smoke command until credentials and funds are present", async () => {

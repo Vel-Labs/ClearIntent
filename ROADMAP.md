@@ -12,7 +12,7 @@ This is the high-visibility roadmap index for ClearIntent. Detailed phase sequen
 
 ## Current Phase
 
-Phase 3A: ENS Agent Identity Local Scaffold is complete locally. The current local implementation target is Phase 4A KeeperHub Execution Local Scaffold. Live-gated targets remain Phase 2B live 0G Storage closeout, Phase 3B live ENS binding, and Phase 4B live KeeperHub/onchain execution.
+Phase 4A: KeeperHub Execution Local Scaffold is complete locally. Live-gated targets remain Phase 2B live 0G Storage closeout, Phase 3B live ENS binding, and Phase 4B live KeeperHub/onchain execution.
 
 Completed baseline:
 
@@ -27,14 +27,15 @@ Completed baseline:
 - Phase 2A local 0G policy memory and audit scaffold with deterministic `packages/zerog-memory/`, local write/read/hash validation, audit-bundle rollup, Center CLI memory commands, and `local-adapter` claim level
 - Phase 2B readiness scaffold with 0G SDK import checks, live config/status output, and fail-closed smoke-test gating while testnet credentials and tokens are pending
 - Phase 3A ENS Agent Identity local scaffold with `packages/ens-identity/`, local/mock resolver, agent card validation, required ENS text-record mapping, fixture tests, Center CLI `identity status`, and `ens-local-fixture` claim level
+- Phase 4A KeeperHub Execution local scaffold with `packages/keeperhub-adapter/`, typed execution adapter interface, local workflow mapping, submit/monitor simulation, canonical receipt conversion, fail-closed tests, Center CLI `execution status` / `keeperhub status`, and `keeperhub-local-fixture` claim level
 
 Immediate next action:
 
-- Start Phase 4A KeeperHub Execution Local Scaffold using `docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md`.
 - When `.env` and tokens are in place, close Phase 2B with live 0G upload/readback/hash evidence, then proceed to Phase 3B live ENS binding and Phase 4B live KeeperHub/onchain execution.
 - Completed Phase 1.5 package: `docs/roadmaps/phase-1.5-center-cli-skeleton/`
 - Completed Phase 2A closeout audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md`
 - Completed Phase 3A closeout audit: `docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md`
+- Completed Phase 4A closeout audit: `docs/audits/phase-4-keeperhub-execution-adapter/4a.9-closeout-audit.md`
 
 ## Feature Order
 

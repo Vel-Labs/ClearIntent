@@ -46,9 +46,9 @@ const modules: CenterModule[] = [
   {
     id: "keeperhub",
     label: "KeeperHub execution",
-    status: "deferred",
-    scope: "future-adapter",
-    reason: "KeeperHub execution adapter remains deferred until its roadmap phase."
+    status: "ready",
+    scope: "local-adapter",
+    reason: "Phase 4A local KeeperHub execution fixture is ready at keeperhub-local-fixture claim level; live KeeperHub/onchain execution remains deferred to Phase 4B."
   },
   {
     id: "signer",

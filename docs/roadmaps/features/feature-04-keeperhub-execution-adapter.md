@@ -27,14 +27,16 @@ Use KeeperHub as the reliable execution layer for approved ClearIntent intents.
 
 ## Subphases
 
-Phase 4 is intentionally split so local execution shape can move now while live KeeperHub/onchain execution waits for credentials, funding, and selected runtime path:
+Phase 4 is intentionally split so local execution shape can move independently from live KeeperHub/onchain execution, which waits for credentials, funding, and selected runtime path:
 
-- **Phase 4A: KeeperHub Execution Local Scaffold** defines the adapter interface, local workflow mapping, mock submit/monitor behavior, typed receipt conversion, blocked/degraded states, fixtures, tests, and honest `keeperhub-local-fixture` claim level.
+- **Phase 4A: KeeperHub Execution Local Scaffold** is complete locally. It defines the adapter interface, local workflow mapping, mock submit/monitor behavior, typed receipt conversion, blocked/degraded states, fixtures, tests, Center CLI status, and honest `keeperhub-local-fixture` claim level.
 - **Phase 4B: Live KeeperHub / Onchain Execution** uses config-driven KeeperHub API/CLI/MCP or direct-execution integration, monitors a live run, captures receipt evidence, and updates feedback docs.
 
 Implementation plan: `../phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md`
 
 ## Phase 4A: KeeperHub Execution Local Scaffold
+
+Status: complete locally. Midpoint audit: `../../audits/phase-4-keeperhub-execution-adapter/4a.5-midpoint-audit.md`. Closeout audit: `../../audits/phase-4-keeperhub-execution-adapter/4a.9-closeout-audit.md`.
 
 ### 4A.1 Adapter interface
 

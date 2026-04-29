@@ -39,6 +39,11 @@ const wizardItems: WizardItem[] = [
     args: ["identity", "status"]
   },
   {
+    label: "Execution status",
+    description: "Inspect the Phase 4A KeeperHub local execution fixture route.",
+    args: ["execution", "status"]
+  },
+  {
     label: "Module doctor",
     description: "Check local module readiness and deferred adapters.",
     args: ["module", "doctor"]
@@ -56,6 +61,7 @@ export function renderLanding(): string {
     "AI lane:",
     "  npm run --silent clearintent -- center inspect --json",
     "  npm run --silent clearintent -- identity status --json",
+    "  npm run --silent clearintent -- execution status --json",
     "  Emits deterministic JSON with no CLI prose.",
     "",
     "Common commands:",

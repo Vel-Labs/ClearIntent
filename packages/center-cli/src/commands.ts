@@ -6,6 +6,7 @@ import {
   type ResultIssue
 } from "../../core/src";
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
+import { getCenterExecutionStatus } from "./execution-status";
 import { getCenterIdentityStatus } from "./identity-status";
 import { getCenterMemoryStatus, getZeroGLiveReadinessStatus, getZeroGLiveSmokeStatus } from "./memory-status";
 import { listCenterModules, runModuleDoctor } from "./modules";
@@ -65,6 +66,24 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         code: identity.blockingReasons.includes(reason) ? "identity_blocked" : "identity_degraded",
         message: reason,
         path: "ens"
+      }))
+    };
+  }
+  if ((group === "execution" || group === "keeperhub") && command === "status") {
+    const execution = await getCenterExecutionStatus();
+    return {
+      command: `${group} status`,
+      ok: false,
+      commandOk: true,
+      authorityOk: false,
+      mode: "keeperhub-local-fixture",
+      liveProvider: false,
+      summary: "Local KeeperHub execution fixture status is available. Execution status is inspection, not authority approval.",
+      data: { execution },
+      issues: execution.degradedReasons.map((reason) => ({
+        code: reason,
+        message: reason,
+        path: "keeperhub"
       }))
     };
   }
@@ -166,7 +185,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
     ok: false,
     commandOk: false,
     authorityOk: false,
-    summary: "Unknown command. Expected center, intent, authority, identity, module, or memory command family.",
+    summary: "Unknown command. Expected center, intent, authority, identity, execution, keeperhub, module, or memory command family.",
     data: {
       usage: [
         "center status",
@@ -175,6 +194,8 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "intent state",
         "authority evaluate",
         "identity status",
+        "execution status",
+        "keeperhub status",
         "module list",
         "module doctor",
         "memory status",
