@@ -76,6 +76,12 @@ Audit target: local workflow mapping, local submit/monitor simulation, typed rec
 
 ## Phase 4B: Live KeeperHub / Onchain Execution
 
+Network posture:
+
+- Run testnet KeeperHub/onchain execution first.
+- Prefer a livenet/mainnet follow-up after testnet run monitoring, transaction evidence, and receipt conversion pass.
+- Do not claim livenet/mainnet execution from testnet run evidence.
+
 ### 4B.1 Live configuration
 
 Use config-driven KeeperHub API/CLI/MCP or direct-execution path. Do not commit credentials or mutable live logs.

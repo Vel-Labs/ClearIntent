@@ -49,6 +49,7 @@
     "phase3RoadmapPackage": "docs/roadmaps/phase-3-ens-agent-identity/",
     "phase3bAuditDirectory": "docs/audits/phase-3-ens-agent-identity/",
     "phase4RoadmapPackage": "docs/roadmaps/phase-4-keeperhub-execution-adapter/",
+    "phase5RoadmapPackage": "docs/roadmaps/phase-5-signer-readable-approval/",
     "phase4bAuditDirectory": "docs/audits/phase-4-keeperhub-execution-adapter/"
   },
   "readFirstFiles": [

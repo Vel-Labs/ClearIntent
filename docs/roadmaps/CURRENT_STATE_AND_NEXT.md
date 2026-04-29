@@ -24,6 +24,8 @@ Phase 4A is complete locally. `packages/keeperhub-adapter/` now provides the loc
 
 ## Immediate next action
 
+Start Phase 5A Signer Payload and Local Approval Scaffold, optionally followed immediately by Phase 5B ERC-7730 / Clear Signing Metadata Local Scaffold. These can proceed locally because typed payloads, approval previews, metadata, fixture signatures, and signer adapter contracts do not require live 0G, ENS, KeeperHub, or wallet utilization.
+
 Close Phase 2B live 0G Storage once local `.env` values, wallet credentials, explicit live-write opt-in, and funded testnet tokens are available. Then proceed to Phase 3B live ENS binding and Phase 4B live KeeperHub/onchain execution against the proven live evidence.
 
 Phase 2 is split intentionally:
@@ -42,6 +44,14 @@ Phase 4 is split intentionally:
 - Phase 4A is complete and defines local/mock KeeperHub execution shape: execution adapter interface, workflow mapping, local submit/monitor simulation, receipt conversion, blocked/degraded states, tests, Center CLI status, and honest `keeperhub-local-fixture` claim level.
 - Phase 4B performs live KeeperHub/API/CLI/MCP/direct-execution work, captures run or transaction evidence, returns typed `ExecutionReceipt`, and updates `KEEPERHUB_FEEDBACK.md`.
 
+Phase 5 is split intentionally:
+
+- Phase 5A defines signer payload and local approval semantics: EIP-712 typed-data mapping, signer adapter interface, ClearIntent readable preview, deterministic fixture signature, display warnings, and conditional review prompt semantics.
+- Phase 5B generates ERC-7730 / Clear Signing metadata locally without vendor or secure-display claims.
+- Phase 5C validates a real software wallet path, with MetaMask preferred as the first injected-wallet target.
+- Phase 5D validates WalletConnect/mobile signing.
+- Phase 5E validates hardware-backed signing and any secure-display claims.
+
 Current Phase 2A documentation state:
 
 - midpoint audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.5-midpoint-audit.md`
@@ -59,6 +69,9 @@ Relevant phase packages:
 - `docs/roadmaps/phase-2-zerog-policy-memory-audit/PHASE_2B_READINESS.md`
 - `docs/roadmaps/phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md`
 - `docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md`
+- `docs/roadmaps/phase-5-signer-readable-approval/5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md`
+- `docs/roadmaps/phase-5-signer-readable-approval/5B_ERC7730_METADATA_LOCAL_PLAN.md`
+- `docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md`
 - `docs/audits/phase-3-ens-agent-identity/3a.5-midpoint-audit.md`
 - `docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md`
 - `docs/audits/phase-4-keeperhub-execution-adapter/4a.5-midpoint-audit.md`
@@ -113,10 +126,14 @@ npm run check
 
 ## Recommended sequencing
 
-1. When `.env` values and tokens are available, close Phase 2B with live 0G upload/readback/hash evidence.
-2. Implement Phase 3B live ENS binding against the proven 2B artifact semantics.
-3. Implement Phase 4B live KeeperHub/onchain execution against the proven adapter semantics.
-4. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
+1. Implement Phase 5A local signer payload and approval scaffold using `docs/roadmaps/phase-5-signer-readable-approval/5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md`.
+2. Implement Phase 5B local ERC-7730 / Clear Signing metadata scaffold using `docs/roadmaps/phase-5-signer-readable-approval/5B_ERC7730_METADATA_LOCAL_PLAN.md` if it stays local and honest.
+3. When `.env` values and tokens are available, close Phase 2B with live/testnet 0G upload/readback/hash evidence.
+4. Implement Phase 3B live/testnet ENS binding against the proven 2B artifact semantics.
+5. Implement Phase 4B live/testnet KeeperHub/onchain execution against the proven adapter semantics.
+6. Optionally run Phase 5C MetaMask/software-wallet signer-only validation using `docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md` after 5A/5B if an operator wallet session is available; repeat it as end-to-end validation after the live-testnet evidence path is available.
+7. Run Phase 5D/5E WalletConnect and hardware utilization validation when the operator devices/sessions are available, with stronger claims reserved for tested evidence.
+8. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
 
 ## Recommended parallelization
 
@@ -125,13 +142,14 @@ Now that the Center CLI skeleton is stable:
 - one agent can prepare Phase 3B live ENS binding after Phase 2B evidence is available
 - one agent can prepare the funded-token Phase 2B smoke pass without committing secrets
 - one agent can prepare Phase 4B live KeeperHub/onchain execution planning after Phase 2B and 3B evidence is available
-- one agent can build signer adapter scaffolding
+- one agent can build Phase 5A/5B signer payload and metadata scaffolding
 - one human should own integration and final demo truth
 
 ## Do not start yet
 
 - Phase 3B live ENS binding before Phase 2B live 0G closeout
 - Phase 4B live KeeperHub/onchain execution before Phase 4A local scaffold and required live credentials/evidence are ready
+- Phase 5C/5D/5E real wallet capability claims before actual wallet utilization testing
 - Phase 2C 0G Compute unless explicitly selected as a demo accelerator
 - demo integration
 - webhook delivery

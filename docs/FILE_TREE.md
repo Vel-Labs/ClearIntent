@@ -163,6 +163,9 @@ docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md
 docs/roadmaps/phase-2-zerog-policy-memory-audit/PHASE_2B_READINESS.md
 docs/roadmaps/phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md
 docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md
+docs/roadmaps/phase-5-signer-readable-approval/5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md
+docs/roadmaps/phase-5-signer-readable-approval/5B_ERC7730_METADATA_LOCAL_PLAN.md
+docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md
 docs/templates/AGENT_ASSIGNMENT_TEMPLATE.md
 docs/templates/CLOSEOUT_AUDIT_TEMPLATE.md
 docs/templates/CONTRACT_CORE_STABILITY_HANDOFF_PROMPT.md

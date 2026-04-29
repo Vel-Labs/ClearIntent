@@ -12,7 +12,7 @@ This is the high-visibility roadmap index for ClearIntent. Detailed phase sequen
 
 ## Current Phase
 
-Phase 4A: KeeperHub Execution Local Scaffold is complete locally. Live-gated targets remain Phase 2B live 0G Storage closeout, Phase 3B live ENS binding, and Phase 4B live KeeperHub/onchain execution.
+Phase 4A: KeeperHub Execution Local Scaffold is complete locally. The next local implementation target is Phase 5A Signer Payload and Local Approval Scaffold. Live-gated targets remain Phase 2B live 0G Storage closeout, Phase 3B live ENS binding, Phase 4B live KeeperHub/onchain execution, and Phase 5C/5D/5E real wallet validation.
 
 Completed baseline:
 
@@ -31,6 +31,8 @@ Completed baseline:
 
 Immediate next action:
 
+- Start Phase 5A Signer Payload and Local Approval Scaffold, then Phase 5B ERC-7730 / Clear Signing Metadata Local Scaffold if it stays local and honest.
+- Phase 5 plans: `docs/roadmaps/phase-5-signer-readable-approval/5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md`, `docs/roadmaps/phase-5-signer-readable-approval/5B_ERC7730_METADATA_LOCAL_PLAN.md`, and `docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md`.
 - When `.env` and tokens are in place, close Phase 2B with live 0G upload/readback/hash evidence, then proceed to Phase 3B live ENS binding and Phase 4B live KeeperHub/onchain execution.
 - Completed Phase 1.5 package: `docs/roadmaps/phase-1.5-center-cli-skeleton/`
 - Completed Phase 2A closeout audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md`

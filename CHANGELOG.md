@@ -4,6 +4,9 @@ All notable repo changes should be logged here.
 
 ## 2026-04-29
 
+- Added Phase 5 implementation plans for 5A signer payload/local approval, 5B ERC-7730 metadata local scaffold, and 5C MetaMask/software-wallet validation.
+- Reflowed Phase 5 into 5A local signer payload/approval scaffold, 5B local ERC-7730 / Clear Signing metadata scaffold, 5C software wallet validation, 5D WalletConnect/mobile validation, and 5E hardware/secure-display validation.
+- Clarified that Phase 2B, 3B, and 4B are testnet-first live evidence phases, with livenet/mainnet follow-up preferred after successful testnet proof and separate claim/audit language.
 - Completed Phase 4A locally by adding `packages/keeperhub-adapter/` with a typed local KeeperHub execution adapter, deterministic workflow mapping, local submit/monitor simulation, canonical `ExecutionReceipt` conversion, explicit fail-closed issue codes, and `keeperhub-local-fixture` claim level.
 - Added `tests/keeperhub-adapter/` coverage for successful mapping, local submit/monitor, canonical receipt schema validation, missing verification, missing signature, unsupported executor, missing workflow ID, failed runs, missing transaction evidence, unavailable live provider, and no live/onchain claim behavior.
 - Added Center CLI `execution status` and `keeperhub status` in human-readable and parse-safe JSON modes, including wizard/landing exposure, while keeping execution status as inspection with `authorityOk: false`.

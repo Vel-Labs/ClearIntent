@@ -242,6 +242,12 @@ Goal: provide signer adapters that sign EIP-712 intents and surface readable app
 
 Primary file: `docs/roadmaps/features/feature-05-hardware-signer-readable-approval.md`
 
+Implementation plans:
+
+- `docs/roadmaps/phase-5-signer-readable-approval/5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md`
+- `docs/roadmaps/phase-5-signer-readable-approval/5B_ERC7730_METADATA_LOCAL_PLAN.md`
+- `docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md`
+
 Dependencies:
 
 - Phase 1 intent schema
@@ -249,13 +255,24 @@ Dependencies:
 
 Key deliverables:
 
-- `packages/signer-hardware/` or future wallet signer packages
-- EIP-712 signing flow
-- software wallet and WalletConnect paths where practical
+- `packages/signer-adapter/` or future wallet signer packages
+- EIP-712 typed-data payload and signer adapter contract
+- local deterministic signature fixture
+- software wallet, WalletConnect, and hardware paths when tested
 - readable preview UI
 - conditional human-review prompts for policy-triggered escalation
-- ERC-7730 metadata output if feasible
+- ERC-7730 / Clear Signing metadata output if feasible
 - blind-signing/degraded display warning
+
+Layering:
+
+- Phase 5A: Signer Payload and Local Approval Scaffold, including EIP-712 typed-data mapping, signer adapter interface, ClearIntent readable preview, deterministic signature fixture, display status vocabulary, and conditional review prompt semantics.
+- Phase 5B: ERC-7730 / Clear Signing Metadata Local Scaffold, generating local metadata artifacts without wallet/vendor approval claims.
+- Phase 5C: Software Wallet Validation, with MetaMask as the preferred first injected-wallet EIP-712 target when operator testing is available.
+- Phase 5D: WalletConnect / Mobile Validation.
+- Phase 5E: Hardware / Secure Display Validation.
+
+Status: Phase 5A and 5B may proceed locally. Phase 5C/5D/5E require real wallet utilization testing and should not claim wallet-rendered, secure-device, or vendor-approved behavior from local fixtures.
 
 ## Phase 6: Guardian Agent Example and Agent Audit Dashboard
 

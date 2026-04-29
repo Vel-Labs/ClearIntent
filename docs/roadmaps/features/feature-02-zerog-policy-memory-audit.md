@@ -151,6 +151,12 @@ Current claim posture:
 
 Goal: connect the Phase 2A interfaces to real 0G Storage and prove actual provider-backed artifact persistence.
 
+Network posture:
+
+- Run testnet first.
+- Prefer a livenet/mainnet follow-up after testnet upload, readback, and hash/proof verification pass.
+- Do not weaken claim language: testnet evidence supports testnet claim levels only; livenet/mainnet evidence requires its own audit note.
+
 Required before starting:
 
 - 0G credentials and testnet/mainnet target selected

@@ -76,6 +76,12 @@ Status: complete. Midpoint audit: `../../audits/phase-3-ens-agent-identity/3a.5-
 
 ## Phase 3B: Live ENS Binding
 
+Network posture:
+
+- Run live/testnet record reads first against the selected ENS-compatible test environment.
+- Prefer a livenet/mainnet follow-up after testnet record read and policy/audit pointer binding succeed.
+- Do not claim livenet/mainnet ENS-bound identity from testnet records.
+
 ### 3B.1 Live resolver configuration
 
 Use config-driven ENS name/resolver/network values. Do not hard-code demo names, wallet addresses, policy hashes, audit URIs, or 0G artifact refs.
