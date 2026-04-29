@@ -89,7 +89,9 @@ export type StorageIssue = {
     | "missing_tokens"
     | "sdk_unavailable"
     | "live_writes_disabled"
-    | "live_write_unverified";
+    | "live_write_unverified"
+    | "live_upload_failed"
+    | "live_readback_failed";
   message: string;
   artifact?: {
     family?: ArtifactFamily;

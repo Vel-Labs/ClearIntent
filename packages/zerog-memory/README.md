@@ -33,6 +33,8 @@ Use the Center CLI:
 ```bash
 npm run --silent clearintent -- memory live-status
 npm run --silent clearintent -- memory live-status --json
+npm run --silent clearintent -- memory live-smoke
+npm run --silent clearintent -- memory live-smoke --json
 ```
 
 Set local credentials in `.env.local` using `.env.example` as the template. Never commit private keys or live run logs.

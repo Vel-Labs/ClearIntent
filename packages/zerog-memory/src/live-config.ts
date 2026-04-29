@@ -59,8 +59,14 @@ export async function getZeroGLiveReadinessStatus(env: NodeJS.ProcessEnv = proce
   const issues = sdkIssue === undefined ? readiness.issues : [...readiness.issues, sdkIssue];
   const blockedCodes = new Set(issues.map((item) => item.code));
 
+  const degradedReasons = [
+    ...issues.map((item) => item.code),
+    "missing_tokens",
+    "live_write_unverified"
+  ].filter(unique);
+
   return {
-    ok: issues.length === 0,
+    ok: false,
     providerMode: "live",
     claimLevel: "local-adapter",
     liveProvider: true,
@@ -120,11 +126,7 @@ export async function getZeroGLiveReadinessStatus(env: NodeJS.ProcessEnv = proce
         detail: "No live 0G proof has been requested or verified yet."
       }
     ],
-    degradedReasons: [
-      ...issues.map((item) => item.code),
-      "missing_tokens",
-      "live_write_unverified"
-    ].filter(unique)
+    degradedReasons
   };
 }
 

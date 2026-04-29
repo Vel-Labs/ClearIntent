@@ -22,6 +22,7 @@ type ZerogMemoryModule = {
   getCenterMemoryStatus?: () => CenterMemoryStatus | Promise<CenterMemoryStatus>;
   getLocalMemoryStatus?: () => CenterMemoryStatus | Promise<CenterMemoryStatus>;
   getZeroGLiveReadinessStatus?: () => CenterMemoryStatus | Promise<CenterMemoryStatus>;
+  getZeroGLiveSmokeStatus?: () => CenterMemoryStatus | Promise<CenterMemoryStatus>;
   runLocalMemoryDoctor?: () => CenterMemoryStatus | Promise<CenterMemoryStatus>;
 };
 
@@ -47,6 +48,21 @@ export async function getZeroGLiveReadinessStatus(): Promise<CenterMemoryStatus>
   try {
     const loaded = await importZerogMemoryModule();
     const status = await loaded.getZeroGLiveReadinessStatus?.();
+
+    if (isCenterMemoryStatus(status)) {
+      return normalizeMemoryStatus(status);
+    }
+
+    return buildUnavailableLiveStatus("zerog_live_status_api_missing");
+  } catch {
+    return buildUnavailableLiveStatus("zerog_memory_package_unavailable");
+  }
+}
+
+export async function getZeroGLiveSmokeStatus(): Promise<CenterMemoryStatus> {
+  try {
+    const loaded = await importZerogMemoryModule();
+    const status = await loaded.getZeroGLiveSmokeStatus?.();
 
     if (isCenterMemoryStatus(status)) {
       return normalizeMemoryStatus(status);

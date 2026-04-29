@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getZeroGLiveReadinessStatus, loadZeroGLiveConfig } from "../../packages/zerog-memory/src";
+import { getZeroGLiveReadinessStatus, getZeroGLiveSmokeStatus, loadZeroGLiveConfig } from "../../packages/zerog-memory/src";
 
 describe("0G live readiness config", () => {
   it("defaults to Galileo testnet endpoints without exposing credentials", () => {
@@ -31,5 +31,14 @@ describe("0G live readiness config", () => {
     expect(status.liveProvider).toBe(true);
     expect(status.localOnly).toBe(false);
     expect(status.degradedReasons).toEqual(expect.arrayContaining(["missing_tokens", "live_write_unverified"]));
+  });
+
+  it("keeps live smoke blocked without credentials or live-write opt-in", async () => {
+    const status = await getZeroGLiveSmokeStatus({});
+
+    expect(status.ok).toBe(false);
+    expect(status.providerMode).toBe("live");
+    expect(status.claimLevel).toBe("local-adapter");
+    expect(status.degradedReasons).toEqual(expect.arrayContaining(["missing_credentials", "live_writes_disabled"]));
   });
 });

@@ -20,6 +20,7 @@ ZERO_G_STORAGE_MODE=turbo
 ZERO_G_WALLET_ADDRESS=<public testnet wallet address>
 ZERO_G_PRIVATE_KEY=<private key for fresh testnet wallet>
 ZERO_G_ENABLE_LIVE_WRITES=false
+ZERO_G_REQUIRE_PROOF=false
 ```
 
 Do not commit `.env.local`, private keys, tokens, or live run logs. `.gitignore` blocks `.env` and `.env.*` while keeping `.env.example` tracked.
@@ -47,6 +48,25 @@ Expected pre-token behavior:
 - wallet check fails until `ZERO_G_PRIVATE_KEY` is set
 - funds check remains degraded until an explicit live network probe exists
 - live write/read/proof remain unverified
+
+## Live Smoke Command
+
+After the wallet is funded, explicitly opt into live writes:
+
+```bash
+ZERO_G_ENABLE_LIVE_WRITES=true
+npm run --silent clearintent -- memory live-smoke
+npm run --silent clearintent -- memory live-smoke --json
+```
+
+The smoke command attempts one small in-memory artifact upload through the 0G SDK, reads it back by root hash, and validates the downloaded payload. It does not print the private key.
+
+First target claim after a successful smoke:
+
+- `0g-write-read` when upload and readback succeed.
+- `0g-write-read-verified` only when `ZERO_G_REQUIRE_PROOF=true` is set and the proof-enabled read succeeds.
+
+If the wallet has no balance or the faucet tokens have not arrived, the command should remain blocked/degraded and keep the claim level at `local-adapter`.
 
 ## Claim Boundary
 

@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 import { parseArgs, runCenterCommand } from "./commands";
+import { loadLocalEnv } from "./env";
 import { renderHuman, renderJson } from "./output";
 import { renderLanding, runInteractiveWizard } from "./wizard";
 
 export async function runCli(args: string[] = process.argv.slice(2)): Promise<{ exitCode: number; stdout: string }> {
   try {
+    loadLocalEnv();
+
     if (args.length === 0) {
       return {
         exitCode: 0,

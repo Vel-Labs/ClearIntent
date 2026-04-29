@@ -208,6 +208,30 @@ describe("ClearIntent Center CLI skeleton", () => {
     );
   });
 
+  it("exposes a blocked live smoke command until credentials and funds are present", async () => {
+    const result = await runCli(["memory", "live-smoke", "--json"]);
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      ok: boolean;
+      liveProvider: boolean;
+      data: { memory: { providerMode: string; claimLevel: string; degradedReasons: string[] } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(parsed.command).toBe("memory live-smoke");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.liveProvider).toBe(true);
+    expect(parsed.data.memory.providerMode).toBe("live");
+    expect(parsed.data.memory.claimLevel).toBe("local-adapter");
+    expect(parsed.data.memory.degradedReasons).toEqual(
+      expect.arrayContaining(["missing_credentials", "live_writes_disabled"])
+    );
+  });
+
   it("renders successful local memory adapter status when the integration API provides it", () => {
     const doctor = buildModuleDoctorResult({
       ok: true,

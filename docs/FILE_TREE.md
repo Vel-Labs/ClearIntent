@@ -169,6 +169,7 @@ package.json
 packages/center-cli/README.md
 packages/center-cli/src/cli.ts
 packages/center-cli/src/commands.ts
+packages/center-cli/src/env.ts
 packages/center-cli/src/fixtures.ts
 packages/center-cli/src/memory-status.ts
 packages/center-cli/src/modules.ts
@@ -191,6 +192,7 @@ packages/zerog-memory/src/doctor.ts
 packages/zerog-memory/src/hash.ts
 packages/zerog-memory/src/index.ts
 packages/zerog-memory/src/live-config.ts
+packages/zerog-memory/src/live-smoke.ts
 packages/zerog-memory/src/local-memory-adapter.ts
 packages/zerog-memory/src/types.ts
 scripts/validate-contracts.ts
