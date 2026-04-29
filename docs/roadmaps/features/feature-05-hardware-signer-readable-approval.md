@@ -36,6 +36,7 @@ Phase 5 should make signing portable without overstating wallet display guarante
 - `signer-local-fixture`: local deterministic signing fixture and adapter contracts only.
 - `eip712-local-fixture`: deterministic EIP-712 typed payload and preview generation only.
 - `erc7730-local-metadata`: local metadata generation only, with no wallet/vendor approval claim.
+- `ready-for-operator-test`: request shape, status route, or manual instructions exist for a real wallet test, but no operator wallet evidence has been recorded.
 - `software-wallet-tested`: a real injected/software wallet path signed the ClearIntent typed payload in a recorded or audited test.
 - `walletconnect-tested`: a real WalletConnect/mobile path signed the ClearIntent typed payload in a recorded or audited test.
 - `hardware-wallet-tested`: a real hardware-backed path signed the ClearIntent typed payload in a recorded or audited test.
@@ -43,6 +44,14 @@ Phase 5 should make signing portable without overstating wallet display guarante
 - `vendor-clear-signing-approved`: vendor approval plus tested signer/display path exists.
 
 Do not claim a stronger signer capability than the evidence proves.
+
+Current local closeout posture:
+
+- Phase 5A is complete locally at `signer-local-fixture` and `eip712-local-fixture`.
+- Phase 5B is complete locally at `erc7730-local-metadata`.
+- Phase 5C is prepared only to `ready-for-operator-test` without operator wallet interaction.
+- No real wallet signing, wallet-rendered preview, secure-device display, or vendor-approved Clear Signing is claimed from local fixtures.
+- Later chain-driven metadata belongs after Phase 5C signer validation and the Phase 2B/3B/4B live-testnet path provide validated chain, identity, audit, and execution context.
 
 ## Subphases
 
@@ -70,6 +79,11 @@ Stop point:
 - No injected wallet, WalletConnect, hardware, secure-device, or vendor Clear Signing claim.
 - No Guardian Agent, dashboard, deploy, or hosted/browser app scope.
 
+Audit artifacts:
+
+- midpoint: `docs/audits/phase-5-signer-readable-approval/5a.5-midpoint-audit.md`
+- closeout: `docs/audits/phase-5-signer-readable-approval/5a.9-closeout-audit.md`
+
 ### Phase 5B: ERC-7730 / Clear Signing Metadata Local Scaffold
 
 Goal: generate local metadata artifacts that can support wallet/vendor readable-display work later.
@@ -86,6 +100,11 @@ Stop point:
 - No vendor approval claim.
 - No secure-screen claim.
 - No wallet-rendered preview claim without tested wallet evidence.
+
+Audit artifacts:
+
+- midpoint: `docs/audits/phase-5-signer-readable-approval/5b.5-midpoint-audit.md`
+- closeout: `docs/audits/phase-5-signer-readable-approval/5b.9-closeout-audit.md`
 
 ### Phase 5C: Software Wallet Validation
 
@@ -113,6 +132,7 @@ Stop point:
 
 - Claim only `software-wallet-tested` unless wallet-rendered preview evidence supports a stronger level.
 - Do not claim secure-device display or vendor Clear Signing.
+- If only request-shape/status/docs scaffolding exists, status remains `planned` / `ready-for-operator-test` and must not be promoted to `software-wallet-tested`.
 
 ### Phase 5D: WalletConnect / Mobile Validation
 

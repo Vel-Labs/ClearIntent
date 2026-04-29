@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "repoName": "ClearIntent",
   "purpose": "Reusable authority layer for autonomous onchain agents. Agents produce bounded intents, humans approve through explicit review and readable signing flows, and executors act only after policy, nonce, deadline, and authority checks pass.",
-  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, Phase 1.5 Center CLI skeleton, Phase 2A local 0G policy memory/audit scaffold, Phase 3A ENS Agent Identity local scaffold, and Phase 4A KeeperHub Execution Local Scaffold are complete locally. Phase 2B live 0G Storage, Phase 3B live ENS binding, and Phase 4B live KeeperHub/onchain execution remain live-gated.",
+  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, Phase 1.5 Center CLI skeleton, Phase 2A local 0G policy memory/audit scaffold, Phase 3A ENS Agent Identity local scaffold, Phase 4A KeeperHub Execution Local Scaffold, and Phase 5A/5B signer payload/local approval plus ERC-7730 metadata scaffold are complete locally. Phase 5C is prepared only to ready-for-operator-test request-shape/status/docs. Phase 2B live 0G Storage, Phase 3B live ENS binding, Phase 4B live KeeperHub/onchain execution, and real wallet validation remain live/operator-gated.",
   "canonicalPaths": {
     "agentPolicy": "AGENTS.md",
     "repoProfile": "REPO_PROFILE.json",
@@ -29,6 +29,9 @@
     "keeperhubAdapterPackage": "packages/keeperhub-adapter/",
     "keeperhubAdapterTests": "tests/keeperhub-adapter/",
     "phase4AuditDirectory": "docs/audits/phase-4-keeperhub-execution-adapter/",
+    "signerAdapterPackage": "packages/signer-adapter/",
+    "signerAdapterTests": "tests/signer-adapter/",
+    "phase5AuditDirectory": "docs/audits/phase-5-signer-readable-approval/",
     "scaffoldValidationScript": "scripts/validate-scaffold.ts",
     "tests": "tests/",
     "contractTests": "tests/contracts/",
@@ -130,11 +133,13 @@
     "packages/center-cli/",
     "packages/ens-identity/",
     "packages/keeperhub-adapter/",
+    "packages/signer-adapter/",
     "scripts/",
     "tests/",
     "tests/contracts/",
     "tests/ens-identity/",
-    "tests/keeperhub-adapter/"
+    "tests/keeperhub-adapter/",
+    "tests/signer-adapter/"
   ],
   "importantAgentDirectories": [
     "skills/"

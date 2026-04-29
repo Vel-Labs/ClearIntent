@@ -28,6 +28,7 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(result.stdout).toContain("AI lane:");
     expect(result.stdout).toContain("Current mode: fixture-only");
     expect(result.stdout).toContain("execution status");
+    expect(result.stdout).toContain("signer status");
   });
 
   it("emits deterministic JSON with no leading prose", async () => {
@@ -312,6 +313,63 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(result.stdout).toContain("Execution local fixture: available");
     expect(result.stdout).toContain("Execution live proof: no");
     expect(result.stdout).toContain("KeeperHub authority approval: no");
+  });
+
+  it("exposes signer routes as local-only JSON without real-wallet claims", async () => {
+    for (const route of ["status", "preview", "typed-data", "metadata"]) {
+      const result = await runCli(["signer", route, "--json"]);
+      const parsed = JSON.parse(result.stdout) as {
+        command: string;
+        commandOk: boolean;
+        authorityOk: boolean;
+        ok: boolean;
+        mode: string;
+        liveProvider: boolean;
+        data: {
+          signer: {
+            route: string;
+            claimLevels: string[];
+            liveProvider: boolean;
+            softwareWalletValidationStatus: string;
+            walletRenderedPreviewProven: boolean;
+            secureDeviceDisplayProven: boolean;
+            vendorApprovedClearSigning: boolean;
+          };
+        };
+      };
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout.startsWith("{")).toBe(true);
+      expect(parsed.command).toBe(`signer ${route}`);
+      expect(parsed.commandOk).toBe(true);
+      expect(parsed.authorityOk).toBe(false);
+      expect(parsed.ok).toBe(false);
+      expect(parsed.mode).toBe("signer-local-fixture");
+      expect(parsed.liveProvider).toBe(false);
+      expect(parsed.data.signer.route).toBe(route);
+      expect(parsed.data.signer.liveProvider).toBe(false);
+      expect(parsed.data.signer.claimLevels.every((level) => ["signer-local-fixture", "eip712-local-fixture", "erc7730-local-metadata"].includes(level))).toBe(true);
+      expect(["not-prepared", "planned", "ready-for-operator-test"]).toContain(parsed.data.signer.softwareWalletValidationStatus);
+      expect(parsed.data.signer.softwareWalletValidationStatus).not.toBe("software-wallet-tested");
+      expect(parsed.data.signer.walletRenderedPreviewProven).toBe(false);
+      expect(parsed.data.signer.secureDeviceDisplayProven).toBe(false);
+      expect(parsed.data.signer.vendorApprovedClearSigning).toBe(false);
+    }
+  });
+
+  it("renders signer status with explicit no-wallet-claim language", async () => {
+    const result = await runCli(["signer", "status"]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("ClearIntent signer status");
+    expect(result.stdout).toContain("Command: ok");
+    expect(result.stdout).toContain("Authority: blocked");
+    expect(result.stdout).toContain("Mode: signer-local-fixture");
+    expect(result.stdout).toContain("Live provider: disabled");
+    expect(result.stdout).toContain("Signer live provider: disabled");
+    expect(result.stdout).toContain("Wallet-rendered preview proven: no");
+    expect(result.stdout).toContain("Secure-device display proven: no");
+    expect(result.stdout).toContain("Vendor-approved Clear Signing: no");
   });
 
   it("exposes a blocked live smoke command until credentials and funds are present", async () => {

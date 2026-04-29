@@ -14,6 +14,19 @@ This file defines how ClearIntent reports wallet support without overstating sig
 | L5 Secure-device display verified | Screenshot, recording, or audit note showing device-side display of meaningful signing details. |
 | L6 Vendor-approved Clear Signing verified | Provider approval, registry acceptance, or equivalent vendor evidence plus a tested signer path. |
 
+## Local Phase 5 Claim Levels
+
+These claim levels are lower than wallet capability levels and must not be promoted automatically:
+
+| Claim | Evidence required | Capability ceiling |
+| --- | --- | --- |
+| `signer-local-fixture` | Local deterministic signer fixture and adapter contract tests. | L1 unless a real wallet signs. |
+| `eip712-local-fixture` | Deterministic EIP-712 typed-data generation and ClearIntent app/CLI preview tests. | L1 unless a real wallet signs. |
+| `erc7730-local-metadata` | Local metadata generation and deterministic validation. | L1 unless a wallet/vendor accepts and renders it. |
+| `ready-for-operator-test` | Request shape, status route, or manual instructions exist for operator-run wallet testing. | L1 until operator evidence is recorded. |
+
+`software-wallet-tested`, `walletconnect-tested`, `hardware-wallet-tested`, `secure-device-display-verified`, and `vendor-clear-signing-approved` require recorded real-wallet or vendor evidence. Local fixtures cannot satisfy those claims.
+
 ## Reporting format
 
 Each wallet doc should include:

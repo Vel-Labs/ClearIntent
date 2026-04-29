@@ -1,6 +1,19 @@
 # Signer Adapter Contract
 
-Status: planned.
+Status: local scaffold complete.
+
+Current local claims:
+
+- `signer-local-fixture` for deterministic local signer fixture behavior.
+- `eip712-local-fixture` for deterministic EIP-712 typed-data and ClearIntent preview generation.
+- `erc7730-local-metadata` for local metadata generation if Phase 5B validation passes.
+
+Unavailable claims:
+
+- real wallet signing
+- wallet-rendered preview
+- secure-device display
+- vendor-approved Clear Signing
 
 Signer adapters should expose wallet behavior without becoming the source of authority truth.
 
@@ -29,3 +42,5 @@ Signer adapters should expose wallet behavior without becoming the source of aut
 ## Rule
 
 Missing display evidence is not a signing failure by itself, but it must be visible to the operator and audit bundle.
+
+If Phase 5C request-shape/status scaffolding exists, report it as `planned` / `ready-for-operator-test` until an operator wallet session produces real evidence.

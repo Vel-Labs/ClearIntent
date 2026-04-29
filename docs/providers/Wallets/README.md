@@ -34,6 +34,20 @@ ClearIntent may claim `clear-signing-ready` when it produces bounded typed inten
 
 The current product guarantee is readability and authority binding before signing: policy, executor, deadline, value bounds, nonce, signer, intent hash, and audit references must be visible through ClearIntent's review surface. Wallet-rendered and secure-device-rendered guarantees are additive assurance layers.
 
+## Current Phase 5 Local Claims
+
+The completed Phase 5A/5B local pass is limited to local fixture and metadata evidence:
+
+| Claim | Meaning | Stronger claims excluded |
+| --- | --- | --- |
+| `signer-local-fixture` | Deterministic local signer fixture and adapter contract shape. | Real wallet signing, WalletConnect, hardware signing. |
+| `eip712-local-fixture` | Deterministic ClearIntent EIP-712 typed payload and app/CLI preview generation. | Wallet-rendered preview, secure-device display. |
+| `erc7730-local-metadata` | Local ERC-7730 / Clear Signing metadata artifact generation and validation. | Vendor approval, registry acceptance, chain-driven metadata publication. |
+
+Phase 5C request-shape/status/docs scaffolding may be `planned` / `ready-for-operator-test`, but it is not `software-wallet-tested` until an operator wallet session signs the exact ClearIntent typed payload and records evidence.
+
+Later chain-driven metadata belongs after Phase 5C signer validation and the Phase 2B/3B/4B live-testnet path establish validated storage, identity, execution, chain ID, and verifying-contract context.
+
 ## Demo direction
 
 The detailed demo strategy lives in [hackathon/wallet-demo-strategy.md](../../hackathon/wallet-demo-strategy.md). The preferred demo should show the same ClearIntent intent moving across multiple wallet surfaces:

@@ -53,9 +53,9 @@ const modules: CenterModule[] = [
   {
     id: "signer",
     label: "Wallet and hardware signer",
-    status: "deferred",
-    scope: "future-adapter",
-    reason: "Live signer behavior and clear-signing claims are not implemented here."
+    status: "ready",
+    scope: "local-adapter",
+    reason: "Phase 5A/5B local signer inspection routes are ready for signer-local-fixture, eip712-local-fixture, and erc7730-local-metadata claim levels; live wallet and clear-signing claims remain deferred."
   },
   {
     id: "notifications",

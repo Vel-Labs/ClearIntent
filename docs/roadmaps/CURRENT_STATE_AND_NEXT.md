@@ -22,9 +22,11 @@ Phase 3A is complete locally. `packages/ens-identity/` now provides the local EN
 
 Phase 4A is complete locally. `packages/keeperhub-adapter/` now provides the local KeeperHub execution scaffold with a narrow `ExecutionAdapter` interface, `keeperhub-local-fixture` claim level, verified-intent-to-workflow mapping, local submit/monitor simulation, canonical `ExecutionReceipt` conversion, explicit blocked/degraded issue codes, and Center status helper. `tests/keeperhub-adapter/` proves local mapping, deterministic submit/monitor, canonical receipt validation, fail-closed unsafe submissions, failed/degraded run behavior, unavailable live provider status, and no live/onchain claim semantics. `packages/center-cli/` exposes `execution status` and `keeperhub status` in human-readable and deterministic JSON modes. Live KeeperHub/onchain execution remains absent.
 
+Phase 5A and 5B are complete locally. `packages/signer-adapter/` now provides deterministic ClearIntent EIP-712 typed-data generation, ClearIntent approval preview rendering, deterministic fixture signature evidence compatible with core signature evidence, display warning vocabulary, conditional review prompt semantics, `eth_signTypedData_v4` request-shape prep, typed injected-wallet issue codes, and local ERC-7730 metadata generation/validation. `tests/signer-adapter/` proves typed data, preview, fixture signature evidence, conditional review prompts, metadata, and injected-wallet request shape/status. `packages/center-cli/` exposes `signer status`, `signer preview`, `signer typed-data`, and `signer metadata` in human-readable and deterministic JSON modes. The only reached local claim levels are `signer-local-fixture`, `eip712-local-fixture`, and `erc7730-local-metadata`. Phase 5C is prepared only to `ready-for-operator-test`; real wallet signing, wallet-rendered preview, secure-device display, and vendor-approved Clear Signing remain absent.
+
 ## Immediate next action
 
-Start Phase 5A Signer Payload and Local Approval Scaffold, optionally followed immediately by Phase 5B ERC-7730 / Clear Signing Metadata Local Scaffold. These can proceed locally because typed payloads, approval previews, metadata, fixture signatures, and signer adapter contracts do not require live 0G, ENS, KeeperHub, or wallet utilization.
+Run the operator checklist in `docs/roadmaps/OPERATOR_TESTING_2A_3A_4A_5ABC.md`, then run Phase 5C MetaMask/software-wallet signer-only validation with operator wallet evidence before returning to the Phase 2B/3B/4B live-testnet vertical path. Keep 5C at `ready-for-operator-test` until an operator wallet session signs the exact ClearIntent typed payload and records evidence.
 
 Close Phase 2B live 0G Storage once local `.env` values, wallet credentials, explicit live-write opt-in, and funded testnet tokens are available. Then proceed to Phase 3B live ENS binding and Phase 4B live KeeperHub/onchain execution against the proven live evidence.
 
@@ -46,11 +48,24 @@ Phase 4 is split intentionally:
 
 Phase 5 is split intentionally:
 
-- Phase 5A defines signer payload and local approval semantics: EIP-712 typed-data mapping, signer adapter interface, ClearIntent readable preview, deterministic fixture signature, display warnings, and conditional review prompt semantics.
-- Phase 5B generates ERC-7730 / Clear Signing metadata locally without vendor or secure-display claims.
-- Phase 5C validates a real software wallet path, with MetaMask preferred as the first injected-wallet target.
+- Phase 5A defines signer payload and local approval semantics: EIP-712 typed-data mapping, signer adapter interface, ClearIntent readable preview, deterministic fixture signature, display warnings, and conditional review prompt semantics. Current status: complete locally.
+- Phase 5B generates ERC-7730 / Clear Signing metadata locally without vendor or secure-display claims. Current status: complete locally.
+- Phase 5C validates a real software wallet path, with MetaMask preferred as the first injected-wallet target. Current status may be only `planned` / `ready-for-operator-test` unless operator wallet evidence exists.
 - Phase 5D validates WalletConnect/mobile signing.
 - Phase 5E validates hardware-backed signing and any secure-display claims.
+
+Current Phase 5A/5B documentation state:
+
+- 5A midpoint audit: `docs/audits/phase-5-signer-readable-approval/5a.5-midpoint-audit.md`
+- 5A closeout audit: `docs/audits/phase-5-signer-readable-approval/5a.9-closeout-audit.md`
+- 5B midpoint audit: `docs/audits/phase-5-signer-readable-approval/5b.5-midpoint-audit.md`
+- 5B closeout audit: `docs/audits/phase-5-signer-readable-approval/5b.9-closeout-audit.md`
+- documented local claim levels: `signer-local-fixture`, `eip712-local-fixture`, `erc7730-local-metadata`
+- real wallet claim: none
+- wallet-rendered preview claim: none
+- secure-device display claim: none
+- vendor-approved Clear Signing claim: none
+- Phase 5C prep status: `ready-for-operator-test` request-shape/status/docs only; no real MetaMask claim without operator-run evidence.
 
 Current Phase 2A documentation state:
 
@@ -126,14 +141,12 @@ npm run check
 
 ## Recommended sequencing
 
-1. Implement Phase 5A local signer payload and approval scaffold using `docs/roadmaps/phase-5-signer-readable-approval/5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md`.
-2. Implement Phase 5B local ERC-7730 / Clear Signing metadata scaffold using `docs/roadmaps/phase-5-signer-readable-approval/5B_ERC7730_METADATA_LOCAL_PLAN.md` if it stays local and honest.
-3. When `.env` values and tokens are available, close Phase 2B with live/testnet 0G upload/readback/hash evidence.
-4. Implement Phase 3B live/testnet ENS binding against the proven 2B artifact semantics.
-5. Implement Phase 4B live/testnet KeeperHub/onchain execution against the proven adapter semantics.
-6. Optionally run Phase 5C MetaMask/software-wallet signer-only validation using `docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md` after 5A/5B if an operator wallet session is available; repeat it as end-to-end validation after the live-testnet evidence path is available.
-7. Run Phase 5D/5E WalletConnect and hardware utilization validation when the operator devices/sessions are available, with stronger claims reserved for tested evidence.
-8. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
+1. Run Phase 5C MetaMask/software-wallet signer-only validation using `docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md` if an operator wallet session is available; keep status `ready-for-operator-test` until real evidence exists.
+2. When `.env` values and tokens are available, close Phase 2B with live/testnet 0G upload/readback/hash evidence.
+3. Implement Phase 3B live/testnet ENS binding against the proven 2B artifact semantics.
+4. Implement Phase 4B live/testnet KeeperHub/onchain execution against the proven adapter semantics.
+5. Run Phase 5D/5E WalletConnect and hardware utilization validation when the operator devices/sessions are available, with stronger claims reserved for tested evidence.
+6. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
 
 ## Recommended parallelization
 

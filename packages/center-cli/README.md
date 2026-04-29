@@ -36,6 +36,14 @@ npm run --silent clearintent -- identity status --json
 npm run clearintent -- execution status
 npm run --silent clearintent -- execution status --json
 npm run clearintent -- keeperhub status
+npm run clearintent -- signer status
+npm run clearintent -- signer preview
+npm run clearintent -- signer typed-data
+npm run clearintent -- signer metadata
+npm run --silent clearintent -- signer status --json
+npm run --silent clearintent -- signer preview --json
+npm run --silent clearintent -- signer typed-data --json
+npm run --silent clearintent -- signer metadata --json
 npm run clearintent -- module list
 npm run --silent clearintent -- module doctor --json
 ```
@@ -77,3 +85,5 @@ Blocked fixture output means the fixture is missing required evidence or intenti
 `identity status` is a Phase 3A local fixture readout. It reports `Mode: ens-local-fixture`, `Live provider: disabled`, no live ENS claim, no live 0G claim, and `Authority: blocked` because identity discovery is not authority approval.
 
 `execution status` and `keeperhub status` are Phase 4A local fixture readouts. They report `Mode: keeperhub-local-fixture`, `Live provider: disabled`, no live KeeperHub/onchain claim, no KeeperHub authority approval, and `Authority: blocked` because execution status is inspection, not approval.
+
+`signer status`, `signer preview`, `signer typed-data`, and `signer metadata` are Phase 5A/5B local signer inspection routes. They report `Mode: signer-local-fixture`, `Live provider: disabled`, `Authority: blocked`, and no real-wallet, wallet-rendered preview, secure-device display, or vendor-approved Clear Signing claim. Claim levels are limited to local signer fixture, local EIP-712 fixture, and local ERC-7730 metadata vocabulary.

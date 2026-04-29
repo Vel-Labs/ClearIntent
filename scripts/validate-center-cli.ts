@@ -25,6 +25,15 @@ type CenterJson = {
       liveExecutionProven?: boolean;
       authorityApprovalProvidedByKeeperHub?: boolean;
     };
+    signer?: {
+      route?: string;
+      claimLevels?: string[];
+      liveProvider?: boolean;
+      softwareWalletValidationStatus?: string;
+      walletRenderedPreviewProven?: boolean;
+      secureDeviceDisplayProven?: boolean;
+      vendorApprovedClearSigning?: boolean;
+    };
   };
 };
 
@@ -88,8 +97,33 @@ async function main(): Promise<void> {
 
   const landing = await run(["run", "--silent", "clearintent"]);
   assertExit("bare clearintent landing exits 0", landing, 0, failures);
-  if (!landing.stdout.includes("Human lane:") || !landing.stdout.includes("AI lane:") || !landing.stdout.includes("execution status")) {
+  if (
+    !landing.stdout.includes("Human lane:") ||
+    !landing.stdout.includes("AI lane:") ||
+    !landing.stdout.includes("execution status") ||
+    !landing.stdout.includes("signer status")
+  ) {
     failures.push("bare clearintent landing did not include both human and AI lane labels");
+  }
+
+  for (const route of ["status", "preview", "typed-data", "metadata"]) {
+    const signer = await run(["run", "--silent", "clearintent", "--", "signer", route, "--json"]);
+    assertExit(`signer ${route} exits 0 for local readout`, signer, 0, failures);
+    const signerJson = parseJson(`signer ${route}`, signer.stdout, failures);
+    if (signerJson !== undefined) {
+      assertEqual(`signer ${route} command`, signerJson.command, `signer ${route}`, failures);
+      assertEqual(`signer ${route} commandOk`, signerJson.commandOk, true, failures);
+      assertEqual(`signer ${route} authorityOk`, signerJson.authorityOk, false, failures);
+      assertEqual(`signer ${route} ok compatibility alias`, signerJson.ok, false, failures);
+      assertEqual(`signer ${route} mode`, signerJson.mode, "signer-local-fixture", failures);
+      assertEqual(`signer ${route} liveProvider`, signerJson.liveProvider, false, failures);
+      assertEqual(`signer ${route} data liveProvider`, signerJson.data?.signer?.liveProvider, false, failures);
+      assertEqual(`signer ${route} wallet-rendered preview claim`, signerJson.data?.signer?.walletRenderedPreviewProven, false, failures);
+      assertEqual(`signer ${route} secure-device display claim`, signerJson.data?.signer?.secureDeviceDisplayProven, false, failures);
+      assertEqual(`signer ${route} vendor Clear Signing claim`, signerJson.data?.signer?.vendorApprovedClearSigning, false, failures);
+      assertClaimLevels(`signer ${route}`, signerJson.data?.signer?.claimLevels, failures);
+      assertSoftwareWalletStatus(`signer ${route}`, signerJson.data?.signer?.softwareWalletValidationStatus, failures);
+    }
   }
 
   if (failures.length > 0) {
@@ -105,6 +139,7 @@ async function main(): Promise<void> {
   console.log("PASS CLI errors remain parseable JSON and exit nonzero");
   console.log("PASS identity status preserves ens-local-fixture and disabled live provider claims");
   console.log("PASS execution status preserves keeperhub-local-fixture and no live/onchain claims");
+  console.log("PASS signer routes preserve local-only claim levels and no real-wallet claims");
   console.log("PASS bare clearintent exposes human and AI lanes");
   console.log("center cli validation ok");
 }
@@ -149,6 +184,29 @@ function assertExit(label: string, result: CommandResult, expected: number, fail
 function assertEqual(label: string, actual: unknown, expected: unknown, failures: string[]): void {
   if (actual !== expected) {
     failures.push(`${label}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+  }
+}
+
+function assertClaimLevels(label: string, claimLevels: string[] | undefined, failures: string[]): void {
+  const allowed = new Set(["signer-local-fixture", "eip712-local-fixture", "erc7730-local-metadata"]);
+  if (!Array.isArray(claimLevels)) {
+    failures.push(`${label}: expected claimLevels array, got ${JSON.stringify(claimLevels)}`);
+    return;
+  }
+  for (const level of claimLevels) {
+    if (!allowed.has(level)) {
+      failures.push(`${label}: unexpected claim level ${JSON.stringify(level)}`);
+    }
+  }
+}
+
+function assertSoftwareWalletStatus(label: string, status: string | undefined, failures: string[]): void {
+  const allowed = new Set(["not-prepared", "planned", "ready-for-operator-test"]);
+  if (status === undefined || !allowed.has(status)) {
+    failures.push(`${label}: unexpected software wallet validation status ${JSON.stringify(status)}`);
+  }
+  if (status === "software-wallet-tested") {
+    failures.push(`${label}: must not claim software-wallet-tested without operator evidence`);
   }
 }
 

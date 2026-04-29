@@ -8,6 +8,13 @@ Proceed in sequence: Phase 5A local signer payload and approval scaffold, Phase 
 
 Reason: EIP-712 payload generation, ClearIntent preview, adapter contracts, local fixture signatures, display vocabulary, and ERC-7730 metadata are not onchain-dependent. Real wallet utilization is separate evidence and must remain separately claimed.
 
+Current coordinated-pass status:
+
+- Phase 5A/5B local closeout is complete.
+- Local claim language is limited to `signer-local-fixture`, `eip712-local-fixture`, and `erc7730-local-metadata`.
+- Phase 5C is prepared only as request-shape/status/docs until operator wallet evidence exists.
+- No real wallet signing, wallet-rendered preview, secure-device display, or vendor-approved Clear Signing is claimed from local fixtures.
+
 Phase 5C operator context at the time this note was updated:
 
 - Operator-reported MetaMask version: `13.27.0`.

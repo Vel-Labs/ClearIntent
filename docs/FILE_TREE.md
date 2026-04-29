@@ -66,6 +66,10 @@ docs/audits/phase-3-ens-agent-identity/3a.5-midpoint-audit.md
 docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md
 docs/audits/phase-4-keeperhub-execution-adapter/4a.5-midpoint-audit.md
 docs/audits/phase-4-keeperhub-execution-adapter/4a.9-closeout-audit.md
+docs/audits/phase-5-signer-readable-approval/5a.5-midpoint-audit.md
+docs/audits/phase-5-signer-readable-approval/5a.9-closeout-audit.md
+docs/audits/phase-5-signer-readable-approval/5b.5-midpoint-audit.md
+docs/audits/phase-5-signer-readable-approval/5b.9-closeout-audit.md
 docs/decisions/2026-04-25.md
 docs/decisions/2026-04-26.md
 docs/decisions/2026-04-27.md
@@ -148,6 +152,7 @@ docs/repo-truth/TRUTH_BOUNDARIES.md
 docs/repo-truth/source-material/project-scaffold.md
 docs/repo-truth/source-material/provider-source-intake.md
 docs/roadmaps/CURRENT_STATE_AND_NEXT.md
+docs/roadmaps/OPERATOR_TESTING_2A_3A_4A_5ABC.md
 docs/roadmaps/README.md
 docs/roadmaps/ROADMAP.md
 docs/roadmaps/features/feature-01-core-authority-kernel.md
@@ -187,6 +192,7 @@ packages/center-cli/src/identity-status.ts
 packages/center-cli/src/memory-status.ts
 packages/center-cli/src/modules.ts
 packages/center-cli/src/output.ts
+packages/center-cli/src/signer-status.ts
 packages/center-cli/src/wizard.ts
 packages/core/API.md
 packages/core/README.md
@@ -213,6 +219,15 @@ packages/keeperhub-adapter/src/receipt.ts
 packages/keeperhub-adapter/src/status.ts
 packages/keeperhub-adapter/src/types.ts
 packages/keeperhub-adapter/src/workflow-mapping.ts
+packages/signer-adapter/src/display-status.ts
+packages/signer-adapter/src/eip712.ts
+packages/signer-adapter/src/erc7730-metadata.ts
+packages/signer-adapter/src/fixture-signer.ts
+packages/signer-adapter/src/index.ts
+packages/signer-adapter/src/injected-wallet.ts
+packages/signer-adapter/src/preview.ts
+packages/signer-adapter/src/review-prompts.ts
+packages/signer-adapter/src/types.ts
 packages/zerog-memory/README.md
 packages/zerog-memory/src/audit-store.ts
 packages/zerog-memory/src/doctor.ts
@@ -252,6 +267,7 @@ tests/core/module-api.test.ts
 tests/core/state.test.ts
 tests/ens-identity/ens-identity.test.ts
 tests/keeperhub-adapter/keeperhub-adapter.test.ts
+tests/signer-adapter/signer-adapter.test.ts
 tests/zerog-memory/live-config.test.ts
 tests/zerog-memory/zerog-memory.test.ts
 tsconfig.json

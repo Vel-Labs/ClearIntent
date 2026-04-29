@@ -44,6 +44,21 @@ const wizardItems: WizardItem[] = [
     args: ["execution", "status"]
   },
   {
+    label: "Signer status",
+    description: "Inspect local signer fixture, typed-data, and metadata claim posture.",
+    args: ["signer", "status"]
+  },
+  {
+    label: "Signer preview",
+    description: "Inspect the local ClearIntent approval preview route.",
+    args: ["signer", "preview"]
+  },
+  {
+    label: "Signer metadata",
+    description: "Inspect the local ERC-7730/Clear Signing metadata route.",
+    args: ["signer", "metadata"]
+  },
+  {
     label: "Module doctor",
     description: "Check local module readiness and deferred adapters.",
     args: ["module", "doctor"]
@@ -62,6 +77,7 @@ export function renderLanding(): string {
     "  npm run --silent clearintent -- center inspect --json",
     "  npm run --silent clearintent -- identity status --json",
     "  npm run --silent clearintent -- execution status --json",
+    "  npm run --silent clearintent -- signer status --json",
     "  Emits deterministic JSON with no CLI prose.",
     "",
     "Common commands:",

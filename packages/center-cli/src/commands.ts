@@ -11,6 +11,7 @@ import { getCenterIdentityStatus } from "./identity-status";
 import { getCenterMemoryStatus, getZeroGLiveReadinessStatus, getZeroGLiveSmokeStatus } from "./memory-status";
 import { listCenterModules, runModuleDoctor } from "./modules";
 import type { CliCommandResult } from "./output";
+import { getCenterSignerStatus, type SignerRoute } from "./signer-status";
 import { renderLanding } from "./wizard";
 
 export type CliOptions = {
@@ -84,6 +85,24 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         code: reason,
         message: reason,
         path: "keeperhub"
+      }))
+    };
+  }
+  if (group === "signer" && isSignerRoute(command)) {
+    const signer = await getCenterSignerStatus(command);
+    return {
+      command: `signer ${command}`,
+      ok: false,
+      commandOk: true,
+      authorityOk: false,
+      mode: "signer-local-fixture",
+      liveProvider: false,
+      summary: signer.summary,
+      data: { signer },
+      issues: signer.degradedReasons.map((reason) => ({
+        code: reason,
+        message: reason,
+        path: "signer"
       }))
     };
   }
@@ -185,7 +204,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
     ok: false,
     commandOk: false,
     authorityOk: false,
-    summary: "Unknown command. Expected center, intent, authority, identity, execution, keeperhub, module, or memory command family.",
+    summary: "Unknown command. Expected center, intent, authority, identity, execution, keeperhub, signer, module, or memory command family.",
     data: {
       usage: [
         "center status",
@@ -196,6 +215,10 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "identity status",
         "execution status",
         "keeperhub status",
+        "signer status",
+        "signer preview",
+        "signer typed-data",
+        "signer metadata",
         "module list",
         "module doctor",
         "memory status",
@@ -207,6 +230,10 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
     },
     issues: [{ code: "unknown_command", message: parsed.positionals.join(" ") || "No command provided." }]
   };
+}
+
+function isSignerRoute(command: string | undefined): command is SignerRoute {
+  return command === "status" || command === "preview" || command === "typed-data" || command === "metadata";
 }
 
 export function parseArgs(args: string[]): { options: CliOptions; positionals: string[] } {

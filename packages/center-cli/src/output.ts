@@ -3,6 +3,7 @@ import type { CenterExecutionStatus } from "./execution-status";
 import type { CenterIdentityStatus } from "./identity-status";
 import type { CenterModule, ModuleDoctorResult } from "./modules";
 import type { CenterMemoryStatus, MemoryCheckStatus } from "./memory-status";
+import type { CenterSignerStatus } from "./signer-status";
 
 export type CliCommandResult = {
   command: string;
@@ -10,7 +11,7 @@ export type CliCommandResult = {
   commandOk?: boolean;
   authorityOk?: boolean;
   fixture?: string;
-  mode?: "fixture-only" | "local-memory" | "live-readiness" | "ens-local-fixture" | "keeperhub-local-fixture";
+  mode?: "fixture-only" | "local-memory" | "live-readiness" | "ens-local-fixture" | "keeperhub-local-fixture" | "signer-local-fixture";
   fixtureSource?: string;
   liveProvider?: boolean;
   summary: string;
@@ -67,6 +68,10 @@ export function renderHuman(result: CliCommandResult): string {
 
   if (isExecutionData(explicit.data)) {
     lines.push(...renderExecutionStatus(explicit.data.execution));
+  }
+
+  if (isSignerData(explicit.data)) {
+    lines.push(...renderSignerStatus(explicit.data.signer));
   }
 
   if (explicit.issues.length > 0) {
@@ -127,6 +132,10 @@ function isIdentityData(data: Record<string, unknown>): data is { identity: Cent
 
 function isExecutionData(data: Record<string, unknown>): data is { execution: CenterExecutionStatus } {
   return typeof data.execution === "object" && data.execution !== null;
+}
+
+function isSignerData(data: Record<string, unknown>): data is { signer: CenterSignerStatus } {
+  return typeof data.signer === "object" && data.signer !== null;
 }
 
 function renderMemoryStatus(memory: CenterMemoryStatus): string[] {
@@ -196,6 +205,35 @@ function renderExecutionStatus(execution: CenterExecutionStatus): string[] {
 function formatExecutionCheckStatus(status: CenterExecutionStatus["checks"][number]["status"]): string {
   if (status === "pass") {
     return "[PASS] pass";
+  }
+  return "[DEGRADED] degraded";
+}
+
+function renderSignerStatus(signer: CenterSignerStatus): string[] {
+  return [
+    `Signer route: ${signer.route}`,
+    `Signer claim levels: ${formatList(signer.claimLevels)}`,
+    `Signer live provider: ${signer.liveProvider ? "enabled" : "disabled"}`,
+    `Signer fixture only: ${signer.fixtureOnly ? "yes" : "no"}`,
+    `Software wallet validation: ${signer.softwareWalletValidationStatus}`,
+    `Wallet-rendered preview proven: ${signer.walletRenderedPreviewProven ? "yes" : "no"}`,
+    `Secure-device display proven: ${signer.secureDeviceDisplayProven ? "yes" : "no"}`,
+    `Vendor-approved Clear Signing: ${signer.vendorApprovedClearSigning ? "yes" : "no"}`,
+    `Signer summary: ${signer.summary}`,
+    ...signer.checks.map((check) => `- ${check.label}: ${formatSignerCheckStatus(check.status)} - ${check.detail}`),
+    `Signer degraded reasons: ${formatList(signer.degradedReasons)}`
+  ];
+}
+
+function formatSignerCheckStatus(status: CenterSignerStatus["checks"][number]["status"]): string {
+  if (status === "pass") {
+    return "[PASS] pass";
+  }
+  if (status === "blocking") {
+    return "[BLOCKED] blocking";
+  }
+  if (status === "planned") {
+    return "[PLANNED] planned";
   }
   return "[DEGRADED] degraded";
 }

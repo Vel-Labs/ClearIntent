@@ -272,7 +272,14 @@ Layering:
 - Phase 5D: WalletConnect / Mobile Validation.
 - Phase 5E: Hardware / Secure Display Validation.
 
-Status: Phase 5A and 5B may proceed locally. Phase 5C/5D/5E require real wallet utilization testing and should not claim wallet-rendered, secure-device, or vendor-approved behavior from local fixtures.
+Status: Phase 5A and 5B are complete locally with `packages/signer-adapter/`, fixture-backed tests, Center CLI signer routes, and claim levels constrained to `signer-local-fixture`, `eip712-local-fixture`, and `erc7730-local-metadata`. Phase 5C request-shape/status/docs prep is `ready-for-operator-test`, but Phase 5C/5D/5E require real wallet utilization testing and should not claim wallet-rendered, secure-device, or vendor-approved behavior from local fixtures.
+
+Audits:
+
+- 5A midpoint: `docs/audits/phase-5-signer-readable-approval/5a.5-midpoint-audit.md`
+- 5A closeout: `docs/audits/phase-5-signer-readable-approval/5a.9-closeout-audit.md`
+- 5B midpoint: `docs/audits/phase-5-signer-readable-approval/5b.5-midpoint-audit.md`
+- 5B closeout: `docs/audits/phase-5-signer-readable-approval/5b.9-closeout-audit.md`
 
 ## Phase 6: Guardian Agent Example and Agent Audit Dashboard
 
