@@ -23,10 +23,12 @@ Skipping 5A would force MetaMask, WalletConnect, hardware, and metadata work to 
 - Add conditional review prompt semantics for escalation triggers such as value threshold, high risk, new executor, degraded audit write, or policy change.
 - Add Center CLI signer status if it remains thin and honest.
 - Add focused tests and midpoint/closeout audits.
+- Keep the package generic-first. Add specialized provider adapters only when real provider behavior requires light translation over the generic contract.
 
 ## Non-goals
 
 - Real MetaMask, WalletConnect, mobile, or hardware wallet signing.
+- Heavy provider-specific adapter stacks before a provider behavior gap is proven.
 - Wallet-rendered preview claims.
 - Secure-device display claims.
 - Vendor-approved Clear Signing claims.
@@ -47,6 +49,13 @@ Skipping 5A would force MetaMask, WalletConnect, hardware, and metadata work to 
 - `docs/providers/Wallets/compatibility-levels.md`
 - `docs/providers/Wallets/generic/eip712.md`
 - `docs/providers/Wallets/generic/signer-adapter-contract.md`
+- `docs/providers/Wallets/PHASE_5_SOURCE_REVIEW.md`
+
+## Adapter posture
+
+Phase 5A should create one generic signer adapter package. Provider-specific adapters may be added later only as thin translations over the generic payload, preview, signature evidence, and display-status contracts.
+
+Reason: the repo goal is wallet-neutral authority. Specialized adapters are acceptable for real provider quirks, but they must not redefine signing truth.
 
 ## Core intent
 
@@ -187,4 +196,3 @@ npm test
 npm run typecheck
 npm run check
 ```
-

@@ -98,6 +98,7 @@ docs/providers/KeeperHub/github-map.md
 docs/providers/KeeperHub/source-notes.md
 docs/providers/README.md
 docs/providers/Wallets/README.md
+docs/providers/Wallets/PHASE_5_SOURCE_REVIEW.md
 docs/providers/Wallets/compatibility-levels.md
 docs/providers/Wallets/generic/README.md
 docs/providers/Wallets/generic/eip712.md

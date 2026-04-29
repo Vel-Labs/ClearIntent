@@ -11,6 +11,7 @@ Phase 5C may run as signer-only validation after 5A/5B, then must be repeated as
 - MetaMask is the lowest-friction real wallet path for EIP-712 typed-data signing.
 - Early signer-only validation can reveal payload, domain, chain ID, and wallet-display problems before the full provider live path is ready.
 - Keeping 5C separate from 5A/5B prevents local fixture work from being mislabeled as real wallet support.
+- Current intended sequence is 5A, then 5B, then 5C signer-only validation, then a return to 2B/3B/4B live-testnet provider validation.
 
 Skipping 5C until final demo assembly risks discovering payload or wallet display problems too late.
 
@@ -39,6 +40,13 @@ Skipping 5C until final demo assembly risks discovering payload or wallet displa
 - `docs/providers/Wallets/software/metamask/README.md`
 - `docs/providers/Wallets/generic/eip712.md`
 - `docs/providers/Wallets/compatibility-levels.md`
+- `docs/providers/Wallets/PHASE_5_SOURCE_REVIEW.md`
+
+Operator context:
+
+- Operator-reported MetaMask version entering planning: `13.27.0`.
+- Primary target: Ethereum and Ethereum testnets.
+- Phase 5C audit must record exact installed wallet version, browser, network, chain ID, and observed wallet display behavior at test time.
 
 ## Core intent
 
@@ -149,6 +157,8 @@ Signer-only 5C can run before 2B/3B/4B. End-to-end 5C should be repeated after:
 
 If testnet signer validation succeeds, prefer a livenet/mainnet follow-up only with separate audit language and no reused testnet claim.
 
+Other EVM chains may be considered only if the same EIP-712 payload/domain model works with minimal translation. Ethereum/ENS testnet validation remains the priority for this pass.
+
 ## Touchpoints
 
 - `docs/providers/Wallets/software/metamask/README.md`
@@ -182,4 +192,3 @@ Real MetaMask validation must additionally record:
 - signature output redacted if needed
 - display status observed
 - exact limitations and claim level reached
-

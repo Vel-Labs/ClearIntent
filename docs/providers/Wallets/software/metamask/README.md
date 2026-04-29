@@ -8,6 +8,10 @@ Expected path: injected provider using `eth_signTypedData_v4` or equivalent libr
 
 Local device tested: no.
 
+Operator-reported planned test version: MetaMask `13.27.0`. Treat this as operator context, not a durable current-version claim. Phase 5C validation must record the exact installed wallet version at test time.
+
+Primary network target: Ethereum and Ethereum testnets. Other EVM chains may be considered only if they require minimal translation and do not distract from the Ethereum/ENS hackathon path.
+
 ClearIntent claim wording:
 
 > MetaMask is a planned software wallet path for signing ClearIntent EIP-712 typed intents. ClearIntent will report wallet-rendered readability only after the exact payload is tested.
@@ -15,6 +19,9 @@ ClearIntent claim wording:
 Sources:
 
 - [EIP-712 specification](https://eips.ethereum.org/EIPS/eip-712)
+- [EIP-1193 provider API](https://eips.ethereum.org/EIPS/eip-1193)
+- [MetaMask sign data docs](https://metamask.github.io/mm-docs-v2/87-onboarding/wallet/how-to/sign-data/)
 - [MetaMask eth-sig-util](https://metamask.github.io/eth-sig-util/latest/)
 - [MetaMask GitHub organization](https://github.com/MetaMask)
 - [MetaMask GitHub map](github-map.md)
+- [Phase 5 source review](../../PHASE_5_SOURCE_REVIEW.md)

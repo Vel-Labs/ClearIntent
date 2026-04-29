@@ -4,6 +4,7 @@ All notable repo changes should be logged here.
 
 ## 2026-04-29
 
+- Added `docs/providers/Wallets/PHASE_5_SOURCE_REVIEW.md` with EIP-712, EIP-1193, ERC-7730, MetaMask, and Clear Signing implementation notes for Phase 5A/5B/5C.
 - Added Phase 5 implementation plans for 5A signer payload/local approval, 5B ERC-7730 metadata local scaffold, and 5C MetaMask/software-wallet validation.
 - Reflowed Phase 5 into 5A local signer payload/approval scaffold, 5B local ERC-7730 / Clear Signing metadata scaffold, 5C software wallet validation, 5D WalletConnect/mobile validation, and 5E hardware/secure-display validation.
 - Clarified that Phase 2B, 3B, and 4B are testnet-first live evidence phases, with livenet/mainnet follow-up preferred after successful testnet proof and separate claim/audit language.

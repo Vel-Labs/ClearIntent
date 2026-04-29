@@ -19,12 +19,14 @@ Skipping 5B would leave readable-signing metadata as a late demo polish task, in
 - Validate metadata shape deterministically.
 - Report claim level `erc7730-local-metadata`.
 - Keep vendor approval and secure-screen claims explicitly absent.
+- Preserve a future path from local metadata generation to chain-driven metadata after 5C and the 2B/3B/4B live-testnet path are validated.
 
 ## Non-goals
 
 - Vendor approval.
 - Secure-device display verification.
 - Wallet-rendered preview verification.
+- Chain-driven metadata claims.
 - Real wallet signing.
 - Live provider or onchain behavior.
 - Changing the canonical intent contract solely to fit metadata display.
@@ -35,10 +37,13 @@ Skipping 5B would leave readable-signing metadata as a late demo polish task, in
 - `docs/providers/Wallets/generic/erc7730.md`
 - `docs/providers/Wallets/compatibility-levels.md`
 - `docs/providers/Wallets/generic/signer-adapter-contract.md`
+- `docs/providers/Wallets/PHASE_5_SOURCE_REVIEW.md`
 
 ## Core intent
 
 Phase 5B makes ClearIntent ready to hand wallet vendors or adapter implementers a consistent readable-signing metadata artifact. It must not claim that any wallet has accepted, rendered, or securely displayed the metadata.
+
+After 5C and the live-testnet provider path are validated, a later metadata pass can bind generated metadata to selected chain/verifying contract context. That later chain-driven metadata should be separately audited.
 
 ## Canonical distinctions
 
@@ -160,4 +165,3 @@ npm test
 npm run typecheck
 npm run check
 ```
-
