@@ -6,6 +6,7 @@ All notable repo changes should be logged here.
 
 - Completed Phase 2A locally by adding `packages/zerog-memory/` with a deterministic `local-adapter` memory/audit implementation, blocked/degraded storage results, hash validation, audit-bundle rollup, focused tests, and Center CLI `memory status`, `memory check`, and `memory audit-bundle` commands.
 - Added the Phase 2A closeout audit with exact validation evidence and routed the next implementation target to Phase 2B live 0G Storage integration behind the same interfaces.
+- Added Phase 2B readiness wiring with `.env.example`, ignored local env files, official 0G SDK dependency wiring, live config/preflight checks, and `memory live-status` CLI output that fails closed until credentials, tokens, and live write/read evidence exist.
 - Updated phase planning, execution prompt, and audit templates to require Center CLI phases to account for direct human commands, agent JSON commands, and the bare `npm run clearintent` guided wizard journey.
 - Added the Phase 2A midpoint audit for the local 0G policy memory and audit scaffold, documenting `local-adapter` as the target claim level, leaving Center CLI memory command evidence as placeholders, and explicitly making no live 0G usage claim.
 - Updated Phase 2A routing docs to keep Phase 2B as the live 0G Storage backend replacement and require final local write/read/hash/audit-bundle evidence before closeout.

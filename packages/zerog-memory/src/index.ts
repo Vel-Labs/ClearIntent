@@ -1,5 +1,6 @@
 export * from "./hash";
 export * from "./audit-store";
 export * from "./doctor";
+export * from "./live-config";
 export * from "./local-memory-adapter";
 export * from "./types";

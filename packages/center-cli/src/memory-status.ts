@@ -1,7 +1,7 @@
 export type MemoryCheckStatus = "pass" | "fail" | "degraded" | "local-only";
 
 export type CenterMemoryCheck = {
-  id: "write" | "read" | "hash" | "audit-bundle" | "proof";
+  id: "config" | "sdk" | "wallet" | "funds" | "write" | "read" | "hash" | "audit-bundle" | "proof";
   label: string;
   status: MemoryCheckStatus;
   detail: string;
@@ -21,6 +21,7 @@ export type CenterMemoryStatus = {
 type ZerogMemoryModule = {
   getCenterMemoryStatus?: () => CenterMemoryStatus | Promise<CenterMemoryStatus>;
   getLocalMemoryStatus?: () => CenterMemoryStatus | Promise<CenterMemoryStatus>;
+  getZeroGLiveReadinessStatus?: () => CenterMemoryStatus | Promise<CenterMemoryStatus>;
   runLocalMemoryDoctor?: () => CenterMemoryStatus | Promise<CenterMemoryStatus>;
 };
 
@@ -39,6 +40,21 @@ export async function getCenterMemoryStatus(): Promise<CenterMemoryStatus> {
     return buildUnavailableMemoryStatus("zerog_memory_status_api_missing");
   } catch {
     return buildUnavailableMemoryStatus("zerog_memory_package_unavailable");
+  }
+}
+
+export async function getZeroGLiveReadinessStatus(): Promise<CenterMemoryStatus> {
+  try {
+    const loaded = await importZerogMemoryModule();
+    const status = await loaded.getZeroGLiveReadinessStatus?.();
+
+    if (isCenterMemoryStatus(status)) {
+      return normalizeMemoryStatus(status);
+    }
+
+    return buildUnavailableLiveStatus("zerog_live_status_api_missing");
+  } catch {
+    return buildUnavailableLiveStatus("zerog_memory_package_unavailable");
   }
 }
 
@@ -66,11 +82,28 @@ export function normalizeMemoryStatus(status: CenterMemoryStatus): CenterMemoryS
     ok: status.ok,
     providerMode: status.providerMode,
     claimLevel: status.claimLevel,
-    liveProvider: false,
+    liveProvider: status.liveProvider,
     localOnly: status.providerMode === "local" ? true : status.localOnly,
     summary: status.summary,
     checks: status.checks.map((check) => ({ ...check })),
     degradedReasons: [...status.degradedReasons]
+  };
+}
+
+function buildUnavailableLiveStatus(reasonCode: string): CenterMemoryStatus {
+  return {
+    ok: false,
+    providerMode: "live",
+    claimLevel: "local-adapter",
+    liveProvider: true,
+    localOnly: false,
+    summary: "0G live readiness could not be checked.",
+    checks: [
+      { id: "sdk", label: "0G SDK", status: "fail", detail: "0G live readiness API is unavailable." },
+      { id: "wallet", label: "Wallet credentials", status: "fail", detail: "Live credentials were not checked." },
+      { id: "funds", label: "Testnet funds", status: "degraded", detail: "Token balance was not checked." }
+    ],
+    degradedReasons: [reasonCode, "live_write_unverified"]
   };
 }
 
@@ -86,9 +119,9 @@ function isCenterMemoryStatus(value: unknown): value is CenterMemoryStatus {
   const candidate = value as Partial<CenterMemoryStatus>;
   return (
     typeof candidate.ok === "boolean" &&
-    candidate.providerMode === "local" &&
+    (candidate.providerMode === "local" || candidate.providerMode === "live") &&
     typeof candidate.claimLevel === "string" &&
-    candidate.liveProvider === false &&
+    typeof candidate.liveProvider === "boolean" &&
     typeof candidate.localOnly === "boolean" &&
     typeof candidate.summary === "string" &&
     Array.isArray(candidate.checks) &&

@@ -9,6 +9,7 @@ Generated manually from the current checkout, excluding `.git/` and `node_module
 .github/ISSUE_TEMPLATE/scaffold_change.yml
 .github/pull_request_template.md
 .github/workflows/quality-gate.yml
+.env.example
 .gitignore
 AGENTS.md
 AI_USAGE.md
@@ -147,6 +148,7 @@ docs/roadmaps/phase-1.5-center-cli-skeleton/EXECUTION_PROMPT.md
 docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md
 docs/roadmaps/phase-1d-core-lifecycle-state-api/FRESH_AGENT_HANDOFF.md
 docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md
+docs/roadmaps/phase-2-zerog-policy-memory-audit/PHASE_2B_READINESS.md
 docs/roadmaps/features/feature-01-core-authority-kernel.md
 docs/roadmaps/features/feature-02-zerog-policy-memory-audit.md
 docs/roadmaps/features/feature-03-ens-agent-identity.md
@@ -188,6 +190,7 @@ packages/zerog-memory/src/audit-store.ts
 packages/zerog-memory/src/doctor.ts
 packages/zerog-memory/src/hash.ts
 packages/zerog-memory/src/index.ts
+packages/zerog-memory/src/live-config.ts
 packages/zerog-memory/src/local-memory-adapter.ts
 packages/zerog-memory/src/types.ts
 scripts/validate-contracts.ts
@@ -218,6 +221,7 @@ tests/contracts/validate-contracts.test.ts
 tests/core/core.test.ts
 tests/core/module-api.test.ts
 tests/core/state.test.ts
+tests/zerog-memory/live-config.test.ts
 tests/zerog-memory/zerog-memory.test.ts
 tsconfig.json
 ```

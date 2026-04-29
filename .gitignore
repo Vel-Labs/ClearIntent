@@ -2,3 +2,9 @@ node_modules/
 coverage/
 dist/
 .DS_Store
+
+# Local credentials and runtime state. Keep examples tracked.
+.env
+.env.*
+!.env.example
+!.env.*.example

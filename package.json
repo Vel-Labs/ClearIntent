@@ -21,5 +21,9 @@
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@0gfoundation/0g-ts-sdk": "^1.2.6",
+    "ethers": "^6.13.1"
   }
 }

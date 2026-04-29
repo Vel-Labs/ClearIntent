@@ -84,7 +84,12 @@ export type StorageIssue = {
     | "mismatched_hash"
     | "missing_proof"
     | "incomplete_audit_write"
-    | "provider_mode_unsupported";
+    | "provider_mode_unsupported"
+    | "missing_credentials"
+    | "missing_tokens"
+    | "sdk_unavailable"
+    | "live_writes_disabled"
+    | "live_write_unverified";
   message: string;
   artifact?: {
     family?: ArtifactFamily;
@@ -141,7 +146,7 @@ export type CenterMemoryStatus = {
   localOnly: boolean;
   summary: string;
   checks: {
-    id: "write" | "read" | "hash" | "audit-bundle" | "proof";
+    id: "config" | "sdk" | "wallet" | "funds" | "write" | "read" | "hash" | "audit-bundle" | "proof";
     label: string;
     status: MemoryCheckStatus;
     detail: string;

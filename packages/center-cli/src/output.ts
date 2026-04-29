@@ -8,9 +8,9 @@ export type CliCommandResult = {
   commandOk?: boolean;
   authorityOk?: boolean;
   fixture?: string;
-  mode?: "fixture-only" | "local-memory";
+  mode?: "fixture-only" | "local-memory" | "live-readiness";
   fixtureSource?: string;
-  liveProvider?: false;
+  liveProvider?: boolean;
   summary: string;
   data: Record<string, unknown>;
   issues: ResultIssue[];

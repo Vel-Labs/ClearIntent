@@ -180,6 +180,34 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(result.stdout).toContain("Memory live provider: disabled");
   });
 
+  it("reports 0G live readiness blockers without claiming live writes", async () => {
+    const result = await runCli(["memory", "live-status", "--json"]);
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      ok: boolean;
+      mode: string;
+      liveProvider: boolean;
+      data: { memory: { providerMode: string; claimLevel: string; checks: { id: string; status: string }[]; degradedReasons: string[] } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.startsWith("{")).toBe(true);
+    expect(parsed.command).toBe("memory live-status");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.mode).toBe("live-readiness");
+    expect(parsed.liveProvider).toBe(true);
+    expect(parsed.data.memory.providerMode).toBe("live");
+    expect(parsed.data.memory.claimLevel).toBe("local-adapter");
+    expect(parsed.data.memory.checks.map((check) => check.id)).toEqual(["config", "sdk", "wallet", "funds", "write", "read", "proof"]);
+    expect(parsed.data.memory.degradedReasons).toEqual(
+      expect.arrayContaining(["missing_credentials", "live_writes_disabled", "missing_tokens", "live_write_unverified"])
+    );
+  });
+
   it("renders successful local memory adapter status when the integration API provides it", () => {
     const doctor = buildModuleDoctorResult({
       ok: true,

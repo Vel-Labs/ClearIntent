@@ -6,7 +6,7 @@ import {
   type ResultIssue
 } from "../../core/src";
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
-import { getCenterMemoryStatus } from "./memory-status";
+import { getCenterMemoryStatus, getZeroGLiveReadinessStatus } from "./memory-status";
 import { listCenterModules, runModuleDoctor } from "./modules";
 import type { CliCommandResult } from "./output";
 import { renderLanding } from "./wizard";
@@ -103,6 +103,24 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
       }))
     };
   }
+  if (group === "memory" && command === "live-status") {
+    const memory = await getZeroGLiveReadinessStatus();
+    return {
+      command: "memory live-status",
+      ok: memory.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "live-readiness",
+      liveProvider: true,
+      summary: "0G live readiness preflight checked config, SDK importability, and live-write blockers without uploading.",
+      data: { memory },
+      issues: memory.degradedReasons.map((reason) => ({
+        code: "memory_degraded",
+        message: reason,
+        path: "zerog"
+      }))
+    };
+  }
 
   return {
     command: "unknown",
@@ -121,7 +139,8 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "module doctor",
         "memory status",
         "memory check",
-        "memory audit-bundle"
+        "memory audit-bundle",
+        "memory live-status"
       ]
     },
     issues: [{ code: "unknown_command", message: parsed.positionals.join(" ") || "No command provided." }]
