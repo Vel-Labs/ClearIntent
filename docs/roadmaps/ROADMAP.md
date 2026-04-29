@@ -189,6 +189,8 @@ Goal: use ENS as the canonical agent identity and discovery layer.
 
 Primary file: `docs/roadmaps/features/feature-03-ens-agent-identity.md`
 
+Implementation plan: `docs/roadmaps/phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md`
+
 Dependencies:
 
 - Phase 1 policy schema
@@ -201,6 +203,13 @@ Key deliverables:
 - agent card schema
 - policy and audit pointer resolution
 - optional subname role-gate proof
+
+Layering:
+
+- Phase 3A: local/mock ENS identity scaffold with agent card schema, resolver interface, text-record mapping, fixtures, tests, and honest `ens-local-fixture` claim level.
+- Phase 3B: live ENS/testnet record read and authority-flow binding after Phase 2B live 0G Storage smoke testing closes.
+
+Status: Phase 3A may proceed while Phase 2B waits on local `.env` values, wallet credentials, and funded testnet tokens. Phase 3B remains gated on Phase 2B closeout evidence.
 
 ## Phase 4: KeeperHub Execution Adapter
 

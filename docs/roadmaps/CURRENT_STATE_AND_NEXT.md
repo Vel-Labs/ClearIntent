@@ -16,13 +16,22 @@ Phase 1.5 is complete. `packages/center-cli/` now provides the fixture-backed Ce
 
 Phase 2A is complete locally. `packages/zerog-memory/` now provides the local deterministic memory/audit adapter with `MemoryAdapter`, `AuditStore`, artifact envelope/ref types, storage results with blocked/degraded states, stable payload hashing, local write/read validation, audit-bundle rollup, and a Center-facing local memory doctor. `packages/center-cli/` exposes `module doctor`, `memory status`, `memory check`, and `memory audit-bundle` in human-readable and deterministic JSON modes. The reached claim level is `local-adapter`; live 0G proof remains explicitly absent as `missing_proof` / `live_provider_disabled`. The closeout audit is `docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md`.
 
+Phase 2B is readiness-stubbed but not closed. The repo has live 0G SDK dependency wiring, `.env.example`, live config parsing, `memory live-status`, and `memory live-smoke` entrypoints. Live upload/readback/hash evidence remains gated on local `.env` values, wallet credentials, explicit live-write opt-in, and funded testnet tokens. Until that smoke pass succeeds, the claim level remains below `0g-write-read`.
+
 ## Immediate next action
 
-Start Phase 2B: live 0G Storage integration behind the Phase 2A interfaces. Phase 2 is split intentionally:
+Start Phase 3A: ENS Agent Identity Local Scaffold. Phase 3A may proceed now because it can use local/mock ENS fixtures and the existing Phase 2A artifact pointer shape without claiming live ENS or live 0G proof.
+
+Phase 2 is split intentionally:
 
 - Phase 2A proved local deterministic artifact storage, hash validation, audit bundle rollup, degraded-state semantics, and Center CLI memory status without live credentials.
 - Phase 2B connects the same interfaces to real 0G Storage after credentials, SDK imports, endpoints, and proof level are verified.
-- Phase 2C is optional 0G Compute risk/reflection and remains deferred until storage persistence is proven.
+- Phase 2C is optional 0G Compute risk/reflection. It is a parking lane for advisory compute output and remains deferred until storage persistence is proven; it does not block Phase 3A or 3B.
+
+Phase 3 is split intentionally:
+
+- Phase 3A defines local/mock ENS identity shape: agent card schema, resolver interface, text-record mapping, fixture records, tests, and honest `ens-local-fixture` claim level.
+- Phase 3B performs live ENS/testnet reads and binds ENS-derived identity or policy evidence after Phase 2B live 0G closeout evidence exists.
 
 Current Phase 2A documentation state:
 
@@ -31,18 +40,23 @@ Current Phase 2A documentation state:
 - documented claim level: `local-adapter`
 - live 0G claim: none
 - Phase 2B requirement: replace the local backend with real 0G write/read behavior without changing artifact semantics, and record the exact claim level reached.
+- Phase 2B current gate: local `.env` values, wallet credentials, explicit live-write opt-in, and funded testnet tokens.
 
 Relevant phase packages:
 
 - `docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md`
 - `docs/roadmaps/phase-1.5-center-cli-skeleton/EXECUTION_PROMPT.md`
 - `docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md`
+- `docs/roadmaps/phase-2-zerog-policy-memory-audit/PHASE_2B_READINESS.md`
+- `docs/roadmaps/phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md`
 
 Rationale for the next route:
 
 - Phase 1 proved local contract/core authority behavior.
 - Phase 1.5 proved a local Center CLI can render core state and authority evaluation without becoming an authority source.
-- Phase 2A should establish the memory/audit adapter shape before other provider modules depend on storage truth.
+- Phase 2A established the memory/audit adapter shape before other provider modules depend on storage truth.
+- Phase 2B can finish quickly once testnet funds are available, but waiting on tokens should not block local ENS identity shape.
+- Phase 3A should make ENS identity fixture-driven and testable before live 3B binding or demo integration.
 - Future ENS, KeeperHub, signer, notification, and demo layers should plug into the Center/module shape instead of creating fragmented operator surfaces.
 
 Structure for usage:
@@ -82,19 +96,27 @@ npm run typecheck
 npm run check
 ```
 
+## Recommended sequencing
+
+1. Implement Phase 3A local ENS scaffold.
+2. When `.env` values and tokens are available, close Phase 2B with live 0G upload/readback/hash evidence.
+3. Implement Phase 3B live ENS binding against the proven 2B artifact semantics.
+4. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
+
 ## Recommended parallelization
 
 Now that the Center CLI skeleton is stable:
 
-- one agent can build ENS resolver scaffolding
-- one agent can build 0G storage scaffolding
+- one agent can build ENS resolver scaffolding for Phase 3A
+- one agent can prepare the funded-token Phase 2B smoke pass without committing secrets
 - one agent can build KeeperHub adapter scaffolding
 - one agent can build signer adapter scaffolding
 - one human should own integration and final demo truth
 
 ## Do not start yet
 
-- provider adapter implementation
+- Phase 3B live ENS binding before Phase 2B live 0G closeout
+- Phase 2C 0G Compute unless explicitly selected as a demo accelerator
 - demo integration
 - webhook delivery
 - local OS notification delivery

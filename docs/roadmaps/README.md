@@ -12,6 +12,11 @@ CURRENT_STATE_AND_NEXT.md
 phase-1.5-center-cli-skeleton/
   IMPLEMENTATION_PLAN.md
   EXECUTION_PROMPT.md
+phase-2-zerog-policy-memory-audit/
+  IMPLEMENTATION_PLAN.md
+  PHASE_2B_READINESS.md
+phase-3-ens-agent-identity/
+  IMPLEMENTATION_PLAN.md
 features/
   feature-01-core-authority-kernel.md
   feature-02-zerog-policy-memory-audit.md

@@ -65,6 +65,7 @@ docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md
 docs/decisions/2026-04-25.md
 docs/decisions/2026-04-26.md
 docs/decisions/2026-04-27.md
+docs/decisions/2026-04-29.md
 docs/decisions/README.md
 docs/governance/AUDIT_PHILOSOPHY.md
 docs/governance/README.md
@@ -149,6 +150,7 @@ docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md
 docs/roadmaps/phase-1d-core-lifecycle-state-api/FRESH_AGENT_HANDOFF.md
 docs/roadmaps/phase-2-zerog-policy-memory-audit/IMPLEMENTATION_PLAN.md
 docs/roadmaps/phase-2-zerog-policy-memory-audit/PHASE_2B_READINESS.md
+docs/roadmaps/phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md
 docs/roadmaps/features/feature-01-core-authority-kernel.md
 docs/roadmaps/features/feature-02-zerog-policy-memory-audit.md
 docs/roadmaps/features/feature-03-ens-agent-identity.md

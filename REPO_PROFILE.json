@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "repoName": "ClearIntent",
   "purpose": "Reusable authority layer for autonomous onchain agents. Agents produce bounded intents, humans approve through explicit review and readable signing flows, and executors act only after policy, nonce, deadline, and authority checks pass.",
-  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, Phase 1.5 Center CLI skeleton, and Phase 2A local 0G policy memory/audit scaffold are complete locally. The current implementation target is Phase 2B live 0G Storage integration behind the Phase 2A memory interfaces.",
+  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, Phase 1.5 Center CLI skeleton, and Phase 2A local 0G policy memory/audit scaffold are complete locally. Phase 2B live 0G Storage is readiness-stubbed pending local env values, credentials, live-write opt-in, and funded testnet tokens. The current implementation target is Phase 3A ENS Agent Identity local scaffold.",
   "canonicalPaths": {
     "agentPolicy": "AGENTS.md",
     "repoProfile": "REPO_PROFILE.json",
@@ -39,7 +39,11 @@
   "plannedCanonicalPaths": {
     "zerogMemoryPackage": "packages/zerog-memory/",
     "zerogMemoryTests": "tests/zerog-memory/",
-    "phase2AuditDirectory": "docs/audits/phase-2-zerog-policy-memory-audit/"
+    "phase2AuditDirectory": "docs/audits/phase-2-zerog-policy-memory-audit/",
+    "ensIdentityPackage": "packages/ens-identity/",
+    "ensIdentityTests": "tests/ens-identity/",
+    "phase3RoadmapPackage": "docs/roadmaps/phase-3-ens-agent-identity/",
+    "phase3AuditDirectory": "docs/audits/phase-3-ens-agent-identity/"
   },
   "readFirstFiles": [
     "AGENTS.md",
@@ -103,7 +107,6 @@
     "marketplace or hosted service features"
   ],
   "forbiddenEarlyScopeDirectories": [
-    "packages/ens-identity",
     "packages/zerog-compute",
     "packages/keeperhub-adapter",
     "packages/signer-hardware",

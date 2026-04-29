@@ -2,6 +2,13 @@
 
 All notable repo changes should be logged here.
 
+## 2026-04-29
+
+- Split Phase 3 into Phase 3A local/mock ENS identity scaffold and Phase 3B live ENS binding, with Phase 3B gated on Phase 2B live 0G upload/readback/hash closeout evidence.
+- Added `docs/roadmaps/phase-3-ens-agent-identity/IMPLEMENTATION_PLAN.md` covering 3A and 3B scope, claim levels, audit points, Center CLI expectations, validation, and deferred boundaries.
+- Updated roadmap/current-state routing to allow Phase 3A to proceed while Phase 2B waits on local `.env` values, wallet credentials, live-write opt-in, and funded testnet tokens.
+- Clarified Phase 2C as an optional 0G Compute advisory lane that does not block Phase 3A or 3B.
+
 ## 2026-04-28
 
 - Completed Phase 2A locally by adding `packages/zerog-memory/` with a deterministic `local-adapter` memory/audit implementation, blocked/degraded storage results, hash validation, audit-bundle rollup, focused tests, and Center CLI `memory status`, `memory check`, and `memory audit-bundle` commands.
