@@ -2,6 +2,11 @@
 
 All notable repo changes should be logged here.
 
+## 2026-04-30
+
+- Added Center CLI `test local` aggregate operator check with simple local/onchain indicators for contracts, core lifecycle, 0G, ENS, KeeperHub, signer payload, metadata, and cross-layer posture without promoting live claims.
+- Updated operator testing docs and Center CLI validation so the aggregate local check is available in human and JSON lanes.
+
 ## 2026-04-29
 
 - Added Phase 5A and 5B midpoint/closeout audit artifacts under `docs/audits/phase-5-signer-readable-approval/` with exact local validation results.

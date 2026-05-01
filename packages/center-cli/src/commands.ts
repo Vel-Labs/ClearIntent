@@ -8,6 +8,7 @@ import {
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
 import { getCenterExecutionStatus } from "./execution-status";
 import { getCenterIdentityStatus } from "./identity-status";
+import { runCenterLocalTestSummary } from "./local-test";
 import { getCenterMemoryStatus, getZeroGLiveReadinessStatus, getZeroGLiveSmokeStatus } from "./memory-status";
 import { listCenterModules, runModuleDoctor } from "./modules";
 import type { CliCommandResult } from "./output";
@@ -49,6 +50,27 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
   }
   if (group === "authority" && command === "evaluate") {
     return buildEvaluationResult(parsed.options.fixture);
+  }
+  if (group === "test" && command === "local") {
+    const testSummary = await runCenterLocalTestSummary();
+    return {
+      command: "test local",
+      ok: testSummary.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "fixture-only",
+      fixtureSource: "contracts/examples/",
+      liveProvider: false,
+      summary: testSummary.summary,
+      data: { testSummary },
+      issues: testSummary.items
+        .filter((item) => item.local.status === "blocked")
+        .map((item) => ({
+          code: "local_test_blocked",
+          message: item.local.detail,
+          path: item.id
+        }))
+    };
   }
   if (group === "identity" && command === "status") {
     const identity = await getCenterIdentityStatus();
@@ -204,7 +226,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
     ok: false,
     commandOk: false,
     authorityOk: false,
-    summary: "Unknown command. Expected center, intent, authority, identity, execution, keeperhub, signer, module, or memory command family.",
+    summary: "Unknown command. Expected center, intent, authority, test, identity, execution, keeperhub, signer, module, or memory command family.",
     data: {
       usage: [
         "center status",
@@ -212,6 +234,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "intent validate",
         "intent state",
         "authority evaluate",
+        "test local",
         "identity status",
         "execution status",
         "keeperhub status",

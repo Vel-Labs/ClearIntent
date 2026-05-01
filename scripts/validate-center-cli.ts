@@ -34,6 +34,18 @@ type CenterJson = {
       secureDeviceDisplayProven?: boolean;
       vendorApprovedClearSigning?: boolean;
     };
+    testSummary?: {
+      ok?: boolean;
+      items?: {
+        id?: string;
+        local?: {
+          status?: string;
+        };
+        onchain?: {
+          status?: string;
+        };
+      }[];
+    };
   };
 };
 
@@ -106,6 +118,28 @@ async function main(): Promise<void> {
     failures.push("bare clearintent landing did not include both human and AI lane labels");
   }
 
+  const localTest = await run(["run", "--silent", "clearintent", "--", "test", "local", "--json"]);
+  assertExit("test local exits 0 for local aggregate readout", localTest, 0, failures);
+  const localTestJson = parseJson("test local", localTest.stdout, failures);
+  if (localTestJson !== undefined) {
+    assertEqual("test local command", localTestJson.command, "test local", failures);
+    assertEqual("test local commandOk", localTestJson.commandOk, true, failures);
+    assertEqual("test local authorityOk", localTestJson.authorityOk, false, failures);
+    assertEqual("test local ok", localTestJson.ok, true, failures);
+    assertEqual("test local liveProvider", localTestJson.liveProvider, false, failures);
+    const items = localTestJson.data?.testSummary?.items ?? [];
+    for (const id of ["contracts", "core", "zerog", "ens", "keeperhub", "signer-payload", "metadata", "cross-layer"]) {
+      const item = items.find((candidate) => candidate.id === id);
+      if (item === undefined) {
+        failures.push(`test local missing item ${id}`);
+      } else {
+        assertEqual(`test local ${id} local status`, item.local?.status, "tested", failures);
+      }
+    }
+    const zerog = items.find((candidate) => candidate.id === "zerog");
+    assertEqual("test local 0G onchain status", zerog?.onchain?.status, "not-tested", failures);
+  }
+
   for (const route of ["status", "preview", "typed-data", "metadata"]) {
     const signer = await run(["run", "--silent", "clearintent", "--", "signer", route, "--json"]);
     assertExit(`signer ${route} exits 0 for local readout`, signer, 0, failures);
@@ -140,6 +174,7 @@ async function main(): Promise<void> {
   console.log("PASS identity status preserves ens-local-fixture and disabled live provider claims");
   console.log("PASS execution status preserves keeperhub-local-fixture and no live/onchain claims");
   console.log("PASS signer routes preserve local-only claim levels and no real-wallet claims");
+  console.log("PASS test local aggregates local checks without promoting live/onchain claims");
   console.log("PASS bare clearintent exposes human and AI lanes");
   console.log("center cli validation ok");
 }

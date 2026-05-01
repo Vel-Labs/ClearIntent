@@ -29,6 +29,7 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(result.stdout).toContain("Current mode: fixture-only");
     expect(result.stdout).toContain("execution status");
     expect(result.stdout).toContain("signer status");
+    expect(result.stdout).toContain("test local");
   });
 
   it("emits deterministic JSON with no leading prose", async () => {
@@ -370,6 +371,65 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(result.stdout).toContain("Wallet-rendered preview proven: no");
     expect(result.stdout).toContain("Secure-device display proven: no");
     expect(result.stdout).toContain("Vendor-approved Clear Signing: no");
+  });
+
+  it("runs an aggregate local layer test with local and onchain status columns", async () => {
+    const result = await runCli(["test", "local", "--json"]);
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      ok: boolean;
+      liveProvider: boolean;
+      data: {
+        testSummary: {
+          ok: boolean;
+          items: {
+            id: string;
+            label: string;
+            local: { status: string; indicator: string; claimLevel?: string };
+            onchain: { status: string; indicator: string };
+          }[];
+        };
+      };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.startsWith("{")).toBe(true);
+    expect(parsed.command).toBe("test local");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.ok).toBe(true);
+    expect(parsed.liveProvider).toBe(false);
+    expect(parsed.data.testSummary.ok).toBe(true);
+    expect(parsed.data.testSummary.items.map((item) => item.id)).toEqual([
+      "contracts",
+      "core",
+      "zerog",
+      "ens",
+      "keeperhub",
+      "signer-payload",
+      "metadata",
+      "cross-layer"
+    ]);
+    expect(parsed.data.testSummary.items.every((item) => item.local.status === "tested")).toBe(true);
+    expect(parsed.data.testSummary.items.find((item) => item.id === "zerog")?.onchain.status).toBe("not-tested");
+    expect(parsed.data.testSummary.items.find((item) => item.id === "metadata")?.local.claimLevel).toBe("erc7730-local-metadata");
+  });
+
+  it("renders aggregate local layer test as simple human indicators", async () => {
+    const result = await runCli(["test", "local"]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("ClearIntent test local");
+    expect(result.stdout).toContain("Contracts tested: local ✅ tested");
+    expect(result.stdout).toContain("0G tested: local ✅ tested (local-adapter)");
+    expect(result.stdout).toContain("ENS tested: local ✅ tested (ens-local-fixture)");
+    expect(result.stdout).toContain("KeeperHub tested: local ✅ tested (keeperhub-local-fixture)");
+    expect(result.stdout).toContain("Signer payload tested: local ✅ tested");
+    expect(result.stdout).toContain("Metadata tested: local ✅ tested (erc7730-local-metadata)");
+    expect(result.stdout).toContain("End to End / Cross Layer tested: local ✅ tested");
+    expect(result.stdout).toContain("onchain [ ] not tested");
   });
 
   it("exposes a blocked live smoke command until credentials and funds are present", async () => {

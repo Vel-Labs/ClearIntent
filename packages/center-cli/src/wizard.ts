@@ -34,6 +34,11 @@ const wizardItems: WizardItem[] = [
     args: ["authority", "evaluate"]
   },
   {
+    label: "Local layer test",
+    description: "Run aggregate local tests for contracts, core, memory, identity, execution, signer, metadata, and cross-layer posture.",
+    args: ["test", "local"]
+  },
+  {
     label: "Identity status",
     description: "Inspect the Phase 3A ENS identity fixture route.",
     args: ["identity", "status"]
@@ -78,6 +83,7 @@ export function renderLanding(): string {
     "  npm run --silent clearintent -- identity status --json",
     "  npm run --silent clearintent -- execution status --json",
     "  npm run --silent clearintent -- signer status --json",
+    "  npm run --silent clearintent -- test local --json",
     "  Emits deterministic JSON with no CLI prose.",
     "",
     "Common commands:",

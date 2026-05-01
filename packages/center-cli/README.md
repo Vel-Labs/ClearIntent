@@ -44,6 +44,8 @@ npm run --silent clearintent -- signer status --json
 npm run --silent clearintent -- signer preview --json
 npm run --silent clearintent -- signer typed-data --json
 npm run --silent clearintent -- signer metadata --json
+npm run clearintent -- test local
+npm run --silent clearintent -- test local --json
 npm run clearintent -- module list
 npm run --silent clearintent -- module doctor --json
 ```
@@ -87,3 +89,5 @@ Blocked fixture output means the fixture is missing required evidence or intenti
 `execution status` and `keeperhub status` are Phase 4A local fixture readouts. They report `Mode: keeperhub-local-fixture`, `Live provider: disabled`, no live KeeperHub/onchain claim, no KeeperHub authority approval, and `Authority: blocked` because execution status is inspection, not approval.
 
 `signer status`, `signer preview`, `signer typed-data`, and `signer metadata` are Phase 5A/5B local signer inspection routes. They report `Mode: signer-local-fixture`, `Live provider: disabled`, `Authority: blocked`, and no real-wallet, wallet-rendered preview, secure-device display, or vendor-approved Clear Signing claim. Claim levels are limited to local signer fixture, local EIP-712 fixture, and local ERC-7730 metadata vocabulary.
+
+`test local` runs the local operator checklist as one aggregate CLI command. It reports simple indicators for contracts, core lifecycle, 0G, ENS, KeeperHub, signer payload, metadata, and cross-layer posture. The local column can show `✅ tested`; live/onchain columns remain `not tested` or `not needed` until a dedicated live phase produces evidence.

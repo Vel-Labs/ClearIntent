@@ -152,6 +152,7 @@ docs/repo-truth/TRUTH_BOUNDARIES.md
 docs/repo-truth/source-material/project-scaffold.md
 docs/repo-truth/source-material/provider-source-intake.md
 docs/roadmaps/CURRENT_STATE_AND_NEXT.md
+docs/roadmaps/OPERATOR_TESTING_FINDINGS_2A_3A_4A_5ABC.md
 docs/roadmaps/OPERATOR_TESTING_2A_3A_4A_5ABC.md
 docs/roadmaps/README.md
 docs/roadmaps/ROADMAP.md
@@ -189,6 +190,7 @@ packages/center-cli/src/env.ts
 packages/center-cli/src/execution-status.ts
 packages/center-cli/src/fixtures.ts
 packages/center-cli/src/identity-status.ts
+packages/center-cli/src/local-test.ts
 packages/center-cli/src/memory-status.ts
 packages/center-cli/src/modules.ts
 packages/center-cli/src/output.ts

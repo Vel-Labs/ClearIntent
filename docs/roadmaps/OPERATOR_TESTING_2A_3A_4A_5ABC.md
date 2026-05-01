@@ -623,6 +623,27 @@ Do not mark `software-wallet-tested` until this exists:
 
 Run this after individual sections pass.
 
+Single-command human summary:
+
+```bash
+npm run clearintent -- test local
+```
+
+Single-command JSON summary:
+
+```bash
+npm run --silent clearintent -- test local --json
+```
+
+Expected behavior:
+
+- contracts, core lifecycle, 0G, ENS, KeeperHub, signer payload, metadata, and cross-layer local checks show `✅ tested`
+- live/onchain columns show `not tested` or `not needed`
+- no live/onchain claim is promoted from local evidence
+- next actions point to `memory live-status`, `memory live-smoke`, 5C wallet validation, then 3B/4B
+
+Expanded command sequence:
+
 ```bash
 npm run --silent clearintent -- memory check --json
 npm run --silent clearintent -- identity status --json

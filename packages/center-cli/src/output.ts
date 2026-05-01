@@ -1,6 +1,7 @@
 import { stableStringify, type ResultIssue } from "../../core/src";
 import type { CenterExecutionStatus } from "./execution-status";
 import type { CenterIdentityStatus } from "./identity-status";
+import type { CenterLocalTestSummary } from "./local-test";
 import type { CenterModule, ModuleDoctorResult } from "./modules";
 import type { CenterMemoryStatus, MemoryCheckStatus } from "./memory-status";
 import type { CenterSignerStatus } from "./signer-status";
@@ -74,6 +75,10 @@ export function renderHuman(result: CliCommandResult): string {
     lines.push(...renderSignerStatus(explicit.data.signer));
   }
 
+  if (isTestSummaryData(explicit.data)) {
+    lines.push(...renderTestSummary(explicit.data.testSummary));
+  }
+
   if (explicit.issues.length > 0) {
     lines.push("Issues:");
     for (const issue of explicit.issues) {
@@ -136,6 +141,10 @@ function isExecutionData(data: Record<string, unknown>): data is { execution: Ce
 
 function isSignerData(data: Record<string, unknown>): data is { signer: CenterSignerStatus } {
   return typeof data.signer === "object" && data.signer !== null;
+}
+
+function isTestSummaryData(data: Record<string, unknown>): data is { testSummary: CenterLocalTestSummary } {
+  return typeof data.testSummary === "object" && data.testSummary !== null;
 }
 
 function renderMemoryStatus(memory: CenterMemoryStatus): string[] {
@@ -236,4 +245,42 @@ function formatSignerCheckStatus(status: CenterSignerStatus["checks"][number]["s
     return "[PLANNED] planned";
   }
   return "[DEGRADED] degraded";
+}
+
+function renderTestSummary(summary: CenterLocalTestSummary): string[] {
+  const lines = [
+    `Tested at: ${summary.testedAt}`,
+    "Layer test summary:",
+    "Layer | Local | Onchain / Live"
+  ];
+
+  for (const item of summary.items) {
+    lines.push(
+      `${item.label}: local ${item.local.indicator} ${formatTestStatus(item.local.status)}${
+        item.local.claimLevel === undefined ? "" : ` (${item.local.claimLevel})`
+      } | onchain ${item.onchain.indicator} ${formatTestStatus(item.onchain.status)}`
+    );
+    lines.push(`  local: ${item.local.detail}`);
+    lines.push(`  onchain: ${item.onchain.detail}`);
+  }
+
+  lines.push("Next actions:");
+  for (const action of summary.nextActions) {
+    lines.push(`- ${action}`);
+  }
+
+  return lines;
+}
+
+function formatTestStatus(status: CenterLocalTestSummary["items"][number]["local"]["status"]): string {
+  if (status === "tested") {
+    return "tested";
+  }
+  if (status === "not-needed") {
+    return "not needed";
+  }
+  if (status === "blocked") {
+    return "blocked";
+  }
+  return "not tested";
 }
