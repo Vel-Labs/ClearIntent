@@ -422,14 +422,20 @@ describe("ClearIntent Center CLI skeleton", () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("ClearIntent test local");
-    expect(result.stdout).toContain("Contracts tested: local ✅ tested");
-    expect(result.stdout).toContain("0G tested: local ✅ tested (local-adapter)");
-    expect(result.stdout).toContain("ENS tested: local ✅ tested (ens-local-fixture)");
-    expect(result.stdout).toContain("KeeperHub tested: local ✅ tested (keeperhub-local-fixture)");
-    expect(result.stdout).toContain("Signer payload tested: local ✅ tested");
-    expect(result.stdout).toContain("Metadata tested: local ✅ tested (erc7730-local-metadata)");
-    expect(result.stdout).toContain("End to End / Cross Layer tested: local ✅ tested");
-    expect(result.stdout).toContain("onchain [ ] not tested");
+    expect(result.stdout).toContain("Layer test summary");
+    expect(result.stdout).toContain("------------------------------------------------------------");
+    expect(result.stdout).toContain("Contracts tested");
+    expect(result.stdout).toContain("0G tested");
+    expect(result.stdout).toContain("ENS tested");
+    expect(result.stdout).toContain("KeeperHub tested");
+    expect(result.stdout).toContain("Signer payload tested");
+    expect(result.stdout).toContain("Metadata tested");
+    expect(result.stdout).toContain("End to End / Cross Layer tested");
+    expect(result.stdout).toContain("Local:        ✅ tested (local-adapter)");
+    expect(result.stdout).toContain("Local:        ✅ tested (ens-local-fixture)");
+    expect(result.stdout).toContain("Local:        ✅ tested (keeperhub-local-fixture)");
+    expect(result.stdout).toContain("Local:        ✅ tested (erc7730-local-metadata)");
+    expect(result.stdout).toContain("Onchain/live: [ ] not tested");
   });
 
   it("exposes a blocked live smoke command until credentials and funds are present", async () => {

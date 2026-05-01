@@ -250,20 +250,28 @@ function formatSignerCheckStatus(status: CenterSignerStatus["checks"][number]["s
 function renderTestSummary(summary: CenterLocalTestSummary): string[] {
   const lines = [
     `Tested at: ${summary.testedAt}`,
-    "Layer test summary:",
-    "Layer | Local | Onchain / Live"
+    "",
+    "Layer test summary"
   ];
 
   for (const item of summary.items) {
+    lines.push("");
+    lines.push("------------------------------------------------------------");
+    lines.push(item.label);
+    lines.push("------------------------------------------------------------");
     lines.push(
-      `${item.label}: local ${item.local.indicator} ${formatTestStatus(item.local.status)}${
+      `Local:        ${item.local.indicator} ${formatTestStatus(item.local.status)}${
         item.local.claimLevel === undefined ? "" : ` (${item.local.claimLevel})`
-      } | onchain ${item.onchain.indicator} ${formatTestStatus(item.onchain.status)}`
+      }`
     );
-    lines.push(`  local: ${item.local.detail}`);
-    lines.push(`  onchain: ${item.onchain.detail}`);
+    lines.push(`Onchain/live: ${item.onchain.indicator} ${formatTestStatus(item.onchain.status)}`);
+    lines.push("");
+    lines.push(`Local detail: ${item.local.detail}`);
+    lines.push(`Live detail:  ${item.onchain.detail}`);
   }
 
+  lines.push("");
+  lines.push("------------------------------------------------------------");
   lines.push("Next actions:");
   for (const action of summary.nextActions) {
     lines.push(`- ${action}`);
