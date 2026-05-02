@@ -206,10 +206,14 @@ function buildConfigured(env: NodeJS.ProcessEnv): CredentialSafetyStatus["config
     zeroGWalletAddress:
       walletAddress === undefined ? "missing" : /^0x[a-fA-F0-9]{40}$/.test(walletAddress) ? "present" : "invalid",
     zeroGPrivateKey:
-      privateKey === undefined ? "missing" : /^0x[a-fA-F0-9]{64}$/.test(privateKey) ? "present" : "invalid",
+      privateKey === undefined ? "missing" : isEvmPrivateKey(privateKey) ? "present" : "invalid",
     zeroGLiveWrites: parseBoolean(env[envKeys.liveWrites]),
     zeroGRequireProof: parseBoolean(env[envKeys.requireProof])
   };
+}
+
+function isEvmPrivateKey(value: string): boolean {
+  return /^(0x)?[a-fA-F0-9]{64}$/.test(value);
 }
 
 function nextActions(liveReady: boolean, liveWritesEnabled: boolean): string[] {

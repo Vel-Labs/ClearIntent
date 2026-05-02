@@ -4,6 +4,9 @@ import {
   ENS_IDENTITY_RECORD_KEYS,
   LiveLookupUnavailableResolver,
   LocalEnsResolver,
+  LiveEnsResolver,
+  getEnsBindingPreparationStatus,
+  getEnsLiveReadStatus,
   localAgentCardFixture,
   localEnsIdentityFixture,
   resolveEnsIdentity,
@@ -122,6 +125,119 @@ describe("ENS identity local scaffold", () => {
     expect(missingResolver.issues.map((issue) => issue.code)).toContain("missing_resolver");
     expect(unsupportedNetwork.issues.map((issue) => issue.code)).toContain("unsupported_network");
   });
+
+  it("reads live ENS-shaped records through the live resolver interface", async () => {
+    const resolver = new LiveEnsResolver({
+      providerMode: "live",
+      chainId: 1,
+      networkName: "mainnet",
+      rpcUrl: "mock://ens",
+      provider: fakeProvider({
+        address: localAgentCardFixture.controllerAddress,
+        textRecords: localEnsIdentityFixture.textRecords
+      })
+    });
+
+    const result = await resolver.resolveName({ ensName: "guardian.agent.clearintent.eth" });
+
+    expect(result.ok).toBe(true);
+    expect(result.value?.ensName).toBe("guardian.agent.clearintent.eth");
+    expect(result.value?.address).toBe(localAgentCardFixture.controllerAddress);
+    expect(result.value?.textRecords[ENS_IDENTITY_RECORD_KEYS.policyHash]).toBe(localAgentCardFixture.policy.hash);
+  });
+
+  it("reports ens-live-bound when live records and expected policy hash match", async () => {
+    const status = await getEnsLiveReadStatus(
+      {
+        ENS_PROVIDER_RPC: "mock://ens",
+        ENS_NAME: "guardian.agent.clearintent.eth",
+        ENS_EXPECTED_POLICY_HASH: localAgentCardFixture.policy.hash
+      },
+      fakeProvider({
+        address: localAgentCardFixture.controllerAddress,
+        textRecords: localEnsIdentityFixture.textRecords
+      })
+    );
+
+    expect(status.ok).toBe(true);
+    expect(status.claimLevel).toBe("ens-live-bound");
+    expect(status.liveProvider).toBe(true);
+    expect(status.records[ENS_IDENTITY_RECORD_KEYS.policyUri]).toBe(localAgentCardFixture.policy.uri);
+    expect(status.degradedReasons).toEqual([]);
+  });
+
+  it("accepts legacy ClearIntent ENS env aliases for local operator config", async () => {
+    const status = await getEnsLiveReadStatus(
+      {
+        ENS_EVM_RPC: "mock://ens",
+        CLEARINTENT_ENS_NAME: "guardian.agent.clearintent.eth",
+        CLEARINTENT_EXPECTED_POLICY_HASH: localAgentCardFixture.policy.hash
+      },
+      fakeProvider({
+        address: localAgentCardFixture.controllerAddress,
+        textRecords: localEnsIdentityFixture.textRecords
+      })
+    );
+
+    expect(status.ok).toBe(true);
+    expect(status.claimLevel).toBe("ens-live-bound");
+    expect(status.ensName).toBe("guardian.agent.clearintent.eth");
+  });
+
+  it("degrades live read when records exist but policy hash is not bound", async () => {
+    const status = await getEnsLiveReadStatus(
+      {
+        ENS_PROVIDER_RPC: "mock://ens",
+        ENS_NAME: "guardian.agent.clearintent.eth"
+      },
+      fakeProvider({
+        address: localAgentCardFixture.controllerAddress,
+        textRecords: localEnsIdentityFixture.textRecords
+      })
+    );
+
+    expect(status.ok).toBe(true);
+    expect(status.claimLevel).toBe("ens-live-read");
+    expect(status.degradedReasons).toContain("policy_hash_not_bound");
+  });
+
+  it("blocks live read until ENS provider and name config exist", async () => {
+    const status = await getEnsLiveReadStatus({});
+
+    expect(status.ok).toBe(false);
+    expect(status.claimLevel).toBe("ens-local-fixture");
+    expect(status.blockingReasons).toContain("live_config_missing");
+  });
+
+  it("prepares one resolver multicall for ClearIntent text-record binding", async () => {
+    const status = await getEnsBindingPreparationStatus(
+      {
+        ENS_NAME: "guardian.agent.clearintent.eth",
+        CLEARINTENT_AGENT_CARD_URI: "0g://agent-card",
+        CLEARINTENT_POLICY_URI: "0g://policy",
+        CLEARINTENT_POLICY_HASH: localAgentCardFixture.policy.hash,
+        CLEARINTENT_AUDIT_LATEST: "0g://audit",
+        CLEARINTENT_VERSION: "0.1.0"
+      },
+      fakeProvider({
+        resolverAddress: "0x4444444444444444444444444444444444444444",
+        address: localAgentCardFixture.controllerAddress,
+        textRecords: localEnsIdentityFixture.textRecords
+      })
+    );
+
+    expect(status.ok).toBe(true);
+    expect(status.tx?.to).toBe("0x4444444444444444444444444444444444444444");
+    expect(status.tx?.method).toBe("multicall(bytes[])");
+    expect(status.tx?.records.map((record) => record.key)).toEqual([
+      "agent.card",
+      "policy.uri",
+      "policy.hash",
+      "audit.latest",
+      "clearintent.version"
+    ]);
+    expect(status.tx?.data.startsWith("0xac9650d8")).toBe(true);
+  });
 });
 
 async function resolveValidFixture() {
@@ -139,5 +255,21 @@ function withoutRecord(recordKey: keyof EnsResolverRecord["textRecords"]): EnsRe
   return {
     ...fixture,
     textRecords
+  };
+}
+
+function fakeProvider(record: { resolverAddress?: string; address?: string; textRecords: EnsResolverRecord["textRecords"] }) {
+  return {
+    async getResolver() {
+      return {
+        address: record.resolverAddress,
+        async getAddress() {
+          return record.address ?? "0x0000000000000000000000000000000000000000";
+        },
+        async getText(key: string) {
+          return record.textRecords[key as keyof typeof record.textRecords] ?? null;
+        }
+      };
+    }
   };
 }

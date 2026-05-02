@@ -366,18 +366,13 @@ Blockers found: none for cross-layer local scope.
 | 5A signer payload/preview | pass | `signer-local-fixture`, `eip712-local-fixture` | Ready for 5C operator wallet test. |
 | 5B metadata | pass | `erc7730-local-metadata` | Local metadata only. |
 | Cross-layer JSON sequence | pass | local claims only | Agent/automation lane is coherent. |
+| 2B live 0G smoke | pass | `0g-write-read-verified` | Proof-enabled live upload/readback succeeded. `rootHash=0x8ee47b16e03de745ebf2e65e94ed3b7341395f506a5fb7c8e299f9974aa22484`; `txHash=0x024cc777830963d7c23500024554ed7692f3cb7562ec44014780f68bfdaa66b7`. |
 
 ## Next Operator Step
 
 Proceed to online/live testing gates in this order:
 
-1. Run 2B live 0G readiness without live write:
-
-```bash
-npm run --silent clearintent -- memory live-status --json
-npm run clearintent -- memory live-status
-```
-
-2. Populate `.env.local` only with required 0G values once ready.
-3. Run `memory live-smoke` only after the wallet is funded and `ZERO_G_ENABLE_LIVE_WRITES=true` is intentional.
-4. Run 5C MetaMask/software-wallet signer-only validation after confirming the wallet network matches typed-data chain ID `11155111`.
+1. Keep `ZERO_G_ENABLE_LIVE_WRITES=false` unless intentionally running another upload.
+2. Proceed to Phase 3B live ENS binding against the proven 2B storage capability.
+3. Proceed to Phase 4B live KeeperHub/onchain execution after the identity binding is ready.
+4. Repeat 5C MetaMask/software-wallet validation as testnet-integrated only after 3B/4B evidence exists.

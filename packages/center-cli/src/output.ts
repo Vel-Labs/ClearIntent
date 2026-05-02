@@ -1,10 +1,10 @@
 import { stableStringify, type ResultIssue } from "../../core/src";
 import type { CredentialSafetyStatus, CredentialCheckStatus } from "./credential-safety";
 import type { CenterExecutionStatus } from "./execution-status";
-import type { CenterIdentityStatus } from "./identity-status";
+import type { CenterIdentityBindingStatus, CenterIdentityStatus } from "./identity-status";
 import type { CenterLocalTestSummary } from "./local-test";
 import type { CenterModule, ModuleDoctorResult } from "./modules";
-import type { CenterMemoryStatus, MemoryCheckStatus } from "./memory-status";
+import type { CenterMemoryBindingsStatus, CenterMemoryStatus, MemoryCheckStatus } from "./memory-status";
 import type { CenterSignerStatus } from "./signer-status";
 
 export type CliCommandResult = {
@@ -13,7 +13,14 @@ export type CliCommandResult = {
   commandOk?: boolean;
   authorityOk?: boolean;
   fixture?: string;
-  mode?: "fixture-only" | "local-memory" | "live-readiness" | "ens-local-fixture" | "keeperhub-local-fixture" | "signer-local-fixture";
+  mode?:
+    | "fixture-only"
+    | "local-memory"
+    | "live-readiness"
+    | "ens-local-fixture"
+    | "ens-live-read"
+    | "keeperhub-local-fixture"
+    | "signer-local-fixture";
   fixtureSource?: string;
   liveProvider?: boolean;
   summary: string;
@@ -64,8 +71,16 @@ export function renderHuman(result: CliCommandResult): string {
     lines.push(...renderMemoryStatus(explicit.data.memory));
   }
 
+  if (isMemoryBindingsData(explicit.data)) {
+    lines.push(...renderMemoryBindingsStatus(explicit.data.bindings));
+  }
+
   if (isIdentityData(explicit.data)) {
     lines.push(...renderIdentityStatus(explicit.data.identity));
+  }
+
+  if (isIdentityBindingData(explicit.data)) {
+    lines.push(...renderIdentityBindingStatus(explicit.data.binding));
   }
 
   if (isExecutionData(explicit.data)) {
@@ -136,8 +151,16 @@ function isMemoryData(data: Record<string, unknown>): data is { memory: CenterMe
   return typeof data.memory === "object" && data.memory !== null;
 }
 
+function isMemoryBindingsData(data: Record<string, unknown>): data is { bindings: CenterMemoryBindingsStatus } {
+  return typeof data.bindings === "object" && data.bindings !== null;
+}
+
 function isIdentityData(data: Record<string, unknown>): data is { identity: CenterIdentityStatus } {
   return typeof data.identity === "object" && data.identity !== null;
+}
+
+function isIdentityBindingData(data: Record<string, unknown>): data is { binding: CenterIdentityBindingStatus } {
+  return typeof data.binding === "object" && data.binding !== null;
 }
 
 function isExecutionData(data: Record<string, unknown>): data is { execution: CenterExecutionStatus } {
@@ -182,19 +205,90 @@ function formatCheckStatus(status: MemoryCheckStatus): string {
   return "[DEGRADED] degraded";
 }
 
+function renderMemoryBindingsStatus(bindings: CenterMemoryBindingsStatus): string[] {
+  const lines = [
+    `Binding provider mode: ${bindings.providerMode}`,
+    `Binding claim level: ${bindings.claimLevel}`,
+    `Binding live provider: ${bindings.liveProvider ? "enabled" : "disabled"}`,
+    `Binding status: ${bindings.ok ? "[PASS] ok" : bindings.blockingReasons.length > 0 ? "[BLOCKED] blocked" : "[DEGRADED] degraded"}`,
+    ...(bindings.ensName === undefined ? [] : [`Binding ENS name: ${bindings.ensName}`]),
+    ...(bindings.controllerAddress === undefined ? [] : [`Binding controller address: ${bindings.controllerAddress}`]),
+    `Binding summary: ${bindings.summary}`,
+    ...bindings.checks.map((check) => `- ${check.label}: ${formatBindingCheckStatus(check.status)} - ${check.detail}`)
+  ];
+
+  if (bindings.records !== undefined) {
+    lines.push("ENS records to set:");
+    lines.push(`- agent.card = ${bindings.records.agentCard}`);
+    lines.push(`- policy.uri = ${bindings.records.policyUri}`);
+    lines.push(`- policy.hash = ${bindings.records.policyHash}`);
+    lines.push(`- audit.latest = ${bindings.records.auditLatest}`);
+    lines.push(`- clearintent.version = ${bindings.records.clearintentVersion}`);
+  }
+
+  if (bindings.artifacts.length > 0) {
+    lines.push("0G artifacts:");
+    for (const artifact of bindings.artifacts) {
+      lines.push(`- ${artifact.name}: uri=${artifact.uri} txHash=${artifact.txHash}`);
+    }
+  }
+
+  lines.push(`Binding blocking reasons: ${formatList(bindings.blockingReasons)}`);
+  lines.push(`Binding degraded reasons: ${formatList(bindings.degradedReasons)}`);
+  return lines;
+}
+
+function formatBindingCheckStatus(status: CenterMemoryBindingsStatus["checks"][number]["status"]): string {
+  if (status === "pass") {
+    return "[PASS] pass";
+  }
+  if (status === "fail") {
+    return "[FAIL] fail";
+  }
+  return "[DEGRADED] degraded";
+}
+
 function renderIdentityStatus(identity: CenterIdentityStatus): string[] {
   return [
     `Identity claim level: ${identity.claimLevel}`,
     `Identity live provider: ${identity.liveProvider ? "enabled" : "disabled"}`,
     `Identity status: ${identity.ok ? "[PASS] ok" : "[BLOCKED] blocked"}`,
     "Identity authority approval: no",
-    "Live ENS claim: no",
-    "Live 0G claim: no",
+    `Live ENS claim: ${identity.claimLevel === "ens-live-read" || identity.claimLevel === "ens-live-bound" ? "yes" : "no"}`,
+    `Live 0G claim: ${identity.claimLevel === "ens-live-bound" ? "bound" : "no"}`,
+    ...(identity.ensName === undefined ? [] : [`Identity ENS name: ${identity.ensName}`]),
+    ...(identity.address === undefined ? [] : [`Identity address: ${identity.address}`]),
     `Identity summary: ${identity.summary}`,
     ...identity.checks.map((check) => `- ${check.label}: ${formatIdentityCheckStatus(check.status)} - ${check.detail}`),
     `Identity blocking reasons: ${formatList(identity.blockingReasons)}`,
     `Identity degraded reasons: ${formatList(identity.degradedReasons)}`
   ];
+}
+
+function renderIdentityBindingStatus(binding: CenterIdentityBindingStatus): string[] {
+  const lines = [
+    `ENS binding status: ${binding.ok ? "[PASS] prepared" : "[BLOCKED] blocked"}`,
+    ...(binding.ensName === undefined ? [] : [`ENS binding name: ${binding.ensName}`]),
+    ...(binding.resolverAddress === undefined ? [] : [`ENS resolver address: ${binding.resolverAddress}`]),
+    `ENS binding summary: ${binding.summary}`,
+    ...binding.checks.map((check) => `- ${check.label}: ${formatIdentityCheckStatus(check.status)} - ${check.detail}`)
+  ];
+
+  if (binding.tx !== undefined) {
+    lines.push("Parent-wallet transaction:");
+    lines.push(`- to = ${binding.tx.to}`);
+    lines.push(`- value = ${binding.tx.value}`);
+    lines.push(`- method = ${binding.tx.method}`);
+    lines.push(`- data = ${binding.tx.data}`);
+    lines.push("Records in multicall:");
+    for (const record of binding.tx.records) {
+      lines.push(`- ${record.key} = ${record.value}`);
+    }
+  }
+
+  lines.push(`ENS binding blocking reasons: ${formatList(binding.blockingReasons)}`);
+  lines.push(`ENS binding degraded reasons: ${formatList(binding.degradedReasons)}`);
+  return lines;
 }
 
 function formatIdentityCheckStatus(status: CenterIdentityStatus["checks"][number]["status"]): string {

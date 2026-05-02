@@ -8,9 +8,14 @@ import {
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
 import { getCredentialSafetyStatus } from "./credential-safety";
 import { getCenterExecutionStatus } from "./execution-status";
-import { getCenterIdentityStatus } from "./identity-status";
+import { getCenterIdentityBindingStatus, getCenterIdentityStatus, getCenterLiveIdentityStatus } from "./identity-status";
 import { runCenterLocalTestSummary } from "./local-test";
-import { getCenterMemoryStatus, getZeroGLiveReadinessStatus, getZeroGLiveSmokeStatus } from "./memory-status";
+import {
+  getCenterMemoryStatus,
+  getZeroGLiveBindingsStatus,
+  getZeroGLiveReadinessStatus,
+  getZeroGLiveSmokeStatus
+} from "./memory-status";
 import { listCenterModules, runModuleDoctor } from "./modules";
 import type { CliCommandResult } from "./output";
 import { getCenterSignerStatus, type SignerRoute } from "./signer-status";
@@ -108,6 +113,46 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
       data: { identity },
       issues: [...identity.blockingReasons, ...identity.degradedReasons].map((reason) => ({
         code: identity.blockingReasons.includes(reason) ? "identity_blocked" : "identity_degraded",
+        message: reason,
+        path: "ens"
+      }))
+    };
+  }
+  if (group === "identity" && command === "live-status") {
+    const identity = await getCenterLiveIdentityStatus();
+    return {
+      command: "identity live-status",
+      ok: false,
+      commandOk: true,
+      authorityOk: false,
+      mode: "ens-live-read",
+      liveProvider: true,
+      summary: identity.ok
+        ? "Live ENS identity readout is available. Identity discovery is not authority approval."
+        : "Live ENS identity readout is blocked or degraded. No authority approval is made.",
+      data: { identity },
+      issues: [...identity.blockingReasons, ...identity.degradedReasons].map((reason) => ({
+        code: identity.blockingReasons.includes(reason) ? "identity_blocked" : "identity_degraded",
+        message: reason,
+        path: "ens"
+      }))
+    };
+  }
+  if (group === "identity" && command === "bind-records") {
+    const binding = await getCenterIdentityBindingStatus();
+    return {
+      command: "identity bind-records",
+      ok: binding.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "ens-live-read",
+      liveProvider: true,
+      summary: binding.ok
+        ? "ENS text-record multicall is prepared for parent-wallet signature."
+        : "ENS text-record multicall preparation is blocked.",
+      data: { binding },
+      issues: [...binding.blockingReasons, ...binding.degradedReasons].map((reason) => ({
+        code: binding.blockingReasons.includes(reason) ? "identity_blocked" : "identity_degraded",
         message: reason,
         path: "ens"
       }))
@@ -241,6 +286,24 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
       }))
     };
   }
+  if (group === "memory" && command === "live-bindings") {
+    const bindings = await getZeroGLiveBindingsStatus();
+    return {
+      command: "memory live-bindings",
+      ok: bindings.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "live-readiness",
+      liveProvider: true,
+      summary: "0G live binding uploads generate ENS text-record values for the selected agent identity.",
+      data: { bindings },
+      issues: [...new Set([...bindings.blockingReasons, ...bindings.degradedReasons])].map((reason) => ({
+        code: bindings.blockingReasons.includes(reason) ? "memory_blocked" : "memory_degraded",
+        message: reason,
+        path: "zerog"
+      }))
+    };
+  }
 
   return {
     command: "unknown",
@@ -258,6 +321,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "test local",
         "credentials status",
         "identity status",
+        "identity bind-records",
         "execution status",
         "keeperhub status",
         "signer status",
@@ -270,7 +334,8 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "memory check",
         "memory audit-bundle",
         "memory live-status",
-        "memory live-smoke"
+        "memory live-smoke",
+        "memory live-bindings"
       ]
     },
     issues: [{ code: "unknown_command", message: parsed.positionals.join(" ") || "No command provided." }]

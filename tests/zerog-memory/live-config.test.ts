@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getZeroGLiveReadinessStatus, getZeroGLiveSmokeStatus, loadZeroGLiveConfig } from "../../packages/zerog-memory/src";
+import {
+  getZeroGLiveBindingsStatus,
+  getZeroGLiveReadinessStatus,
+  getZeroGLiveSmokeStatus,
+  loadZeroGLiveConfig
+} from "../../packages/zerog-memory/src";
 
 describe("0G live readiness config", () => {
   it("defaults to Galileo testnet endpoints without exposing credentials", () => {
@@ -33,6 +38,17 @@ describe("0G live readiness config", () => {
     expect(status.degradedReasons).toEqual(expect.arrayContaining(["missing_tokens", "live_write_unverified"]));
   });
 
+  it("accepts MetaMask-style private keys without 0x prefix", async () => {
+    const status = await getZeroGLiveReadinessStatus({
+      ZERO_G_PRIVATE_KEY: "1111111111111111111111111111111111111111111111111111111111111111",
+      ZERO_G_WALLET_ADDRESS: "0x1111111111111111111111111111111111111111",
+      ZERO_G_ENABLE_LIVE_WRITES: "true"
+    });
+
+    expect(status.checks.find((check) => check.id === "wallet")?.status).toBe("pass");
+    expect(status.degradedReasons).not.toContain("missing_credentials");
+  });
+
   it("keeps live smoke blocked without credentials or live-write opt-in", async () => {
     const status = await getZeroGLiveSmokeStatus({});
 
@@ -40,5 +56,14 @@ describe("0G live readiness config", () => {
     expect(status.providerMode).toBe("live");
     expect(status.claimLevel).toBe("local-adapter");
     expect(status.degradedReasons).toEqual(expect.arrayContaining(["missing_credentials", "live_writes_disabled"]));
+  });
+
+  it("keeps live ENS binding artifact uploads blocked without opt-in and ENS name", async () => {
+    const status = await getZeroGLiveBindingsStatus({});
+
+    expect(status.ok).toBe(false);
+    expect(status.claimLevel).toBe("local-adapter");
+    expect(status.blockingReasons).toEqual(expect.arrayContaining(["live_writes_disabled", "missing_ens_name"]));
+    expect(status.records).toBeUndefined();
   });
 });

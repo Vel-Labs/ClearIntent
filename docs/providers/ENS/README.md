@@ -2,7 +2,7 @@
 
 ENS is the ClearIntent provider for canonical agent identity, metadata discovery, role/subname routing, and optional ENSIP-25 alignment.
 
-Current ClearIntent claim level: `Planned`.
+Current ClearIntent claim level: `ens-local-fixture` locally; Phase 3B live-read route is implemented but blocked on live ENS config/records.
 
 ## Read first
 
@@ -20,6 +20,33 @@ Current ClearIntent claim level: `Planned`.
 | Role separation | Subnames and optional Name Wrapper | Model executor/auditor/signer/session roles as subnames if useful for the demo. |
 | Registry verification | ENSIP-25 draft | Optional alignment for AI agent registry verification; do not treat as stable MVP dependency. |
 | Cross-chain/offchain data | Universal Resolver, CCIP Read, L2/offchain resolvers | Use standard libraries that support Universal Resolver and CCIP Read. |
+
+## Current repo evidence
+
+Phase 3B has a live resolver and Center CLI route:
+
+```bash
+npm run clearintent -- identity live-status
+npm run --silent clearintent -- identity live-status --json
+```
+
+The route is config-driven through `ENS_PROVIDER_RPC` or `PRIVATE_EVM_RPC_URL`, `ENS_CHAIN_ID`, `ENS_NETWORK`, `ENS_NAME`, and optional `ENS_EXPECTED_POLICY_HASH`. For operator files created before the Phase 3B live read route, `ENS_EVM_RPC`, `CLEARINTENT_ENS_NAME`, and `CLEARINTENT_EXPECTED_POLICY_HASH` remain accepted aliases. It currently blocks cleanly until live ENS config and records are available. Do not claim `ens-live-read` or `ens-live-bound` until the command reads the selected name and records the resulting claim level in the Phase 3B closeout audit.
+
+The remaining live binding records should come from 0G, not hand-authored placeholders:
+
+```bash
+npm run clearintent -- memory live-bindings
+```
+
+Set the returned values on the live agent name as `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version`, then set `ENS_EXPECTED_POLICY_HASH` or `CLEARINTENT_EXPECTED_POLICY_HASH` to the returned `policy.hash` before rerunning `identity live-status`.
+
+For parent-wallet UX, ClearIntent can prepare a single ENS Public Resolver batch transaction:
+
+```bash
+npm run clearintent -- identity bind-records
+```
+
+This route encodes all ClearIntent text-record updates as one resolver `multicall(bytes[])` transaction. It does not send the transaction or require an ENS-owner private key; the connected parent wallet must still sign and submit it. Frontend setup should reuse this adapter helper so users can bind `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version` in one wallet prompt when their resolver supports `multicall`.
 
 ## Taxonomy
 

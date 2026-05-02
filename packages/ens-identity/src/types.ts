@@ -1,8 +1,8 @@
 import type { AgentIdentity } from "../../core/src";
 import type { EnsIdentityRecordKey } from "./record-keys";
 
-export type EnsIdentityClaimLevel = "ens-local-fixture";
-export type EnsProviderMode = "local";
+export type EnsIdentityClaimLevel = "ens-local-fixture" | "ens-live-read" | "ens-live-bound";
+export type EnsProviderMode = "local" | "live";
 export type EnsResolutionState = "resolved" | "blocked" | "degraded";
 
 export type EnsIdentityIssueCode =
@@ -11,7 +11,9 @@ export type EnsIdentityIssueCode =
   | "missing_record"
   | "unsupported_network"
   | "policy_hash_mismatch"
-  | "live_lookup_unavailable";
+  | "live_lookup_unavailable"
+  | "live_config_missing"
+  | "live_lookup_failed";
 
 export type EnsIdentityIssue = {
   code: EnsIdentityIssueCode;
@@ -76,7 +78,7 @@ export interface EnsResolverAdapter {
 export type ResolvedEnsIdentity = {
   claimLevel: EnsIdentityClaimLevel;
   providerMode: EnsProviderMode;
-  liveProvider: false;
+  liveProvider: boolean;
   agentIdentity: AgentIdentity;
   agentCard: AgentCard;
   records: {
@@ -86,4 +88,32 @@ export type ResolvedEnsIdentity = {
     auditLatest: string;
     clearintentVersion: string;
   };
+};
+
+export type EnsLiveConfig = {
+  providerMode: "live";
+  rpcUrl?: string;
+  chainId: number;
+  networkName: string;
+  ensName?: string;
+  expectedPolicyHash?: string;
+};
+
+export type EnsLiveReadStatus = {
+  ok: boolean;
+  claimLevel: "ens-local-fixture" | "ens-live-read" | "ens-live-bound";
+  providerMode: "live";
+  liveProvider: true;
+  ensName?: string;
+  address?: string;
+  records: EnsTextRecords;
+  summary: string;
+  checks: {
+    id: string;
+    label: string;
+    status: "pass" | "blocking" | "degraded";
+    detail: string;
+  }[];
+  degradedReasons: string[];
+  blockingReasons: string[];
 };

@@ -60,6 +60,8 @@ Target claim level: `0g-write-read-verified`.
 
 Fallback claim level: `0g-write-read` with proof verification documented as degraded or deferred.
 
+Current evidence: Phase 2B reached `0g-write-read-verified` for live smoke storage. Proof-enabled readback succeeded with `rootHash=0x8ee47b16e03de745ebf2e65e94ed3b7341395f506a5fb7c8e299f9974aa22484` and `txHash=0x024cc777830963d7c23500024554ed7692f3cb7562ec44014780f68bfdaa66b7`. This is smoke evidence, not final demo artifact publication.
+
 ### Phase 2C: optional 0G Compute
 
 Compute is not part of the first storage/audit implementation. It is a later optional risk/reflection layer. Any compute output must be persisted as a hash-bound artifact through the memory/audit layer.
@@ -87,6 +89,16 @@ Sources: [0G docs](https://docs.0g.ai/), [0G AI coding context](https://docs.0g.
 0G Storage is the primary fit for ClearIntent. The docs cover TypeScript and Go clients, CLI upload/download, KV operations, browser support, indexer usage, and Merkle proof download options.
 
 ClearIntent usage: make `packages/zerog-memory/` the narrow adapter that uploads and retrieves typed artifacts. The adapter should return explicit degraded states when storage or retrieval proof is missing.
+
+## ENS Binding Artifacts
+
+After live smoke evidence is available, `memory live-bindings` publishes the demo policy, audit pointer, and agent-card payloads to 0G and prints the ENS records to set on the selected agent name:
+
+```bash
+npm run clearintent -- memory live-bindings
+```
+
+The command remains gated by `ZERO_G_ENABLE_LIVE_WRITES=true`, funded 0G credentials, and live readback. Use `ZERO_G_REQUIRE_PROOF=true` for the strongest claim. If `KEEPERHUB_EXECUTOR_ADDRESS` is absent, the upload still produces ENS/0G records but reports `keeperhub_executor_unbound` so the KeeperHub adapter can be bound explicitly before final demo claims.
 
 Sources: [Storage SDK](https://docs.0g.ai/docs/developer-hub/building-on-0g/storage/sdk), [Storage CLI](https://docs.0g.ai/docs/developer-hub/building-on-0g/storage/storage-cli), [Storage Web Starter Kit](https://github.com/0gfoundation/0g-storage-web-starter-kit).
 

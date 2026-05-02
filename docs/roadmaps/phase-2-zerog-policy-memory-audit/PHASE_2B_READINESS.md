@@ -1,6 +1,6 @@
-# Phase 2B Readiness: 0G Live Storage Prep
+# Phase 2B Readiness and Evidence: 0G Live Storage
 
-This note records the pre-token setup for Phase 2B. It wires configuration, dependency import checks, and CLI readiness output without claiming live 0G write/read behavior.
+This note records the Phase 2B setup and live smoke evidence. The initial readiness scaffold wired configuration, dependency import checks, and CLI readiness output without claiming live 0G write/read behavior. The operator smoke pass has now reached live 0G upload/readback/proof-enabled retrieval.
 
 ## Local Env Setup
 
@@ -18,7 +18,7 @@ ZERO_G_EVM_RPC=https://evmrpc-testnet.0g.ai
 ZERO_G_INDEXER_RPC=https://indexer-storage-testnet-turbo.0g.ai
 ZERO_G_STORAGE_MODE=turbo
 ZERO_G_WALLET_ADDRESS=<public testnet wallet address>
-ZERO_G_PRIVATE_KEY=<private key for fresh testnet wallet>
+  ZERO_G_PRIVATE_KEY=<private key for fresh testnet wallet; 0x prefix optional for MetaMask exports>
 ZERO_G_ENABLE_LIVE_WRITES=false
 ZERO_G_REQUIRE_PROOF=false
 ```
@@ -76,4 +76,34 @@ Do not claim:
 - `0g-write-read` until upload and readback both succeed
 - `0g-write-read-verified` until proof/hash verification is demonstrated
 
-The current readiness scaffold is not Phase 2B closeout. It exists so the funded-token smoke pass can be narrow once tokens arrive.
+## Recorded Phase 2B Evidence
+
+Operator-run smoke evidence:
+
+```text
+Command: npm run clearintent -- memory live-smoke
+Claim level: 0g-write-read
+rootHash: 0xba59181f8a69c093c348343c8be22480f827881a574f153a3710c15cfb5de4a6
+txHash: 0xef60d37a7ff9af43043960dff144b945752d7de45c02227d2e7d7f640bed35fd
+proof: not requested
+degraded reasons: missing_proof
+```
+
+Operator-run proof-enabled smoke evidence:
+
+```text
+Command: npm run clearintent -- memory live-smoke
+Claim level: 0g-write-read-verified
+rootHash: 0x8ee47b16e03de745ebf2e65e94ed3b7341395f506a5fb7c8e299f9974aa22484
+txHash: 0x024cc777830963d7c23500024554ed7692f3cb7562ec44014780f68bfdaa66b7
+proof: requested
+degraded reasons: none
+```
+
+Closeout audit:
+
+- `docs/audits/phase-2-zerog-policy-memory-audit/2b.9-closeout-audit.md`
+
+## Current Claim Boundary
+
+Phase 2B is closed at `0g-write-read-verified` for live 0G Storage smoke evidence. This proves upload/readback/hash validation/proof-enabled retrieval for the small smoke artifact. It does not yet claim that final demo policy, agent-card, risk, receipt, or audit-bundle artifacts have been published to 0G.

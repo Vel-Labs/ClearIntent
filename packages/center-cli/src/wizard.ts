@@ -49,6 +49,11 @@ const wizardItems: WizardItem[] = [
     args: ["identity", "status"]
   },
   {
+    label: "Identity live status",
+    description: "Inspect the Phase 3B live ENS read route.",
+    args: ["identity", "live-status"]
+  },
+  {
     label: "Execution status",
     description: "Inspect the Phase 4A KeeperHub local execution fixture route.",
     args: ["execution", "status"]
@@ -86,6 +91,7 @@ export function renderLanding(): string {
     "AI lane:",
     "  npm run --silent clearintent -- center inspect --json",
     "  npm run --silent clearintent -- identity status --json",
+    "  npm run --silent clearintent -- identity live-status --json",
     "  npm run --silent clearintent -- execution status --json",
     "  npm run --silent clearintent -- signer status --json",
     "  npm run --silent clearintent -- test local --json",

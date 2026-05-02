@@ -7,6 +7,12 @@ All notable repo changes should be logged here.
 - Documented the intended hosted-dashboard-first, SDK/CLI-second product abstraction: parent-wallet login, dedicated agent wallet or smart-account setup, policy/escalation configuration, 0G/ENS-backed pointers, and scoped agent-facing runtime inputs.
 - Clarified that the hosted dashboard must stay stateless and non-custodial, while the agent-facing runtime must not receive parent-wallet secrets or unrestricted hot-wallet keys.
 - Recorded smart-account/session-key enforcement as the preferred future bounded-automation layer while keeping current MVP claims limited to ClearIntent core plus KeeperHub pre-execution policy gating until live evidence exists.
+- Closed Phase 2B live 0G Storage smoke evidence at `0g-write-read-verified` with proof-enabled readback, recording root hash `0x8ee47b16e03de745ebf2e65e94ed3b7341395f506a5fb7c8e299f9974aa22484` and transaction hash `0x024cc777830963d7c23500024554ed7692f3cb7562ec44014780f68bfdaa66b7`.
+- Updated credential validation and live smoke handling to accept MetaMask-style 64-character private keys without a `0x` prefix while preserving 32-byte EVM key validation and secret-redaction behavior.
+- Added Phase 3B live ENS resolver scaffolding and Center CLI `identity live-status`, with deterministic degraded output until ENS RPC/name/text-record configuration is available.
+- Added backward-compatible ENS live config aliases so older `.env.local` blocks using `ENS_EVM_RPC`, `CLEARINTENT_ENS_NAME`, and `CLEARINTENT_EXPECTED_POLICY_HASH` still drive `identity live-status`.
+- Added Center CLI `memory live-bindings` to upload demo policy, audit pointer, and agent-card artifacts to 0G and print the ENS text-record values needed for `ens-live-bound`.
+- Added ENS Public Resolver multicall preparation for ClearIntent text-record binding through `identity bind-records`, enabling a future parent-wallet frontend to set all agent binding records in one wallet transaction.
 
 ## 2026-04-30
 

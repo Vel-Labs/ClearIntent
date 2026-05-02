@@ -8,7 +8,7 @@ export async function getZeroGLiveSmokeStatus(env: NodeJS.ProcessEnv = process.e
     return blockedSmokeStatus(readiness.issues);
   }
 
-  const privateKey = env.ZERO_G_PRIVATE_KEY?.trim();
+  const privateKey = normalizePrivateKey(env.ZERO_G_PRIVATE_KEY);
   if (privateKey === undefined || privateKey.length === 0) {
     return blockedSmokeStatus([issue("missing_credentials", "ZERO_G_PRIVATE_KEY is not set.")]);
   }
@@ -116,4 +116,12 @@ function issue(code: StorageIssue["code"], message: string): StorageIssue {
       family: "audit-bundle"
     }
   };
+}
+
+function normalizePrivateKey(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (trimmed === undefined || trimmed.length === 0) {
+    return undefined;
+  }
+  return trimmed.startsWith("0x") ? trimmed : `0x${trimmed}`;
 }

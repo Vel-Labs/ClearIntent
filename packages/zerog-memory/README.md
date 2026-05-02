@@ -35,6 +35,10 @@ npm run --silent clearintent -- memory live-status
 npm run --silent clearintent -- memory live-status --json
 npm run --silent clearintent -- memory live-smoke
 npm run --silent clearintent -- memory live-smoke --json
+npm run --silent clearintent -- memory live-bindings
+npm run --silent clearintent -- memory live-bindings --json
 ```
+
+`memory live-bindings` uploads the demo policy, audit pointer, and agent-card artifacts, reads them back, and returns the exact ENS text-record values for `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version`. It uses `ENS_NAME` or `CLEARINTENT_ENS_NAME` for the identity name and `ZERO_G_WALLET_ADDRESS` as the controller address. `KEEPERHUB_EXECUTOR_ADDRESS` can be set before upload to bind a real executor; otherwise the command reports a degraded `keeperhub_executor_unbound` reason.
 
 Set local credentials in `.env.local` using `.env.example` as the template. Never commit private keys or live run logs.

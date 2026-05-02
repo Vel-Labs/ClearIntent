@@ -744,21 +744,35 @@ Required before 2B closeout:
 - successful `memory live-smoke`
 - recorded `rootHash` and `txHash`
 
-### Not Yet Consumed by Code: Phase 3B ENS Planning Values
+### Consumed by Code: Phase 3B ENS Planning Values
 
-These are planning values to decide before implementation. Add them to `.env.local` only after the 3B implementation defines exact names.
+These values are consumed by `identity live-status`. Add public/non-secret values to `.env.local`; put paid/private RPC URLs in the external operator secrets file as `PRIVATE_EVM_RPC_URL`.
 
 ```bash
 ENS_PROVIDER_RPC=
+ENS_EVM_RPC=
 ENS_CHAIN_ID=
 ENS_NAME=
+CLEARINTENT_ENS_NAME=
 ENS_MANAGER_ADDRESS=
 ENS_AGENT_CARD_RECORD_KEY=agent.card
 ENS_POLICY_URI_RECORD_KEY=policy.uri
 ENS_POLICY_HASH_RECORD_KEY=policy.hash
 ENS_AUDIT_LATEST_RECORD_KEY=audit.latest
 ENS_CLEARINTENT_VERSION_RECORD_KEY=clearintent.version
+ENS_EXPECTED_POLICY_HASH=
+CLEARINTENT_EXPECTED_POLICY_HASH=
+ENS_RESOLVER_ADDRESS=
+CLEARINTENT_AGENT_CARD_URI=
+CLEARINTENT_POLICY_URI=
+CLEARINTENT_POLICY_HASH=
+CLEARINTENT_AUDIT_LATEST=
+CLEARINTENT_VERSION=0.1.0
 ```
+
+`ENS_EVM_RPC`, `CLEARINTENT_ENS_NAME`, and `CLEARINTENT_EXPECTED_POLICY_HASH` are backward-compatible aliases for older local operator files. Prefer the shorter `ENS_PROVIDER_RPC`, `ENS_NAME`, and `ENS_EXPECTED_POLICY_HASH` names for new setup.
+
+`identity bind-records` consumes the binding values above and prepares one ENS Public Resolver `multicall(bytes[])` transaction. It is a transaction-prep route only; a parent wallet or ENS manager still signs the transaction.
 
 Operator needs before 3B:
 

@@ -1,5 +1,7 @@
 export * from "./agent-card";
+export * from "./bind-records";
 export * from "./fixtures";
+export * from "./live-resolver";
 export * from "./live-unavailable-resolver";
 export * from "./local-resolver";
 export * from "./record-keys";

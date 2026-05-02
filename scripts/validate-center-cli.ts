@@ -93,6 +93,23 @@ async function main(): Promise<void> {
     assertEqual("identity status data liveProvider", identityJson.data?.identity?.liveProvider, false, failures);
   }
 
+  const identityLive = await run(["run", "--silent", "clearintent", "--", "identity", "live-status", "--json"], {
+    CLEARINTENT_SECRETS_FILE: "/tmp/clearintent-test-missing-secrets.env",
+    ENS_PROVIDER_RPC: "",
+    ENS_NAME: ""
+  });
+  assertExit("identity live-status exits 0 for degraded live readout", identityLive, 0, failures);
+  const identityLiveJson = parseJson("identity live-status", identityLive.stdout, failures);
+  if (identityLiveJson !== undefined) {
+    assertEqual("identity live-status command", identityLiveJson.command, "identity live-status", failures);
+    assertEqual("identity live-status commandOk", identityLiveJson.commandOk, true, failures);
+    assertEqual("identity live-status authorityOk", identityLiveJson.authorityOk, false, failures);
+    assertEqual("identity live-status mode", identityLiveJson.mode, "ens-live-read", failures);
+    assertEqual("identity live-status liveProvider", identityLiveJson.liveProvider, true, failures);
+    assertEqual("identity live-status fallback claimLevel", identityLiveJson.data?.identity?.claimLevel, "ens-local-fixture", failures);
+    assertEqual("identity live-status data liveProvider", identityLiveJson.data?.identity?.liveProvider, true, failures);
+  }
+
   const execution = await run(["run", "--silent", "clearintent", "--", "execution", "status", "--json"]);
   assertExit("execution status exits 0 for local fixture readout", execution, 0, failures);
   const executionJson = parseJson("execution status", execution.stdout, failures);
@@ -192,6 +209,7 @@ async function main(): Promise<void> {
   console.log("PASS center inspect separates commandOk from authorityOk");
   console.log("PASS CLI errors remain parseable JSON and exit nonzero");
   console.log("PASS identity status preserves ens-local-fixture and disabled live provider claims");
+  console.log("PASS identity live-status preserves degraded live-provider readout without authority claims");
   console.log("PASS execution status preserves keeperhub-local-fixture and no live/onchain claims");
   console.log("PASS signer routes preserve local-only claim levels and no real-wallet claims");
   console.log("PASS test local aggregates local checks without promoting live/onchain claims");
@@ -200,9 +218,9 @@ async function main(): Promise<void> {
   console.log("center cli validation ok");
 }
 
-function run(args: string[]): Promise<CommandResult> {
+function run(args: string[], env: NodeJS.ProcessEnv = {}): Promise<CommandResult> {
   return new Promise((resolve) => {
-    const child = spawn("npm", args, { cwd: process.cwd(), stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn("npm", args, { cwd: process.cwd(), env: { ...process.env, ...env }, stdio: ["ignore", "pipe", "pipe"] });
     let stdout = "";
     let stderr = "";
     child.stdout.on("data", (chunk: Buffer) => {

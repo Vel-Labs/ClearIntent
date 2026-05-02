@@ -183,7 +183,7 @@ describe("ClearIntent Center CLI skeleton", () => {
   });
 
   it("reports 0G live readiness blockers without claiming live writes", async () => {
-    const result = await runCli(["memory", "live-status", "--json"]);
+    const result = await runCliWithoutOperatorSecrets(["memory", "live-status", "--json"]);
     const parsed = JSON.parse(result.stdout) as {
       command: string;
       commandOk: boolean;
@@ -247,6 +247,69 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(parsed.data.identity.degradedReasons).toEqual(expect.arrayContaining(["live_ens_disabled", "live_0g_not_claimed"]));
     expect(parsed.data.identity.blockingReasons).toEqual([]);
     expect(parsed.issues).toEqual(expect.arrayContaining([expect.objectContaining({ code: "identity_degraded", path: "ens" })]));
+  });
+
+  it("exposes parse-safe live identity status without authority approval", async () => {
+    const result = await runCliWithEnv(["identity", "live-status", "--json"], {
+      CLEARINTENT_SECRETS_FILE: "/tmp/clearintent-test-missing-secrets.env",
+      ENS_PROVIDER_RPC: "",
+      ENS_EVM_RPC: "",
+      PRIVATE_EVM_RPC_URL: "",
+      ENS_NAME: "",
+      CLEARINTENT_ENS_NAME: ""
+    });
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      mode: string;
+      liveProvider: boolean;
+      data: { identity: { claimLevel: string; liveProvider: boolean; blockingReasons: string[] } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(parsed.command).toBe("identity live-status");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.mode).toBe("ens-live-read");
+    expect(parsed.liveProvider).toBe(true);
+    expect(parsed.data.identity.claimLevel).toBe("ens-local-fixture");
+    expect(parsed.data.identity.liveProvider).toBe(true);
+    expect(parsed.data.identity.blockingReasons).toContain("live_config_missing");
+  });
+
+  it("prepares ENS binding transaction data without sending a wallet transaction", async () => {
+    const result = await runCliWithEnv(["identity", "bind-records", "--json"], {
+      CLEARINTENT_SECRETS_FILE: "/tmp/clearintent-test-missing-secrets.env",
+      ENS_NAME: "guardian.agent.clearintent.eth",
+      ENS_RESOLVER_ADDRESS: "0x4444444444444444444444444444444444444444",
+      CLEARINTENT_AGENT_CARD_URI: "0g://agent-card",
+      CLEARINTENT_POLICY_URI: "0g://policy",
+      CLEARINTENT_POLICY_HASH: "0x1111111111111111111111111111111111111111111111111111111111111111",
+      CLEARINTENT_AUDIT_LATEST: "0g://audit",
+      CLEARINTENT_VERSION: "0.1.0"
+    });
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      data: { binding: { ok: boolean; tx: { to: string; data: string; records: { key: string }[] } } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(parsed.command).toBe("identity bind-records");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.data.binding.ok).toBe(true);
+    expect(parsed.data.binding.tx.to).toBe("0x4444444444444444444444444444444444444444");
+    expect(parsed.data.binding.tx.data.startsWith("0xac9650d8")).toBe(true);
+    expect(parsed.data.binding.tx.records.map((record) => record.key)).toEqual([
+      "agent.card",
+      "policy.uri",
+      "policy.hash",
+      "audit.latest",
+      "clearintent.version"
+    ]);
   });
 
   it("renders identity status with explicit fixture and no-live-claim language", async () => {
@@ -484,7 +547,7 @@ describe("ClearIntent Center CLI skeleton", () => {
   });
 
   it("exposes a blocked live smoke command until credentials and funds are present", async () => {
-    const result = await runCli(["memory", "live-smoke", "--json"]);
+    const result = await runCliWithoutOperatorSecrets(["memory", "live-smoke", "--json"]);
     const parsed = JSON.parse(result.stdout) as {
       command: string;
       commandOk: boolean;
@@ -505,6 +568,37 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(parsed.data.memory.degradedReasons).toEqual(
       expect.arrayContaining(["missing_credentials", "live_writes_disabled"])
     );
+  });
+
+  it("exposes blocked live ENS binding uploads until credentials and opt-in are present", async () => {
+    const result = await runCliWithoutOperatorSecrets(["memory", "live-bindings", "--json"]);
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      ok: boolean;
+      liveProvider: boolean;
+      data: { bindings: { claimLevel: string; blockingReasons: string[]; records?: unknown } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(parsed.command).toBe("memory live-bindings");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.liveProvider).toBe(true);
+    expect(parsed.data.bindings.claimLevel).toBe("local-adapter");
+    expect(parsed.data.bindings.blockingReasons).toEqual(expect.arrayContaining(["live_writes_disabled"]));
+    expect(parsed.data.bindings.records).toBeUndefined();
+  });
+
+  it("renders blocked live ENS binding uploads in human mode", async () => {
+    const result = await runCliWithoutOperatorSecrets(["memory", "live-bindings"]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("ClearIntent memory live-bindings");
+    expect(result.stdout).toContain("Binding claim level: local-adapter");
+    expect(result.stdout).toContain("Binding blocking reasons:");
   });
 
   it("renders successful local memory adapter status when the integration API provides it", () => {
@@ -562,3 +656,47 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(parsed.issues[0]?.code).toBe("cli_error");
   });
 });
+
+async function runCliWithoutOperatorSecrets(args: string[]): Promise<{ exitCode: number; stdout: string }> {
+  const saved = {
+    CLEARINTENT_SECRETS_FILE: process.env.CLEARINTENT_SECRETS_FILE,
+    ZERO_G_PRIVATE_KEY: process.env.ZERO_G_PRIVATE_KEY,
+    ZERO_G_WALLET_ADDRESS: process.env.ZERO_G_WALLET_ADDRESS,
+    ZERO_G_ENABLE_LIVE_WRITES: process.env.ZERO_G_ENABLE_LIVE_WRITES
+  };
+  process.env.CLEARINTENT_SECRETS_FILE = "/tmp/clearintent-test-missing-secrets.env";
+  delete process.env.ZERO_G_PRIVATE_KEY;
+  delete process.env.ZERO_G_WALLET_ADDRESS;
+  process.env.ZERO_G_ENABLE_LIVE_WRITES = "false";
+  try {
+    return await runCli(args);
+  } finally {
+    restoreEnv("CLEARINTENT_SECRETS_FILE", saved.CLEARINTENT_SECRETS_FILE);
+    restoreEnv("ZERO_G_PRIVATE_KEY", saved.ZERO_G_PRIVATE_KEY);
+    restoreEnv("ZERO_G_WALLET_ADDRESS", saved.ZERO_G_WALLET_ADDRESS);
+    restoreEnv("ZERO_G_ENABLE_LIVE_WRITES", saved.ZERO_G_ENABLE_LIVE_WRITES);
+  }
+}
+
+async function runCliWithEnv(args: string[], env: Record<string, string>): Promise<{ exitCode: number; stdout: string }> {
+  const saved = new Map<string, string | undefined>();
+  for (const [key, value] of Object.entries(env)) {
+    saved.set(key, process.env[key]);
+    process.env[key] = value;
+  }
+  try {
+    return await runCli(args);
+  } finally {
+    for (const [key, value] of saved) {
+      restoreEnv(key, value);
+    }
+  }
+}
+
+function restoreEnv(key: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[key];
+  } else {
+    process.env[key] = value;
+  }
+}

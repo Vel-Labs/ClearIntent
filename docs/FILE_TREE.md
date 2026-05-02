@@ -63,8 +63,10 @@ docs/audits/phase-1.5-center-cli-skeleton/1.5.5-midpoint-audit.md
 docs/audits/phase-1.5-center-cli-skeleton/1.5.9-closeout-audit.md
 docs/audits/phase-2-zerog-policy-memory-audit/2a.5-midpoint-audit.md
 docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md
+docs/audits/phase-2-zerog-policy-memory-audit/2b.9-closeout-audit.md
 docs/audits/phase-3-ens-agent-identity/3a.5-midpoint-audit.md
 docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md
+docs/audits/phase-3-ens-agent-identity/3b.5-midpoint-audit.md
 docs/audits/phase-4-keeperhub-execution-adapter/4a.5-midpoint-audit.md
 docs/audits/phase-4-keeperhub-execution-adapter/4a.9-closeout-audit.md
 docs/audits/phase-5-signer-readable-approval/5a.5-midpoint-audit.md
@@ -212,8 +214,10 @@ packages/core/src/status.ts
 packages/core/src/types.ts
 packages/core/src/verification.ts
 packages/ens-identity/src/agent-card.ts
+packages/ens-identity/src/bind-records.ts
 packages/ens-identity/src/fixtures.ts
 packages/ens-identity/src/index.ts
+packages/ens-identity/src/live-resolver.ts
 packages/ens-identity/src/live-unavailable-resolver.ts
 packages/ens-identity/src/local-resolver.ts
 packages/ens-identity/src/record-keys.ts
@@ -239,6 +243,7 @@ packages/zerog-memory/src/audit-store.ts
 packages/zerog-memory/src/doctor.ts
 packages/zerog-memory/src/hash.ts
 packages/zerog-memory/src/index.ts
+packages/zerog-memory/src/live-bindings.ts
 packages/zerog-memory/src/live-config.ts
 packages/zerog-memory/src/live-smoke.ts
 packages/zerog-memory/src/local-memory-adapter.ts

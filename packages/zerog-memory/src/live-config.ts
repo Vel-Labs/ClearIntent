@@ -31,6 +31,8 @@ export function loadZeroGLiveConfig(env: NodeJS.ProcessEnv = process.env): ZeroG
   const issues: StorageIssue[] = [];
   if (privateKey === undefined) {
     issues.push(issue("missing_credentials", "ZERO_G_PRIVATE_KEY is not set. Live upload/read smoke tests are blocked."));
+  } else if (!isEvmPrivateKey(privateKey)) {
+    issues.push(issue("missing_credentials", "ZERO_G_PRIVATE_KEY is set but is not a valid 32-byte EVM private key."));
   }
   if (walletAddress !== undefined && !/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
     issues.push(issue("missing_credentials", "ZERO_G_WALLET_ADDRESS is set but is not a valid EVM address."));
@@ -141,6 +143,10 @@ function parseBoolean(value: string | undefined): boolean {
 function nonEmpty(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed === undefined || trimmed.length === 0 ? undefined : trimmed;
+}
+
+function isEvmPrivateKey(value: string): boolean {
+  return /^(0x)?[a-fA-F0-9]{64}$/.test(value);
 }
 
 async function sdkAvailable(): Promise<StorageIssue | undefined> {
