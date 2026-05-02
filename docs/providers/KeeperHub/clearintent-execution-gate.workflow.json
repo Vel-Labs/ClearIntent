@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "exportedAt": "2026-05-02T19:01:25.079Z",
+  "workflow": {
+    "name": "ClearIntent Execution Gate",
+    "description": ""
+  },
+  "nodes": [
+    {
+      "id": "LM3PmFGpD6fNKw38u62Dm",
+      "data": {
+        "type": "trigger",
+        "label": "ClearIntent Execution Gate",
+        "config": {
+          "network": "1",
+          "triggerType": "Manual"
+        },
+        "status": "idle",
+        "description": ""
+      },
+      "type": "trigger",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "ohSTbUxJ3WhRRI5sOX9aT",
+      "data": {
+        "type": "action",
+        "label": "Send ClearIntent Event",
+        "config": {
+          "actionType": "webhook/send-webhook",
+          "webhookUrl": "https://clearintent.xyz/api/keeperhub/events",
+          "webhookMethod": "POST",
+          "webhookHeaders": "{  \"Content-Type\": \"application/json\"}\n",
+          "webhookPayload": "{\n  \"source\": \"keeperhub\",  \"project\": \"clearintent\",  \"schemaVersion\": \"clearintent.keeperhub-event.v1\",  \"eventType\": \"{{Evaluate ClearIntent Gate.result.eventType}}\",  \"status\": \"{{Evaluate ClearIntent Gate.result.status}}\",  \"error\": \"{{Evaluate ClearIntent Gate.result.error}}\",  \"severity\": \"{{Evaluate ClearIntent Gate.result.severity}}\",  \"shouldExecute\": \"{{Evaluate ClearIntent Gate.result.shouldExecute}}\",  \"parentWallet\": \"{{Evaluate ClearIntent Gate.result.parentWallet}}\",  \"agentAccount\": \"{{Evaluate ClearIntent Gate.result.agentAccount}}\",  \"agentEnsName\": \"{{Evaluate ClearIntent Gate.result.agentEnsName}}\",  \"intentHash\": \"{{Evaluate ClearIntent Gate.result.intentHash}}\",  \"verificationIntentHash\": \"{{Evaluate ClearIntent Gate.result.verificationIntentHash}}\",  \"policyHash\": \"{{Evaluate ClearIntent Gate.result.policyHash}}\",  \"verificationPolicyHash\": \"{{Evaluate ClearIntent Gate.result.verificationPolicyHash}}\",  \"auditLatest\": \"{{Evaluate ClearIntent Gate.result.auditLatest}}\",  \"actionType\": \"{{Evaluate ClearIntent Gate.result.actionType}}\",  \"target\": \"{{Evaluate ClearIntent Gate.result.target}}\",  \"chainId\": \"{{Evaluate ClearIntent Gate.result.chainId}}\",  \"valueLimit\": \"{{Evaluate ClearIntent Gate.result.valueLimit}}\",  \"executor\": \"{{Evaluate ClearIntent Gate.result.executor}}\",  \"signer\": \"{{Evaluate ClearIntent Gate.result.signer}}\",  \"transactionHash\": \"{{Evaluate ClearIntent Gate.result.transactionHash}}\"}\n"
+        },
+        "status": "idle",
+        "enabled": false,
+        "description": "Send the terminal ClearIntent execution result to the canonical ClearIntent webhook for user-facing alert and audit display."
+      },
+      "type": "action",
+      "position": {
+        "x": 504,
+        "y": 0
+      }
+    },
+    {
+      "id": "Hn6jOUw2E52ZQT7nYq3pO",
+      "data": {
+        "type": "action",
+        "label": "Evaluate ClearIntent Gate",
+        "config": {
+          "code": "async function actionStep(input) {\n  \"use step\";\n\n  const clearintent = input.clearintent ?? {};\n\n  const verificationStatusOk = clearintent.verification?.status === \"verified\";\n  const intentHashOk =\n    clearintent.verification?.intentHash != null &&\n    clearintent.verification.intentHash === clearintent.intentHash;\n  const policyHashOk =\n    clearintent.verification?.policyHash != null &&\n    clearintent.verification.policyHash === clearintent.policyHash;\n\n  let status = \"completed\";\n  let eventType = \"clearintent.execution.completed\";\n  let error = null;\n  let severity = \"info\";\n  let shouldExecute = true;\n\n  if (!verificationStatusOk) {\n    status = \"failed\";\n    eventType = \"clearintent.execution.failed\";\n    error = \"clearintent_verification_missing\";\n    severity = \"critical\";\n    shouldExecute = false;\n  } else if (!intentHashOk) {\n    status = \"failed\";\n    eventType = \"clearintent.execution.failed\";\n    error = \"intent_hash_mismatch\";\n    severity = \"critical\";\n    shouldExecute = false;\n  } else if (!policyHashOk) {\n    status = \"failed\";\n    eventType = \"clearintent.execution.failed\";\n    error = \"policy_hash_mismatch\";\n    severity = \"critical\";\n    shouldExecute = false;\n  }\n\n  return {\n    success: true,\n    status,\n    eventType,\n    error,\n    severity,\n    shouldExecute,\n\n    parentWallet: clearintent.parentWallet ?? null,\n    agentAccount: clearintent.agentAccount ?? null,\n    agentEnsName: clearintent.agentEnsName ?? null,\n\n    intentHash: clearintent.intentHash ?? null,\n    verificationIntentHash: clearintent.verification?.intentHash ?? null,\n    policyHash: clearintent.policyHash ?? null,\n    verificationPolicyHash: clearintent.verification?.policyHash ?? null,\n    auditLatest: clearintent.auditLatest ?? null,\n\n    actionType: clearintent.action?.actionType ?? null,\n    target: clearintent.action?.target ?? null,\n    chainId: clearintent.action?.chainId ?? null,\n    valueLimit: clearintent.action?.valueLimit ?? null,\n\n    executor: clearintent.authority?.executor ?? null,\n    signer: clearintent.authority?.signer ?? null,\n    transactionHash: null\n  };\n}\n",
+          "timeout": "60",
+          "actionType": "code/run-code"
+        },
+        "status": "idle",
+        "description": ""
+      },
+      "type": "action",
+      "position": {
+        "x": 252,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "RfId0jZG-aYkqWbrbUBip",
+      "type": "animated",
+      "source": "LM3PmFGpD6fNKw38u62Dm",
+      "target": "Hn6jOUw2E52ZQT7nYq3pO"
+    },
+    {
+      "id": "KrYqX-0w8_iNzi2D2HS7o",
+      "type": "animated",
+      "source": "Hn6jOUw2E52ZQT7nYq3pO",
+      "target": "ohSTbUxJ3WhRRI5sOX9aT",
+      "sourceHandle": null,
+      "targetHandle": null
+    }
+  ],
+  "integrationBindings": []
+}

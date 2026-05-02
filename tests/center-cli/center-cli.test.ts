@@ -465,6 +465,35 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(parsed.data.execution.submission).toBeUndefined();
   });
 
+  it("exposes KeeperHub live-run-status blockers without an execution ID", async () => {
+    const result = await runCliWithEnv(["keeperhub", "live-run-status", "--json"], {
+      CLEARINTENT_SECRETS_FILE: "/tmp/clearintent-test-missing-secrets.env",
+      KEEPERHUB_API_TOKEN: "kh_test",
+      KEEPERHUB_WORKFLOW_ID: "wf_demo",
+      KEEPERHUB_EXECUTOR_ADDRESS: "0x2222222222222222222222222222222222222222",
+      KEEPERHUB_EXECUTION_ID: "",
+      CLEARINTENT_AGENT_CARD_URI: "0g://agent-card",
+      CLEARINTENT_POLICY_URI: "0g://policy",
+      CLEARINTENT_POLICY_HASH: "0x1111111111111111111111111111111111111111111111111111111111111111",
+      CLEARINTENT_AUDIT_LATEST: "0g://audit"
+    });
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      ok: boolean;
+      data: { execution: { blockingReasons: string[]; run?: unknown } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(parsed.command).toBe("keeperhub live-run-status");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.data.execution.blockingReasons).toEqual(expect.arrayContaining(["missing_execution_id"]));
+    expect(parsed.data.execution.run).toBeUndefined();
+  });
+
   it("renders execution status with explicit local fixture and no-live-claim language", async () => {
     const result = await runCli(["keeperhub", "status"]);
 

@@ -26,6 +26,14 @@ export type CenterExecutionStatus = {
     status?: string;
     transactionHash?: string;
   };
+  run?: {
+    executionId?: string;
+    runId?: string;
+    status?: string;
+    transactionHash?: string;
+    completedAt?: string;
+    logCount?: number;
+  };
   receipt?: unknown;
 };
 
@@ -33,6 +41,7 @@ type KeeperHubAdapterApi = {
   getCenterExecutionStatus?: () => CenterExecutionStatus | Promise<CenterExecutionStatus>;
   getKeeperHubLiveStatus?: () => CenterExecutionStatus | Promise<CenterExecutionStatus>;
   submitKeeperHubLiveWorkflow?: () => CenterExecutionStatus | Promise<CenterExecutionStatus>;
+  getKeeperHubLiveRunStatus?: () => CenterExecutionStatus | Promise<CenterExecutionStatus>;
 };
 
 export async function getCenterExecutionStatus(): Promise<CenterExecutionStatus> {
@@ -90,6 +99,19 @@ export async function submitCenterKeeperHubLiveWorkflow(): Promise<CenterExecuti
       return normalizeExecutionStatus(status);
     }
     return buildUnavailableLiveStatus("keeperhub_live_submit_api_missing");
+  } catch {
+    return buildUnavailableLiveStatus("keeperhub_adapter_unavailable");
+  }
+}
+
+export async function getCenterKeeperHubLiveRunStatus(): Promise<CenterExecutionStatus> {
+  try {
+    const loaded = await importKeeperHubAdapter();
+    const status = await loaded.getKeeperHubLiveRunStatus?.();
+    if (isCenterExecutionStatus(status)) {
+      return normalizeExecutionStatus(status);
+    }
+    return buildUnavailableLiveStatus("keeperhub_live_run_status_api_missing");
   } catch {
     return buildUnavailableLiveStatus("keeperhub_adapter_unavailable");
   }

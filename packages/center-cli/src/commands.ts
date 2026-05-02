@@ -7,7 +7,12 @@ import {
 } from "../../core/src";
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
 import { getCredentialSafetyStatus } from "./credential-safety";
-import { getCenterExecutionStatus, getCenterKeeperHubLiveStatus, submitCenterKeeperHubLiveWorkflow } from "./execution-status";
+import {
+  getCenterExecutionStatus,
+  getCenterKeeperHubLiveRunStatus,
+  getCenterKeeperHubLiveStatus,
+  submitCenterKeeperHubLiveWorkflow
+} from "./execution-status";
 import {
   getCenterIdentityBindingStatus,
   getCenterIdentityStatus,
@@ -237,6 +242,24 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
       }))
     };
   }
+  if ((group === "execution" || group === "keeperhub") && command === "live-run-status") {
+    const execution = await getCenterKeeperHubLiveRunStatus();
+    return {
+      command: `${group} live-run-status`,
+      ok: execution.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "keeperhub-live",
+      liveProvider: true,
+      summary: execution.summary,
+      data: { execution },
+      issues: [...(execution.blockingReasons ?? []), ...execution.degradedReasons].map((reason) => ({
+        code: reason,
+        message: reason,
+        path: "keeperhub"
+      }))
+    };
+  }
   if (group === "signer" && isSignerRoute(command)) {
     const signer = await getCenterSignerStatus(command);
     return {
@@ -388,6 +411,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "keeperhub status",
         "keeperhub live-status",
         "keeperhub live-submit",
+        "keeperhub live-run-status",
         "signer status",
         "signer preview",
         "signer typed-data",

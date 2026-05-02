@@ -62,7 +62,11 @@ Audit target: the agent cannot bypass ClearIntent.
 
 ### 6.6 Agent Audit dashboard
 
+Implementation plan: `docs/roadmaps/phase-6-guardian-agent-example/6.6_FRONTEND_DASHBOARD_PLAN.md`
+
 Build a lightweight Next.js dashboard for the clear chain of intent. The dashboard must be wallet-gated through Reown and read authority context from verifiable sources: wallet session, ENS identity records, 0G policy/audit artifacts, onchain authority contract state/events through Alchemy, and KeeperHub receipts. It should show proposed intent, policy check, risk report, human review checkpoint, signature, onchain verification, execution, and audit evidence as a single timeline.
+
+Current implementation direction: use the dark operational dashboard visual direction selected during May 2 planning. Overview is the initial page and should explain value while showing real connected-wallet/provider state; Wizard is the setup path. Alchemy Account Kit is the preferred smart-account path, with parent-owned agent smart account language. Reown remains a possible wallet-connection reference, not a locked implementation requirement for this phase.
 
 If conditional human-review gates are in scope for the final demo, the dashboard should also show why a specific autonomous action was interrupted for review, such as order size, value threshold, new executor, elevated risk, policy mismatch, or degraded audit evidence.
 

@@ -12,7 +12,7 @@ This is the high-visibility roadmap index for ClearIntent. Detailed phase sequen
 
 ## Current Phase
 
-Phase 5A Signer Payload and Local Approval Scaffold plus Phase 5B ERC-7730 / Clear Signing Metadata Local Scaffold are complete locally. Phase 2B live 0G Storage smoke reached `0g-write-read-verified`. Phase 3B live ENS binding is complete at `ens-live-bound` for `guardian.agent.clearintent.eth`, with live 0G policy/audit/agent-card artifacts bound through ENS text records. Live-gated targets now focus on Phase 4B live KeeperHub/onchain execution and Phase 5C/5D/5E real wallet validation.
+Phase 5A Signer Payload and Local Approval Scaffold plus Phase 5B ERC-7730 / Clear Signing Metadata Local Scaffold are complete locally. Phase 2B live 0G Storage smoke reached `0g-write-read-verified`. Phase 3B live ENS binding is complete at `ens-live-bound` for `guardian.agent.clearintent.eth`, with live 0G policy/audit/agent-card artifacts bound through ENS text records. Phase 4B has reached `keeperhub-live-submitted` for workflow `r8hbrox9eorgvvlunk72b` and corrected execution/run `089to8oqegw0r48i63vbj`; the monitor route reports terminal status `executed` with no transaction hash. Phase 4B remains open until the claim boundary is closed as workflow-execution proof or extended to transaction-backed onchain evidence. Live-gated targets now focus on Phase 4B receipt/claim closeout and Phase 5C/5D/5E real wallet validation.
 
 Completed baseline:
 
@@ -29,11 +29,12 @@ Completed baseline:
 - Phase 3A ENS Agent Identity local scaffold with `packages/ens-identity/`, local/mock resolver, agent card validation, required ENS text-record mapping, fixture tests, Center CLI `identity status`, and `ens-local-fixture` claim level
 - Phase 3B live ENS binding with `identity live-status`, parent-wallet-oriented `identity bind-records` / `identity send-bind-records`, one Public Resolver multicall over ClearIntent text records, `guardian.agent.clearintent.eth`, and `ens-live-bound` policy-hash verification against live 0G artifacts
 - Phase 4A KeeperHub Execution local scaffold with `packages/keeperhub-adapter/`, typed execution adapter interface, local workflow mapping, submit/monitor simulation, canonical receipt conversion, fail-closed tests, Center CLI `execution status` / `keeperhub status`, and `keeperhub-local-fixture` claim level
+- Phase 4B live KeeperHub workflow submit and monitor path with `keeperhub live-status`, gated `keeperhub live-submit`, `keeperhub live-run-status`, exported workflow `docs/providers/KeeperHub/clearintent-execution-gate.workflow.json`, workflow ID `r8hbrox9eorgvvlunk72b`, and monitored executed workflow run `089to8oqegw0r48i63vbj` at claim level `keeperhub-live-submitted`
 - Phase 5A/5B local signer payload, approval preview, fixture signature, request-shape prep, and ERC-7730 metadata scaffold with `packages/signer-adapter/`, Center CLI signer routes, focused tests, and claim levels constrained to `signer-local-fixture`, `eip712-local-fixture`, and `erc7730-local-metadata`
 
 Immediate next action:
 
-- Proceed to Phase 4B live KeeperHub/onchain execution now that the required 0G/ENS binding evidence exists. Capture the selected KeeperHub path, live run or transaction evidence, canonical receipt conversion, and audit persistence level.
+- Continue Phase 4B by closing the claim boundary for workflow execution proof or extending to a transaction-backed run, then record canonical `ExecutionReceipt` and audit persistence level.
 - Phase 5 plans: `docs/roadmaps/phase-5-signer-readable-approval/5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md`, `docs/roadmaps/phase-5-signer-readable-approval/5B_ERC7730_METADATA_LOCAL_PLAN.md`, and `docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md`.
 - Phase 5A audits: `docs/audits/phase-5-signer-readable-approval/5a.5-midpoint-audit.md` and `docs/audits/phase-5-signer-readable-approval/5a.9-closeout-audit.md`.
 - Phase 5B audits: `docs/audits/phase-5-signer-readable-approval/5b.5-midpoint-audit.md` and `docs/audits/phase-5-signer-readable-approval/5b.9-closeout-audit.md`.

@@ -76,13 +76,14 @@ Audit target: local workflow mapping, local submit/monitor simulation, typed rec
 
 ## Phase 4B: Live KeeperHub / Onchain Execution
 
-Status: open. Phase 4B is unblocked by the Phase 2B/3B storage and identity prerequisites, but it is not complete until KeeperHub live execution evidence is captured.
+Status: open. Phase 4B is unblocked by the Phase 2B/3B storage and identity prerequisites and has reached `keeperhub-live-submitted` for a live KeeperHub workflow execution request. It is not complete until final run evidence, transaction evidence where claimed, canonical receipt conversion, and audit persistence are captured.
 
 Current prerequisite evidence:
 
 - Phase 2B live 0G smoke reached `0g-write-read-verified`.
 - Phase 3B live ENS binding reached `ens-live-bound` for `guardian.agent.clearintent.eth`.
 - ENS records now bind the ClearIntent policy, audit pointer, and agent card to live 0G artifacts.
+- KeeperHub workflow `r8hbrox9eorgvvlunk72b` accepted live submit `p5w6v9tydmv80ss4zfr0r`; `keeperhub live-run-status` later reported terminal status `failed`, zero logs, and no transaction hash. After simplification to a single `Evaluate ClearIntent Gate` code node, corrected execution `089to8oqegw0r48i63vbj` reached terminal status `executed` with no transaction hash.
 
 Network posture:
 
@@ -102,13 +103,19 @@ Check credentials, selected project/workflow/direct-execution target, executor/c
 
 Submit only a verified ClearIntent intent through the selected KeeperHub path.
 
+Status: first live submit accepted by KeeperHub with execution/run ID `p5w6v9tydmv80ss4zfr0r`; claim level is `keeperhub-live-submitted`.
+
 ### 4B.4 Monitor path
 
 Capture run status, logs, transaction hash when applicable, timestamps, and error context.
 
+Status: CLI route added as `keeperhub live-run-status`; execution `089to8oqegw0r48i63vbj` was monitored and reached terminal status `executed` with zero logs and no transaction hash.
+
 ### 4B.5 Midpoint audit
 
 Audit target: live execution claim boundaries, custody/gas model, and no execution before ClearIntent verification.
+
+Status: complete for midpoint boundary. Audit: `docs/audits/phase-4-keeperhub-execution-adapter/4b.5-midpoint-audit.md`.
 
 ### 4B.6 Receipt conversion
 

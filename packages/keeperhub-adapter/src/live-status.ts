@@ -22,6 +22,8 @@ export type KeeperHubLiveCheck = {
     | "live-probe"
     | "live-submit-gate"
     | "live-submit"
+    | "live-run-status"
+    | "live-run-logs"
     | "receipt";
   label: string;
   status: "pass" | "degraded" | "blocking";
@@ -56,6 +58,14 @@ export type KeeperHubLiveStatus = {
     runId?: string;
     status?: string;
     transactionHash?: string;
+  };
+  run?: {
+    executionId?: string;
+    runId?: string;
+    status?: string;
+    transactionHash?: string;
+    completedAt?: string;
+    logCount?: number;
   };
   receipt?: ExecutionReceipt;
 };
@@ -183,6 +193,107 @@ export async function submitKeeperHubLiveWorkflow(options: {
   }
 }
 
+export async function getKeeperHubLiveRunStatus(options: {
+  env?: NodeJS.ProcessEnv;
+  fetchImpl?: FetchLike;
+  input?: VerifiedExecutionIntent;
+} = {}): Promise<KeeperHubLiveStatus> {
+  const config = readKeeperHubLiveConfig(options.env);
+  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
+  const input = options.input ?? buildVerifiedLocalExecutionInput(validIntent as AgentIntent);
+  const base = buildBaseLiveStatus(config);
+  const executionId = config.executionId;
+
+  const blockingReasons: ExecutionIssue["code"][] = [...base.blockingReasons];
+  if (executionId === undefined) {
+    blockingReasons.push("missing_execution_id");
+  }
+
+  if (blockingReasons.length > 0 || config.workflowId === undefined || executionId === undefined) {
+    return {
+      ...base,
+      ok: false,
+      summary: "KeeperHub live run status is blocked before querying execution evidence.",
+      checks: withRunChecks(base.checks, false, false, "KEEPERHUB_EXECUTION_ID is required to query run status.", "Run logs were not queried."),
+      blockingReasons: uniqueIssueCodes(blockingReasons)
+    };
+  }
+
+  try {
+    const statusResponse = await fetchKeeperHub(fetchImpl, config, `/workflows/executions/${executionId}/status`, { method: "GET" });
+    if (!statusResponse.ok) {
+      return {
+        ...base,
+        ok: false,
+        summary: "KeeperHub live run status query failed.",
+        checks: withRunChecks(base.checks, false, false, `KeeperHub execution status returned HTTP ${statusResponse.status}.`, "Run logs were not queried."),
+        blockingReasons: uniqueIssueCodes([...base.blockingReasons, "live_run_status_failed"])
+      };
+    }
+
+    const statusPayload = unwrapData(await statusResponse.json());
+    const logsResult = await fetchRunLogs(fetchImpl, config, executionId);
+    const run = buildExecutionRun(config.workflowId, {
+      ...objectRecord(statusPayload),
+      executionId,
+      runId: executionId,
+      transactionHash: findTransactionHash([statusPayload, logsResult.logs]),
+      completedAt: stringField(statusPayload, "completedAt")
+    });
+    const receipt = convertRunToExecutionReceipt({ intent: input.intent, run });
+    const terminal = run.status === "executed" || run.status === "failed";
+    const liveExecutionProven = receipt.ok && receipt.value.status === "executed";
+    const degradedReasons = receipt.ok
+      ? base.degradedReasons
+      : uniqueIssueCodes([...base.degradedReasons, ...logsResult.degradedReasons, ...receipt.issues.map((issue) => issue.code)]);
+
+    return {
+      ...base,
+      ok: liveExecutionProven,
+      claimLevel: liveExecutionProven ? KEEPERHUB_LIVE_EXECUTED_CLAIM : KEEPERHUB_LIVE_SUBMITTED_CLAIM,
+      liveExecutionProven,
+      summary: liveExecutionProven
+        ? "KeeperHub live run completed with transaction evidence and canonical receipt conversion."
+        : run.status === "failed"
+          ? "KeeperHub live run failed before executable receipt evidence was available."
+        : terminal
+          ? "KeeperHub live run reached a terminal status, but receipt evidence remains degraded."
+          : "KeeperHub live run status is available but not terminal yet.",
+      checks: withRunChecks(
+        base.checks,
+        true,
+        logsResult.degradedReasons.length === 0,
+        `KeeperHub execution status is ${run.status}.`,
+        logsResult.degradedReasons.length === 0 ? `KeeperHub returned ${logsResult.logs.length} log entries.` : logsResult.detail
+      ),
+      degradedReasons,
+      run: {
+        executionId,
+        runId: run.runId,
+        status: run.status,
+        transactionHash: run.transactionHash,
+        completedAt: run.completedAt,
+        logCount: logsResult.logs.length
+      },
+      receipt: receipt.value
+    };
+  } catch (error) {
+    return {
+      ...base,
+      ok: false,
+      summary: "KeeperHub live run status query failed.",
+      checks: withRunChecks(
+        base.checks,
+        false,
+        false,
+        error instanceof Error ? error.message : "KeeperHub execution status query failed.",
+        "Run logs were not queried."
+      ),
+      blockingReasons: uniqueIssueCodes([...base.blockingReasons, "live_run_status_failed"])
+    };
+  }
+}
+
 function buildBaseLiveStatus(config: KeeperHubLiveConfig): KeeperHubLiveStatus {
   const checks: KeeperHubLiveCheck[] = [
     {
@@ -285,6 +396,30 @@ function withSubmitChecks(checks: KeeperHubLiveCheck[], accepted: boolean, detai
   ];
 }
 
+function withRunChecks(
+  checks: KeeperHubLiveCheck[],
+  statusOk: boolean,
+  logsOk: boolean,
+  statusDetail: string,
+  logsDetail: string
+): KeeperHubLiveCheck[] {
+  return [
+    ...checks,
+    {
+      id: "live-run-status",
+      label: "Live run status",
+      status: statusOk ? "pass" : "blocking",
+      detail: statusDetail
+    },
+    {
+      id: "live-run-logs",
+      label: "Live run logs",
+      status: logsOk ? "pass" : "degraded",
+      detail: logsDetail
+    }
+  ];
+}
+
 function addDegraded(status: KeeperHubLiveStatus, code: ExecutionIssue["code"], detail: string): KeeperHubLiveStatus {
   return {
     ...status,
@@ -319,6 +454,7 @@ function buildExecutionRun(workflowId: string, payload: unknown): ExecutionRun {
     runId,
     submittedAt: new Date().toISOString(),
     status: mapRunStatus(status),
+    completedAt: stringField(payload, "completedAt"),
     transactionHash,
     error: stringField(payload, "error")
   };
@@ -330,6 +466,28 @@ function mapRunStatus(status: string | undefined): ExecutionRun["status"] {
   if (status === "running") return "running";
   if (status === "pending") return "pending";
   return "submitted";
+}
+
+async function fetchRunLogs(
+  fetchImpl: FetchLike,
+  config: KeeperHubLiveConfig,
+  executionId: string
+): Promise<{ logs: unknown[]; degradedReasons: ExecutionIssue["code"][]; detail: string }> {
+  try {
+    const response = await fetchKeeperHub(fetchImpl, config, `/workflows/executions/${executionId}/logs`, { method: "GET" });
+    if (!response.ok) {
+      return { logs: [], degradedReasons: ["live_run_logs_failed"], detail: `KeeperHub execution logs returned HTTP ${response.status}.` };
+    }
+    const payload = unwrapData(await response.json());
+    const logs = Array.isArray(payload) ? payload : [];
+    return { logs, degradedReasons: [], detail: `KeeperHub returned ${logs.length} log entries.` };
+  } catch (error) {
+    return {
+      logs: [],
+      degradedReasons: ["live_run_logs_failed"],
+      detail: error instanceof Error ? error.message : "KeeperHub execution logs query failed."
+    };
+  }
 }
 
 async function fetchKeeperHub(
@@ -364,6 +522,45 @@ function stringField(payload: unknown, key: string): string | undefined {
   }
   const value = (payload as Record<string, unknown>)[key];
   return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
+function objectRecord(payload: unknown): Record<string, unknown> {
+  return typeof payload === "object" && payload !== null && !Array.isArray(payload) ? (payload as Record<string, unknown>) : {};
+}
+
+function findTransactionHash(values: unknown[]): string | undefined {
+  for (const value of values) {
+    const found = findTransactionHashInValue(value);
+    if (found !== undefined) {
+      return found;
+    }
+  }
+  return undefined;
+}
+
+function findTransactionHashInValue(value: unknown): string | undefined {
+  if (typeof value === "string") {
+    return /^0x[a-fA-F0-9]{64}$/.test(value) ? value : undefined;
+  }
+  if (Array.isArray(value)) {
+    return findTransactionHash(value);
+  }
+  if (typeof value !== "object" || value === null) {
+    return undefined;
+  }
+  for (const [key, nested] of Object.entries(value)) {
+    if (/^(transactionHash|txHash|hash)$/i.test(key)) {
+      const direct = findTransactionHashInValue(nested);
+      if (direct !== undefined) {
+        return direct;
+      }
+    }
+    const nestedFound = findTransactionHashInValue(nested);
+    if (nestedFound !== undefined) {
+      return nestedFound;
+    }
+  }
+  return undefined;
 }
 
 function uniqueIssueCodes(values: ExecutionIssue["code"][]): ExecutionIssue["code"][] {

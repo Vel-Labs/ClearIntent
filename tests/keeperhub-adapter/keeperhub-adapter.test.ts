@@ -5,6 +5,7 @@ import {
   createLocalKeeperHubExecutionAdapter,
   deterministicLocalWorkflowId,
   getCenterExecutionStatus,
+  getKeeperHubLiveRunStatus,
   getKeeperHubLiveStatus,
   KEEPERHUB_LOCAL_FIXTURE_CLAIM,
   submitKeeperHubLiveWorkflow,
@@ -252,6 +253,68 @@ describe("KeeperHub local execution adapter", () => {
     expect(status.submission?.executionId).toBe("exec_demo");
     expect(status.receipt).toMatchObject({ status: "degraded", degradedReason: "missing_transaction_evidence" });
     expect(status.degradedReasons).toEqual(expect.arrayContaining(["missing_transaction_evidence"]));
+  });
+
+  it("blocks KeeperHub live run status without an execution ID", async () => {
+    const status = await getKeeperHubLiveRunStatus({
+      env: liveKeeperHubEnv(),
+      fetchImpl: async () => {
+        throw new Error("fetch should not be called without an execution ID");
+      }
+    });
+
+    expect(status.ok).toBe(false);
+    expect(status.blockingReasons).toEqual(expect.arrayContaining(["missing_execution_id"]));
+    expect(status.run).toBeUndefined();
+  });
+
+  it("queries KeeperHub execution status and logs for a submitted run", async () => {
+    const calls: string[] = [];
+    const status = await getKeeperHubLiveRunStatus({
+      env: liveKeeperHubEnv({ KEEPERHUB_EXECUTION_ID: "exec_demo" }),
+      fetchImpl: async (url) => {
+        calls.push(url);
+        if (url.endsWith("/status")) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              status: "success",
+              progress: { totalSteps: 3, completedSteps: 3 },
+              completedAt: "2026-05-02T18:01:00.000Z"
+            })
+          };
+        }
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            data: [
+              {
+                nodeId: "success-log",
+                nodeName: "Log Success",
+                status: "success",
+                output: { transactionHash: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
+              }
+            ]
+          })
+        };
+      }
+    });
+
+    expect(calls).toEqual([
+      "https://app.keeperhub.com/api/workflows/executions/exec_demo/status",
+      "https://app.keeperhub.com/api/workflows/executions/exec_demo/logs"
+    ]);
+    expect(status.claimLevel).toBe("keeperhub-live-executed");
+    expect(status.liveExecutionProven).toBe(true);
+    expect(status.run).toMatchObject({
+      executionId: "exec_demo",
+      runId: "exec_demo",
+      status: "executed",
+      transactionHash: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      logCount: 1
+    });
   });
 });
 

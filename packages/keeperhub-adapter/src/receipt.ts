@@ -31,14 +31,20 @@ export function convertRunToExecutionReceipt(input: {
 
   if (run.status === "failed") {
     return {
-      ok: true,
+      ok: false,
       value: {
         ...base,
         status: "failed",
         completedAt: run.completedAt || LOCAL_COMPLETED_AT,
-        error: run.error || "Local KeeperHub fixture run failed."
+        error: run.error || "KeeperHub run failed."
       },
-      issues: []
+      issues: [
+        {
+          code: "failed_run",
+          message: run.error || "KeeperHub run failed before executable receipt evidence was available.",
+          path: "status"
+        }
+      ]
     };
   }
 

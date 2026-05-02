@@ -6,6 +6,7 @@ export type KeeperHubLiveConfig = {
   apiTokenStatus: "present" | "missing" | "invalid";
   webhookTokenStatus: "present" | "missing" | "invalid";
   workflowId?: string;
+  executionId?: string;
   projectId?: string;
   organizationId?: string;
   executorAddress?: string;
@@ -40,6 +41,7 @@ export function readKeeperHubLiveConfig(env: NodeJS.ProcessEnv = process.env): K
     apiTokenStatus: apiToken === undefined ? "missing" : apiToken.startsWith("kh_") ? "present" : "invalid",
     webhookTokenStatus: webhookToken === undefined ? "missing" : webhookToken.startsWith("wfb_") ? "present" : "invalid",
     workflowId: nonEmpty(env.KEEPERHUB_WORKFLOW_ID),
+    executionId: nonEmpty(env.KEEPERHUB_EXECUTION_ID) ?? nonEmpty(env.KEEPERHUB_RUN_ID),
     projectId: nonEmpty(env.KEEPERHUB_PROJECT_ID),
     organizationId: nonEmpty(env.KEEPERHUB_ORG_ID),
     executorAddress,

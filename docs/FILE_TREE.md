@@ -70,6 +70,7 @@ docs/audits/phase-3-ens-agent-identity/3b.5-midpoint-audit.md
 docs/audits/phase-3-ens-agent-identity/3b.9-closeout-audit.md
 docs/audits/phase-4-keeperhub-execution-adapter/4a.5-midpoint-audit.md
 docs/audits/phase-4-keeperhub-execution-adapter/4a.9-closeout-audit.md
+docs/audits/phase-4-keeperhub-execution-adapter/4b.5-midpoint-audit.md
 docs/audits/phase-5-signer-readable-approval/5a.5-midpoint-audit.md
 docs/audits/phase-5-signer-readable-approval/5a.9-closeout-audit.md
 docs/audits/phase-5-signer-readable-approval/5b.5-midpoint-audit.md
@@ -103,6 +104,7 @@ docs/providers/ENS/README.md
 docs/providers/ENS/github-map.md
 docs/providers/ENS/source-notes.md
 docs/providers/KeeperHub/README.md
+docs/providers/KeeperHub/clearintent-execution-gate.workflow.json
 docs/providers/KeeperHub/github-map.md
 docs/providers/KeeperHub/source-notes.md
 docs/providers/README.md
@@ -179,6 +181,7 @@ docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md
 docs/roadmaps/phase-5-signer-readable-approval/5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md
 docs/roadmaps/phase-5-signer-readable-approval/5B_ERC7730_METADATA_LOCAL_PLAN.md
 docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md
+docs/roadmaps/phase-6-guardian-agent-example/6.6_FRONTEND_DASHBOARD_PLAN.md
 docs/templates/AGENT_ASSIGNMENT_TEMPLATE.md
 docs/templates/CLOSEOUT_AUDIT_TEMPLATE.md
 docs/templates/CONTRACT_CORE_STABILITY_HANDOFF_PROMPT.md

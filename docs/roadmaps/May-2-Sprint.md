@@ -21,7 +21,7 @@ The sprint should keep ClearIntent honest: the validated surface today is CLI-fi
 - 0G live storage is validated at `0g-write-read-verified`.
 - ENS live binding is validated at `ens-live-bound` for `guardian.agent.clearintent.eth`.
 - Phase 4A KeeperHub local adapter is complete at `keeperhub-local-fixture`.
-- Phase 4B KeeperHub live execution is unblocked but not complete.
+- Phase 4B KeeperHub live execution has reached `keeperhub-live-submitted` but is not complete.
 - Phase 5A/5B signer payload and ERC-7730 metadata are complete locally.
 - Phase 5C/5D/5E wallet validation remains open.
 
@@ -51,15 +51,17 @@ Status: in progress. The first CLI routes now exist and are gated:
 ```bash
 npm run clearintent -- keeperhub live-status
 npm run clearintent -- keeperhub live-submit
+npm run clearintent -- keeperhub live-run-status
 ```
 
-Current operator state: KeeperHub token and 0G/ENS binding are present, but live execution is blocked until `KEEPERHUB_WORKFLOW_ID` is configured. Executor binding is currently degraded until `KEEPERHUB_EXECUTOR_ADDRESS` is configured.
+Current operator state: KeeperHub token and 0G/ENS binding are present. A KeeperHub workflow has been built and exported to `docs/providers/KeeperHub/clearintent-execution-gate.workflow.json`; webhook blocks remain disabled until the frontend event-ingest endpoint exists. `keeperhub live-status` passed. The original branched workflow run `p5w6v9tydmv80ss4zfr0r` failed, then the simplified `Evaluate ClearIntent Gate` workflow produced corrected execution/run ID `089to8oqegw0r48i63vbj` with terminal status `executed`. Live execution still needs executor binding and transaction evidence if claiming onchain execution.
 
 Build or validate CLI routes such as:
 
 ```bash
 npm run clearintent -- keeperhub live-status
 npm run clearintent -- keeperhub live-submit
+npm run clearintent -- keeperhub live-run-status
 ```
 
 Minimum behavior:
@@ -76,7 +78,9 @@ Minimum behavior:
 Closeout artifacts:
 
 - `docs/audits/phase-4-keeperhub-execution-adapter/4b.9-closeout-audit.md`
+- `docs/audits/phase-4-keeperhub-execution-adapter/4b.5-midpoint-audit.md`
 - `KEEPERHUB_FEEDBACK.md`
+- `docs/providers/KeeperHub/clearintent-execution-gate.workflow.json`
 - `docs/providers/KeeperHub/README.md`
 - roadmap/current-state updates
 - `CHANGELOG.md`

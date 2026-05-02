@@ -24,6 +24,8 @@ phase-5-signer-readable-approval/
   5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md
   5B_ERC7730_METADATA_LOCAL_PLAN.md
   5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md
+phase-6-guardian-agent-example/
+  6.6_FRONTEND_DASHBOARD_PLAN.md
 features/
   feature-01-core-authority-kernel.md
   feature-02-zerog-policy-memory-audit.md

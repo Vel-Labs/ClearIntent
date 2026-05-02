@@ -2,7 +2,7 @@
 
 KeeperHub is the ClearIntent provider for reliable onchain execution after ClearIntent has resolved identity, loaded policy, created a typed intent, reviewed risk, and collected a valid signature.
 
-Current ClearIntent claim level: `keeperhub-local-fixture`. Phase 4B is open but unblocked by 0G/ENS prerequisites after Phase 3B reached `ens-live-bound`.
+Current ClearIntent claim level: `keeperhub-live-submitted`. Phase 4B is open but unblocked by 0G/ENS prerequisites after Phase 3B reached `ens-live-bound`. The live submit path has been accepted by KeeperHub, but transaction/final execution evidence is still absent.
 
 ## Read first
 
@@ -34,14 +34,30 @@ Phase 4B still needs a selected live path:
 
 The required 0G/ENS prerequisite is ready: `guardian.agent.clearintent.eth` reached `ens-live-bound` and resolves live 0G policy, audit, and agent-card artifacts.
 
+Phase 4B now has an exported KeeperHub workflow artifact at `docs/providers/KeeperHub/clearintent-execution-gate.workflow.json`. The workflow uses a manual trigger so ClearIntent can invoke it programmatically after verification. The current simplified workflow is intended to run one `Evaluate ClearIntent Gate` code node and, later, a disabled webhook node targeting `https://clearintent.xyz/api/keeperhub/events` for the frontend event-ingest pass.
+
+First live submit evidence:
+
+- workflow ID: `r8hbrox9eorgvvlunk72b`
+- first failed execution ID: `p5w6v9tydmv80ss4zfr0r`
+- corrected execution ID: `089to8oqegw0r48i63vbj`
+- corrected run ID: `089to8oqegw0r48i63vbj`
+- submitted status: `running`
+- monitored status: `executed`
+- log count: 0
+- claim level: `keeperhub-live-submitted`
+- transaction hash: none
+- degraded reasons after monitoring: `unsupported_executor`, `missing_transaction_evidence`
+
 Current CLI routes:
 
 ```bash
 npm run clearintent -- keeperhub live-status
 npm run clearintent -- keeperhub live-submit
+npm run clearintent -- keeperhub live-run-status
 ```
 
-`keeperhub live-status` is read-only unless `KEEPERHUB_ENABLE_LIVE_PROBE=true`, in which case it may call KeeperHub's workflow lookup endpoint. `keeperhub live-submit` is always blocked unless `KEEPERHUB_ENABLE_LIVE_SUBMIT=true`.
+`keeperhub live-status` is read-only unless `KEEPERHUB_ENABLE_LIVE_PROBE=true`, in which case it may call KeeperHub's workflow lookup endpoint. `keeperhub live-submit` is always blocked unless `KEEPERHUB_ENABLE_LIVE_SUBMIT=true`. `keeperhub live-run-status` reads `KEEPERHUB_EXECUTION_ID` or `KEEPERHUB_RUN_ID` and queries KeeperHub execution status plus logs without submitting another run.
 
 Phase 4B environment:
 
@@ -49,13 +65,14 @@ Phase 4B environment:
 KEEPERHUB_API_BASE_URL=https://app.keeperhub.com/api
 KEEPERHUB_API_TOKEN=<external secrets only>
 KEEPERHUB_WORKFLOW_ID=
+KEEPERHUB_EXECUTION_ID=
 KEEPERHUB_EXECUTION_MODE=workflow
 KEEPERHUB_EXECUTOR_ADDRESS=
 KEEPERHUB_ENABLE_LIVE_PROBE=false
 KEEPERHUB_ENABLE_LIVE_SUBMIT=false
 ```
 
-The initial live-status output in the operator environment has token and 0G/ENS binding present, but is blocked on `KEEPERHUB_WORKFLOW_ID` and degraded by missing executor binding plus disabled live probe.
+The first live-status output in the operator environment has token, workflow, and 0G/ENS binding present. The first live-submit was accepted by KeeperHub but failed because the original branched workflow could not evaluate conditions correctly. The simplified workflow then produced corrected execution `089to8oqegw0r48i63vbj`, and `keeperhub live-run-status` reported terminal status `executed` with no transaction hash. This supports workflow-execution proof, not onchain transaction proof.
 
 ## Taxonomy
 

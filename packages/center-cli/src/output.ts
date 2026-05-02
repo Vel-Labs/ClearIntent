@@ -331,6 +331,17 @@ function renderExecutionStatus(execution: CenterExecutionStatus): string[] {
           `- status = ${execution.submission.status ?? "none"}`,
           `- transactionHash = ${execution.submission.transactionHash ?? "none"}`
         ]),
+    ...(execution.run === undefined
+      ? []
+      : [
+          "KeeperHub run:",
+          `- executionId = ${execution.run.executionId ?? "none"}`,
+          `- runId = ${execution.run.runId ?? "none"}`,
+          `- status = ${execution.run.status ?? "none"}`,
+          `- transactionHash = ${execution.run.transactionHash ?? "none"}`,
+          `- completedAt = ${execution.run.completedAt ?? "none"}`,
+          `- logCount = ${execution.run.logCount ?? "none"}`
+        ]),
     `Execution blocking reasons: ${formatList(execution.blockingReasons)}`,
     `Execution degraded reasons: ${formatList(execution.degradedReasons)}`
   ];
