@@ -76,7 +76,7 @@ Audit target: local workflow mapping, local submit/monitor simulation, typed rec
 
 ## Phase 4B: Live KeeperHub / Onchain Execution
 
-Status: open. Phase 4B is unblocked by the Phase 2B/3B storage and identity prerequisites and has reached `keeperhub-live-submitted` for a live KeeperHub workflow execution request. It is not complete until final run evidence, transaction evidence where claimed, canonical receipt conversion, and audit persistence are captured.
+Status: complete at workflow-execution proof. Phase 4B is unblocked by the Phase 2B/3B storage and identity prerequisites and reached `keeperhub-live-submitted` for a live KeeperHub workflow execution request. The corrected run reached terminal KeeperHub workflow status `executed`, but no onchain transaction hash or known executor binding is claimed.
 
 Current prerequisite evidence:
 
@@ -103,7 +103,7 @@ Check credentials, selected project/workflow/direct-execution target, executor/c
 
 Submit only a verified ClearIntent intent through the selected KeeperHub path.
 
-Status: first live submit accepted by KeeperHub with execution/run ID `p5w6v9tydmv80ss4zfr0r`; claim level is `keeperhub-live-submitted`.
+Status: first live submit accepted by KeeperHub with execution/run ID `p5w6v9tydmv80ss4zfr0r`; corrected simplified run `089to8oqegw0r48i63vbj` reached terminal workflow status `executed`; claim level is `keeperhub-live-submitted`.
 
 ### 4B.4 Monitor path
 

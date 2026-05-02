@@ -1,6 +1,8 @@
 node_modules/
 coverage/
 dist/
+.next/
+apps/**/.next/
 .DS_Store
 
 # Local credentials and runtime state. Keep examples tracked.

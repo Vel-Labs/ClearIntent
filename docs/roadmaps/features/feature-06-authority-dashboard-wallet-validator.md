@@ -83,6 +83,29 @@ Audit target: Phase 6 proves the frontend authority dashboard and wallet validat
 - KeeperHub events cannot masquerade as authority truth without authenticity checks.
 - The dashboard remains an interface over authority truth, not the authority source.
 
+## Current implementation status
+
+The Phase 6 foundation is implemented locally under `apps/web/`.
+
+Proven:
+
+- `apps/web/` is intentionally opened in repo governance and root package scripts.
+- The app has a Next.js shell with Overview as the public first page and a top-right parent-wallet connect button.
+- Connected wallets reveal Setup Wizard, Provider Evidence, Intent History, Human Intervention, and Settings as separate sidebar destinations.
+- The dashboard models `unconnected`, `connected-unconfigured`, `partially-configured`, `configured`, `degraded`, and `demo`.
+- The default page shows unconnected/missing evidence and a clearly labeled demo payload lane.
+- The EIP-1193/MetaMask adapter boundary can prepare `eth_signTypedData_v4` requests from the existing signer-adapter typed-data shape.
+- The KeeperHub event route validates reported event shape and labels accepted events as non-authoritative.
+
+Unproven:
+
+- real MetaMask signing or wallet-rendered preview
+- WalletConnect/mobile and hardware-wallet validation
+- Ledger Clear Signing
+- smart-account/session-key enforcement
+- trusted KeeperHub webhook authenticity/replay/source binding
+- Phase 7 setup wizard
+
 ## Downstream routing
 
 - Phase 7 owns the UX/setup wizard flow.

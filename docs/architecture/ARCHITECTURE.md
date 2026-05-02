@@ -186,6 +186,8 @@ Rule: the hosted frontend is an interface over wallet-owned authority and decent
 
 Phase split: Phase 6 proves the authority dashboard, canonical payload preview, wallet approval validation, and provider evidence reflection. Phase 7 builds the guided setup wizard on top of that validated surface.
 
+Current implementation note: `apps/web/` now contains the first Phase 6 dashboard foundation. It models authority/evidence display states, renders an Overview page, prepares a generic EIP-1193/MetaMask `eth_signTypedData_v4` request boundary from the existing signer-adapter typed-data shape, reports Alchemy Account Kit readiness without enforcement claims, and accepts KeeperHub events only as reported/non-authoritative until authenticity and replay checks exist.
+
 Preferred product flow:
 
 ```text

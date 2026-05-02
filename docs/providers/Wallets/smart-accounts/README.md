@@ -2,6 +2,8 @@
 
 Smart accounts are planned signer surfaces for ClearIntent when the account can verify typed signatures and preserve auditability.
 
+Phase 6 only reports Alchemy/Account Kit public-config readiness in the dashboard. It does not create a smart account, grant a session key, enforce permissions, or prove account-abstraction execution.
+
 ## Candidate systems
 
 | System | Expected path | Current level |

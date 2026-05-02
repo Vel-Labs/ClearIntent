@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "repoName": "ClearIntent",
   "purpose": "Reusable authority layer for autonomous onchain agents. Agents produce bounded intents, humans approve through explicit review and readable signing flows, and executors act only after policy, nonce, deadline, and authority checks pass.",
-  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, Phase 1.5 Center CLI skeleton, Phase 2A local 0G policy memory/audit scaffold, Phase 2B live 0G Storage, Phase 3A local ENS Agent Identity scaffold, Phase 3B live ENS binding, Phase 4A KeeperHub Execution Local Scaffold, and Phase 5A/5B signer payload/local approval plus ERC-7730 metadata scaffold are complete. Phase 4B has workflow-execution evidence but no transaction hash. Phase 5C is prepared only to ready-for-operator-test request-shape/status/docs. Phase 6 is the authority dashboard and wallet validator needed for real wallet validation; Phase 7 is the guided UX/setup wizard.",
+  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, Phase 1.5 Center CLI skeleton, Phase 2A local 0G policy memory/audit scaffold, Phase 2B live 0G Storage, Phase 3A local ENS Agent Identity scaffold, Phase 3B live ENS binding, Phase 4A KeeperHub Execution Local Scaffold, Phase 5A/5B signer payload/local approval plus ERC-7730 metadata scaffold, and Phase 6 authority dashboard/wallet validator foundation are in progress. Phase 4B has workflow-execution evidence but no transaction hash. Phase 5C is prepared only to ready-for-operator-test request-shape/status/docs and now has a browser harness foundation. Phase 7 remains the guided UX/setup wizard.",
   "canonicalPaths": {
     "agentPolicy": "AGENTS.md",
     "repoProfile": "REPO_PROFILE.json",
@@ -47,7 +47,9 @@
     "githubPullRequestTemplate": ".github/pull_request_template.md",
     "githubScaffoldIssueTemplate": ".github/ISSUE_TEMPLATE/scaffold_change.yml",
     "githubIssueConfig": ".github/ISSUE_TEMPLATE/config.yml",
-    "githubQualityGate": ".github/workflows/quality-gate.yml"
+    "githubQualityGate": ".github/workflows/quality-gate.yml",
+    "webApp": "apps/web/",
+    "phase6AuditDirectory": "docs/audits/phase-6-authority-wallet-validator/"
   },
   "plannedCanonicalPaths": {
     "zerogMemoryPackage": "packages/zerog-memory/",
@@ -95,7 +97,12 @@
     "allTests": "npm test",
     "centerCli": "npm run clearintent",
     "typecheck": "npm run typecheck",
-    "fullQualityGate": "npm run check"
+    "fullQualityGate": "npm run check",
+    "webDev": "npm run web:dev",
+    "webStart": "npm run web:start",
+    "webTypecheck": "npm run web:typecheck",
+    "webLint": "npm run web:lint",
+    "webTest": "npm run web:test"
   },
   "governanceLockedPaths": [
     "AGENTS.md",
@@ -131,7 +138,6 @@
     "packages/opencleaw-adapter",
     "packages/x402-adapter",
     "examples/guardian-agent",
-    "apps/web",
     "deploy"
   ],
   "importantSourceDirectories": [
@@ -148,7 +154,8 @@
     "tests/contracts/",
     "tests/ens-identity/",
     "tests/keeperhub-adapter/",
-    "tests/signer-adapter/"
+    "tests/signer-adapter/",
+    "apps/web/"
   ],
   "importantAgentDirectories": [
     "skills/"
@@ -175,7 +182,10 @@
     "npm run test:contracts",
     "npm test",
     "npm run typecheck",
-    "npm run check"
+    "npm run check",
+    "npm run web:typecheck",
+    "npm run web:lint",
+    "npm run web:test"
   ],
   "allowedTemplatePlaceholders": [
     "<Feature Or Phase>",

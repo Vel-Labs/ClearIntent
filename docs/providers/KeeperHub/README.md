@@ -2,7 +2,7 @@
 
 KeeperHub is the ClearIntent provider for reliable onchain execution after ClearIntent has resolved identity, loaded policy, created a typed intent, reviewed risk, and collected a valid signature.
 
-Current ClearIntent claim level: `keeperhub-live-submitted`. Phase 4B is open but unblocked by 0G/ENS prerequisites after Phase 3B reached `ens-live-bound`. The live submit path has been accepted by KeeperHub, but transaction/final execution evidence is still absent.
+Current ClearIntent claim level: `keeperhub-live-submitted`. Phase 4B is closed at the workflow-execution proof boundary after Phase 3B reached `ens-live-bound`. The live submit path was accepted by KeeperHub and the corrected run reached terminal workflow status, but transaction/final onchain execution evidence is still absent.
 
 ## Read first
 
@@ -24,17 +24,19 @@ Current ClearIntent claim level: `keeperhub-live-submitted`. Phase 4B is open bu
 
 Phase 4A is complete locally through `packages/keeperhub-adapter/` and Center CLI `execution status` / `keeperhub status`. This proves adapter semantics, workflow mapping, local submit/monitor simulation, and canonical receipt conversion only.
 
-Phase 4B still needs a selected live path:
+Phase 4B closed live path:
 
-- KeeperHub API, CLI, MCP, or direct-execution surface
-- live run or transaction evidence
-- run/log/status monitoring evidence
-- canonical `ExecutionReceipt` conversion
-- audit persistence of the execution receipt
+- KeeperHub REST API workflow execution
+- live workflow lookup and gated submit
+- run/status monitoring through `keeperhub live-run-status`
+- workflow-level terminal status evidence
+- explicit degraded state for missing executor and transaction evidence
 
 The required 0G/ENS prerequisite is ready: `guardian.agent.clearintent.eth` reached `ens-live-bound` and resolves live 0G policy, audit, and agent-card artifacts.
 
-Phase 4B now has an exported KeeperHub workflow artifact at `docs/providers/KeeperHub/clearintent-execution-gate.workflow.json`. The workflow uses a manual trigger so ClearIntent can invoke it programmatically after verification. The current simplified workflow is intended to run one `Evaluate ClearIntent Gate` code node and, later, a disabled webhook node targeting `https://clearintent.xyz/api/keeperhub/events` for the frontend event-ingest pass.
+Phase 4B now has an exported KeeperHub workflow artifact at `docs/providers/KeeperHub/clearintent-execution-gate.workflow.json`. The workflow uses a manual trigger so ClearIntent can invoke it programmatically after verification. The cleaned artifact keeps only the active edge `ClearIntent Execution Gate -> Evaluate ClearIntent Gate`. The `Send ClearIntent Event` webhook node remains present, disabled, and disconnected until `https://clearintent.xyz/api/keeperhub/events` is deployed and authenticated for the frontend event-ingest pass.
+
+Phase 6 added the local Next.js route shape at `apps/web/src/app/api/keeperhub/events/route.ts`. The route validates reported KeeperHub event shape and returns deterministic JSON, but it does not yet authenticate tokens/signatures, enforce timestamp/nonce replay checks, or bind source headers to a configured KeeperHub workflow. Events from that route must be displayed as reported/non-authoritative until those checks are implemented and audited.
 
 First live submit evidence:
 
@@ -125,6 +127,5 @@ Sources: [AI tools overview](https://docs.keeperhub.com/ai-tools), [MCP server](
 
 ## Local follow-ups
 
-- Select the Phase 4B live path: REST API, CLI, MCP, direct execution, or a layered adapter supporting more than one.
 - Bind the executor identity or workflow reference into the 0G/ENS evidence path when the live KeeperHub target is selected.
 - Capture one live run or transaction and convert it into a canonical `ExecutionReceipt`.

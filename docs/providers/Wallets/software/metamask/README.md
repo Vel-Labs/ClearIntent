@@ -4,6 +4,8 @@ Current level: L0 researched only.
 
 Phase 5C prep status: `planned` / `ready-for-operator-test` only if request-shape/status scaffolding lands. No real MetaMask validation claim exists without operator-run evidence.
 
+Phase 6 now provides the browser harness foundation under `apps/web/`: a generic EIP-1193/MetaMask-first adapter boundary, canonical ClearIntent typed-data preview, and `eth_signTypedData_v4` request construction. This is still request-shape and app-preview evidence only until an operator records the exact MetaMask version, wallet-rendered fields, signature result, and screenshots or notes from the real wallet prompt.
+
 First 5C target: `software-wallet-tested signer-only`, meaning MetaMask signs the local ClearIntent EIP-712 fixture payload. This proves signer compatibility with the local payload shape only.
 
 Later 5C target after 2B/3B/4B: `software-wallet-tested testnet-integrated`, meaning MetaMask signs the ClearIntent EIP-712 payload after it is bound to live-testnet 0G artifact evidence, ENS/testnet identity binding, and KeeperHub/onchain execution evidence.

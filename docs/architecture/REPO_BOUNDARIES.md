@@ -94,8 +94,12 @@ No package, adapter, or demo may silently replace these shapes with local varian
 
 - wallet-gated human entrypoint
 - parent-wallet authentication
-- agent wallet or smart-account setup UX where implemented
-- policy and escalation configuration UX
+- Phase 6 authority dashboard and wallet-validation harness
+- canonical ClearIntent payload preview before wallet approval
+- EIP-1193/MetaMask request construction for operator-run software-wallet validation
+- reported/non-authoritative KeeperHub event display until authenticity and replay checks exist
+- agent wallet or smart-account setup UX where implemented in later phases
+- policy and escalation configuration UX where implemented in later phases
 - ENS, 0G, onchain, KeeperHub, and signer evidence visualization
 - audit-log and blocked-intent display
 - configuration export for SDK/CLI use
@@ -108,6 +112,8 @@ No package, adapter, or demo may silently replace these shapes with local varian
 - hidden server-side authority
 - execution submission without core verification
 - agent-readable secrets
+- wallet-rendered display truth without operator-run wallet evidence
+- smart-account or session-key enforcement until a dedicated account-abstraction phase proves it
 
 ## What the agent wallet / smart account owns
 

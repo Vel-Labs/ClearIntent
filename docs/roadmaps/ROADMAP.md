@@ -320,6 +320,8 @@ Dashboard scope:
 - KeeperHub events are reported/non-authoritative until authenticated and replay-checked.
 - The dashboard must not claim smart-account/session-key enforcement, WalletConnect/mobile validation, or hardware-wallet validation until those are separately proven.
 
+Status: Phase 6 foundation is implemented locally under `apps/web/`. It proves app structure, governance opening, Overview rendering, state vocabulary, canonical payload preview, EIP-1193/MetaMask request-shape construction, Alchemy readiness reporting, and non-authoritative KeeperHub event ingest/display. It does not prove real MetaMask signing, wallet-rendered preview, WalletConnect/mobile, hardware-wallet validation, Ledger Clear Signing, smart-account/session-key enforcement, trusted KeeperHub webhooks, or Phase 7 wizard behavior.
+
 Agent wallet scope:
 
 - The recommended secure setup is a dedicated agent wallet or smart account owned by the user's parent wallet.

@@ -3,10 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "apps/web"
+  ],
   "scripts": {
     "clearintent": "tsx packages/center-cli/src/cli.ts",
     "center": "npm run clearintent -- center",
     "typecheck": "tsc --noEmit",
+    "web:dev": "npm --workspace apps/web run dev",
+    "web:start": "npm --workspace apps/web run start",
+    "web:typecheck": "npm --workspace apps/web run typecheck",
+    "web:lint": "npm --workspace apps/web run lint",
+    "web:test": "vitest run tests/web",
     "validate:scaffold": "tsx scripts/validate-scaffold.ts",
     "validate:center-cli": "tsx scripts/validate-center-cli.ts",
     "validate:credentials": "tsx scripts/check-credential-safety.ts",
