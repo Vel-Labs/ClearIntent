@@ -7,6 +7,7 @@ All notable repo changes should be logged here.
 - Closed Phase 3B live ENS binding at `ens-live-bound` for `guardian.agent.clearintent.eth`, with live ENS record resolution, required ClearIntent text records present, and expected policy hash verification against the 0G-backed policy artifact.
 - Recorded ENS resolver multicall evidence: transaction `0x1dce685d1af441208b5ae22f890cbf3e7ed38b2865c04701c874e1f40d5f861b`, block `25005501`, records `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version`.
 - Added the Phase 3B closeout audit and updated roadmap/current-state routing so Phase 4B is unblocked by 0G/ENS prerequisites but remains open until KeeperHub live run/transaction evidence and canonical receipt conversion are recorded.
+- Added `docs/roadmaps/May-2-Sprint.md` to capture the next implementation leg: KeeperHub CLI completion, parent-owned agent smart accounts, frontend wizard, canonical ClearIntent payload rendering, software-wallet validation, and hardware-wallet validation.
 
 ## 2026-05-01
 

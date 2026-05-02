@@ -9,6 +9,7 @@ Root `../../ROADMAP.md` is the high-visibility roadmap index. `ROADMAP.md` in th
 ```text
 ROADMAP.md
 CURRENT_STATE_AND_NEXT.md
+May-2-Sprint.md
 phase-1.5-center-cli-skeleton/
   IMPLEMENTATION_PLAN.md
   EXECUTION_PROMPT.md
