@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "operatorSecretsFile": "~/.clearintent/clearintent.secrets.env",
+  "operatorSecretsFileEnv": "CLEARINTENT_SECRETS_FILE",
+  "notes": [
+    "Repo-local .env.local is for non-secret runtime config only.",
+    "Real wallet keys and provider tokens belong in the external operator secrets file.",
+    "Agents should use credentials status output and must not read the external secrets file."
+  ]
+}

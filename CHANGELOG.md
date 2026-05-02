@@ -2,10 +2,19 @@
 
 All notable repo changes should be logged here.
 
+## 2026-05-01
+
+- Documented the intended hosted-dashboard-first, SDK/CLI-second product abstraction: parent-wallet login, dedicated agent wallet or smart-account setup, policy/escalation configuration, 0G/ENS-backed pointers, and scoped agent-facing runtime inputs.
+- Clarified that the hosted dashboard must stay stateless and non-custodial, while the agent-facing runtime must not receive parent-wallet secrets or unrestricted hot-wallet keys.
+- Recorded smart-account/session-key enforcement as the preferred future bounded-automation layer while keeping current MVP claims limited to ClearIntent core plus KeeperHub pre-execution policy gating until live evidence exists.
+
 ## 2026-04-30
 
 - Added Center CLI `test local` aggregate operator check with simple local/onchain indicators for contracts, core lifecycle, 0G, ENS, KeeperHub, signer payload, metadata, and cross-layer posture without promoting live claims.
 - Updated operator testing docs and Center CLI validation so the aggregate local check is available in human and JSON lanes.
+- Clarified Phase 5C claim staging as `software-wallet-tested signer-only` before 2B/3B/4B live-testnet context and `software-wallet-tested testnet-integrated` after the wallet signs a payload bound to live 2B/3B/4B evidence.
+- Added the `credential-safety` repo-local skill, `credentials status` Center CLI route, and `npm run validate:credentials` preflight so operators can check local env readiness without printing secrets before Phase 2B/3B/4B/5C testing.
+- Added `clearintent.config.json` and `operator-secrets/` templates so real wallet/provider secrets can live outside repo-local `.env.local` while the CLI reports only redacted readiness.
 
 ## 2026-04-29
 

@@ -21,6 +21,7 @@ KEEPERHUB_FEEDBACK.md
 README.md
 REPO_PROFILE.json
 ROADMAP.md
+clearintent.config.json
 clearintent_banner.png
 clearintent_logo.png
 contracts/README.md
@@ -183,9 +184,12 @@ docs/templates/PHASE_PROMPT_TEMPLATE.md
 docs/templates/REPO_PERSONALIZATION_CHECKLIST.md
 package-lock.json
 package.json
+operator-secrets/README.md
+operator-secrets/clearintent.secrets.env.example
 packages/center-cli/README.md
 packages/center-cli/src/cli.ts
 packages/center-cli/src/commands.ts
+packages/center-cli/src/credential-safety.ts
 packages/center-cli/src/env.ts
 packages/center-cli/src/execution-status.ts
 packages/center-cli/src/fixtures.ts
@@ -239,6 +243,7 @@ packages/zerog-memory/src/live-config.ts
 packages/zerog-memory/src/live-smoke.ts
 packages/zerog-memory/src/local-memory-adapter.ts
 packages/zerog-memory/src/types.ts
+scripts/check-credential-safety.ts
 scripts/validate-center-cli.ts
 scripts/validate-contracts.ts
 scripts/validate-scaffold.ts
@@ -248,6 +253,7 @@ skills/agent-assignment-writer/SKILL.md
 skills/agent-assignment-writer/templates/agent-assignment.md
 skills/agent-assignment-writer/templates/fresh-agent-handoff.md
 skills/center-cli-operator/SKILL.md
+skills/credential-safety/SKILL.md
 skills/contract-fixture-author/SKILL.md
 skills/contract-steward/SKILL.md
 skills/core-enforcement/SKILL.md

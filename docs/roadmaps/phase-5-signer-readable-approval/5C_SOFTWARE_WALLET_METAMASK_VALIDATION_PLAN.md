@@ -6,6 +6,11 @@ Validate the Phase 5A EIP-712 payload through a real injected/software wallet pa
 
 Phase 5C may run as signer-only validation after 5A/5B, then must be repeated as end-to-end validation after Phase 2B, 3B, and 4B live-testnet evidence exists.
 
+ClearIntent uses two 5C evidence stages:
+
+- `software-wallet-tested signer-only`: MetaMask or another injected/software wallet signs the local ClearIntent EIP-712 fixture payload before live 2B/3B/4B context exists.
+- `software-wallet-tested testnet-integrated`: MetaMask or another injected/software wallet signs the ClearIntent EIP-712 payload after it is bound to Phase 2B live 0G artifact evidence, Phase 3B live ENS/testnet identity binding, and Phase 4B live KeeperHub/onchain execution evidence.
+
 ## Why now
 
 - MetaMask is the lowest-friction real wallet path for EIP-712 typed-data signing.
@@ -63,6 +68,8 @@ Phase 5C proves a real software wallet can sign ClearIntent typed payloads. It m
 ## Expected outcome
 
 After 5C signer-only validation, an operator can point to a tested MetaMask/injected-wallet EIP-712 signature path and know exactly what the wallet did and did not display. After repeating 5C post-2/3/4B, the same signer path can support the end-to-end demo chain of intent.
+
+Signer-only success is useful and should be recorded, but it is not testnet-integrated proof. The audit language must say that the signed payload came from the local ClearIntent fixture until 2B/3B/4B live-testnet evidence is available.
 
 ## Human and agent surfaces
 
@@ -149,13 +156,15 @@ Expected outcome:
 
 ## Testnet and end-to-end posture
 
-Signer-only 5C can run before 2B/3B/4B. End-to-end 5C should be repeated after:
+Signer-only 5C can run before 2B/3B/4B and can reach `software-wallet-tested signer-only` with real operator wallet evidence. End-to-end 5C should be repeated after:
 
 - Phase 2B has live/testnet 0G upload/readback/hash evidence.
 - Phase 3B has live/testnet ENS binding evidence if identity is included.
 - Phase 4B has live/testnet KeeperHub/onchain execution evidence.
 
 If testnet signer validation succeeds, prefer a livenet/mainnet follow-up only with separate audit language and no reused testnet claim.
+
+After 2B/3B/4B are complete, repeat 5C against the updated payload and record `software-wallet-tested testnet-integrated` only if the wallet signs the payload that includes or binds to the live-testnet evidence.
 
 Other EVM chains may be considered only if the same EIP-712 payload/domain model works with minimal translation. Ethereum/ENS testnet validation remains the priority for this pass.
 

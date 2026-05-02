@@ -38,6 +38,8 @@ Phase 5 should make signing portable without overstating wallet display guarante
 - `erc7730-local-metadata`: local metadata generation only, with no wallet/vendor approval claim.
 - `ready-for-operator-test`: request shape, status route, or manual instructions exist for a real wallet test, but no operator wallet evidence has been recorded.
 - `software-wallet-tested`: a real injected/software wallet path signed the ClearIntent typed payload in a recorded or audited test.
+- `software-wallet-tested signer-only`: a real injected/software wallet signed the local ClearIntent EIP-712 fixture payload before 2B/3B/4B live-testnet context exists.
+- `software-wallet-tested testnet-integrated`: a real injected/software wallet signed the ClearIntent EIP-712 payload after the payload was bound to 2B live 0G, 3B live ENS, and 4B live KeeperHub/onchain evidence.
 - `walletconnect-tested`: a real WalletConnect/mobile path signed the ClearIntent typed payload in a recorded or audited test.
 - `hardware-wallet-tested`: a real hardware-backed path signed the ClearIntent typed payload in a recorded or audited test.
 - `secure-device-display-verified`: device-side meaningful display is proven in the tested path.
@@ -50,6 +52,7 @@ Current local closeout posture:
 - Phase 5A is complete locally at `signer-local-fixture` and `eip712-local-fixture`.
 - Phase 5B is complete locally at `erc7730-local-metadata`.
 - Phase 5C is prepared only to `ready-for-operator-test` without operator wallet interaction.
+- The next 5C step is signer-only MetaMask/software-wallet validation. If it passes, record `software-wallet-tested signer-only`; do not treat it as testnet-integrated or end-to-end proof.
 - No real wallet signing, wallet-rendered preview, secure-device display, or vendor-approved Clear Signing is claimed from local fixtures.
 - Later chain-driven metadata belongs after Phase 5C signer validation and the Phase 2B/3B/4B live-testnet path provide validated chain, identity, audit, and execution context.
 
@@ -130,7 +133,8 @@ Timing:
 
 Stop point:
 
-- Claim only `software-wallet-tested` unless wallet-rendered preview evidence supports a stronger level.
+- Before 2B/3B/4B live-testnet context exists, claim only `software-wallet-tested signer-only` unless wallet-rendered preview evidence supports a separately documented display claim.
+- After 2B/3B/4B live-testnet context exists, repeat 5C and claim `software-wallet-tested testnet-integrated` only if the wallet signs the payload bound to that live evidence.
 - Do not claim secure-device display or vendor Clear Signing.
 - If only request-shape/status/docs scaffolding exists, status remains `planned` / `ready-for-operator-test` and must not be promoted to `software-wallet-tested`.
 

@@ -144,6 +144,7 @@ Rule: execution adapters may submit only after policy and signature verification
 Expected paths:
 
 - `packages/center-cli/`
+- `apps/web/`
 - `apps/demo-console/`
 - `examples/guardian-agent/`
 - `docs/hackathon/`
@@ -162,6 +163,40 @@ Rule: the demo must prove the framework. It should not fake the hard part.
 
 Current implementation note: `packages/center-cli/` is the product-center skeleton over `packages/core`. It renders core-derived state, validation, authority evaluation, and local module metadata, but it does not own authority rules and does not implement provider behavior.
 
+### 8. Hosted dashboard and agent-wallet plane
+
+Expected paths:
+
+- `apps/web/`
+- future smart-account or account-abstraction adapter package
+- relevant wallet provider notes under `docs/providers/Wallets/`
+
+Responsibilities:
+
+- stateless wallet-gated entrypoint for humans
+- parent-wallet authentication
+- agent wallet or smart-account creation/connection where implemented
+- policy configuration and escalation-mode UX
+- ENS/0G/onchain/KeeperHub evidence visualization
+- audit-log and blocked-intent display
+- configuration export for local SDK/CLI runtime
+
+Rule: the hosted frontend is an interface over wallet-owned authority and decentralized/provider evidence. It must not custody secrets, store private authority records as canonical truth, or become the hidden policy source.
+
+Preferred product flow:
+
+```text
+human connects parent wallet in hosted dashboard
+  -> dashboard creates/connects an agent wallet or smart account
+  -> human configures policy and escalation thresholds
+  -> policy/audit references are written to 0G and discoverable through ENS
+  -> human runs ClearIntent SDK/CLI using those references
+  -> agent proposes intents to SDK/CLI/runtime
+  -> ClearIntent validates and blocks/escalates before signing or execution
+```
+
+The parent wallet should see the user's ClearIntent content by resolving the user's own ENS, 0G, onchain, and KeeperHub evidence. The dashboard may cache UI state locally in the browser, but persistent authority must come from signed wallet actions and explicit artifact references.
+
 ## Critical lifecycle
 
 ```text
@@ -178,6 +213,27 @@ User goal
   -> Execution receipt and audit bundle are written to 0G
   -> ENS record or agent card points to latest audit state
 ```
+
+## Agent input boundary
+
+The agent-facing SDK/CLI may receive:
+
+- user-approved policy URI/hash
+- ENS identity reference
+- 0G audit/policy pointers
+- KeeperHub executor configuration
+- allowed action parameters
+- session-key or agent-wallet address if that key is scoped, revocable, and not the parent wallet key
+
+The agent-facing SDK/CLI must not require or encourage:
+
+- parent wallet seed phrases
+- parent wallet private keys
+- unrestricted hot-wallet keys
+- raw secrets stored in agent-readable workspaces
+- authority paths that bypass policy verification, review gates, signer adapters, or execution receipts
+
+The recommended secure setup is a dedicated agent wallet or smart account owned by the user's parent wallet. The parent wallet remains the authority and escalation signer. Routine actions may be delegated only when policy bounds are explicit; out-of-policy actions escalate to human review.
 
 ## Fail-closed laws
 

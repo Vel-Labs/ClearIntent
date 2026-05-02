@@ -28,6 +28,7 @@ These skills are scaffold assets. They are not globally installed automatically.
 | `phase-closeout-audit` | Close phases or scaffold passes with scope, evidence, findings, follow-up, and decision/changelog routing. | `templates/closeout-audit.md` |
 | `pre-commit-quality-gate` | Check commit, push, handoff, or merge readiness and proactively catch regressions. | `templates/quality-gate-report.md` |
 | `hackathon-submission-auditor` | Check prize/vendor eligibility, demo claims, feedback files, and disclosure readiness. | None |
+| `credential-safety` | Check credential, `.env`, wallet, live-provider, and operator setup safety before testnet or wallet work. | None |
 
 ## Suggested Workflow
 

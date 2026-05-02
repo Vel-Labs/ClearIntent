@@ -46,6 +46,8 @@ npm run --silent clearintent -- signer typed-data --json
 npm run --silent clearintent -- signer metadata --json
 npm run clearintent -- test local
 npm run --silent clearintent -- test local --json
+npm run clearintent -- credentials status
+npm run --silent clearintent -- credentials status --json
 npm run clearintent -- module list
 npm run --silent clearintent -- module doctor --json
 ```
@@ -91,3 +93,5 @@ Blocked fixture output means the fixture is missing required evidence or intenti
 `signer status`, `signer preview`, `signer typed-data`, and `signer metadata` are Phase 5A/5B local signer inspection routes. They report `Mode: signer-local-fixture`, `Live provider: disabled`, `Authority: blocked`, and no real-wallet, wallet-rendered preview, secure-device display, or vendor-approved Clear Signing claim. Claim levels are limited to local signer fixture, local EIP-712 fixture, and local ERC-7730 metadata vocabulary.
 
 `test local` runs the local operator checklist as one aggregate CLI command. It reports simple indicators for contracts, core lifecycle, 0G, ENS, KeeperHub, signer payload, metadata, and cross-layer posture. The local column can show `✅ tested`; live/onchain columns remain `not tested` or `not needed` until a dedicated live phase produces evidence.
+
+`credentials status` checks repo-local runtime env safety, the configured external operator secrets file, and Phase 2B 0G setup readiness without printing secrets. It reports whether env files are ignored, whether sensitive env files are tracked, whether secret values were accidentally placed in repo-local env files, whether required 0G values are present, and whether live writes are enabled.

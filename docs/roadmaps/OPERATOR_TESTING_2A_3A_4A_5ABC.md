@@ -13,7 +13,7 @@ Use this file as a working log. Paste command output, wallet observations, block
 | Phase 4A KeeperHub execution | `keeperhub-local-fixture` | Local execution request/receipt semantics. | Live KeeperHub/API/onchain execution. |
 | Phase 5A signer payload | `signer-local-fixture`, `eip712-local-fixture` | Deterministic typed data, approval preview, fixture signature evidence, display warnings. | Real wallet signing or wallet-rendered preview. |
 | Phase 5B metadata | `erc7730-local-metadata` | Local metadata generation and validation. | Wallet acceptance, secure-device display, or vendor approval. |
-| Phase 5C MetaMask/software wallet | `ready-for-operator-test` only | Request shape and issue mapping are prepared. | `software-wallet-tested` until an operator wallet signs the exact payload. |
+| Phase 5C MetaMask/software wallet | `ready-for-operator-test` only | Request shape and issue mapping are prepared. | `software-wallet-tested signer-only` until an operator wallet signs the exact local fixture payload; `software-wallet-tested testnet-integrated` until 2B/3B/4B live-testnet evidence is bound and retested. |
 
 Do not promote any claim from local fixture output alone.
 
@@ -43,18 +43,25 @@ git status --short
 node --version
 npm --version
 npm install
+npm run clearintent -- credentials status
+npm run --silent clearintent -- credentials status --json
 ```
 
 Expected behavior:
 
 - `npm install` completes without dependency errors.
-- `git status --short` may show intentional local edits, but should not show secrets, `.env.local`, runtime logs, wallet state, or `node_modules`.
+- `git status --short` may show intentional local edits, but should not show secrets, `.env.local`, `operator-secrets/*.env`, runtime logs, wallet state, or `node_modules`.
+- `credentials status` does not print secrets and reports any `.env` / `.env.local` blockers before live work.
 
 Potential blockers:
 
 - missing Node/npm
 - dependency install failure
 - untracked secret files
+- tracked `.env` / `.env.local`
+- non-empty private keys or API tokens in repo-local `.env` / `.env.local`
+- filled `operator-secrets/*.env` left inside the repo instead of moved to the external operator secrets path
+- unexpectedly enabled live writes
 - dirty worktree containing unrelated edits
 
 Operator result log:
@@ -569,7 +576,8 @@ Expected behavior for a successful 5C signer-only test:
 - operator approves intentionally
 - wallet returns a signature string
 - evidence records wallet version, network, chain ID, typed-data payload hash or full non-secret payload, signature result, and observed display behavior
-- status may advance to `software-wallet-tested` only after this evidence is recorded in an audit note
+- status may advance to `software-wallet-tested signer-only` only after this evidence is recorded in an audit note
+- status must not advance to `software-wallet-tested testnet-integrated` until 2B/3B/4B live-testnet evidence exists and the wallet signs the updated/bound payload
 
 Expected behavior for a rejected test:
 
@@ -606,7 +614,7 @@ Do not paste seed phrases or private keys.
 
 ### 5C Evidence Requirements Before Claim Promotion
 
-Do not mark `software-wallet-tested` until this exists:
+Do not mark `software-wallet-tested signer-only` until this exists:
 
 - exact wallet name and version
 - exact browser
@@ -618,6 +626,12 @@ Do not mark `software-wallet-tested` until this exists:
 - whether ClearIntent app/CLI preview was shown before wallet prompt
 - limitations and blockers
 - audit artifact path
+
+Do not mark `software-wallet-tested testnet-integrated` until the signer-only test is repeated against a payload bound to:
+
+- Phase 2B live 0G artifact refs/hashes
+- Phase 3B live ENS/testnet identity or policy binding
+- Phase 4B live KeeperHub/onchain execution evidence
 
 ## Cross-Layer Operator Scenario
 
@@ -667,9 +681,41 @@ Operator result log:
 Paste command summaries and cross-layer notes here.
 ```
 
-## Final `.env.local` Checklist for Remaining Steps
+## Final Runtime Config and Secret Checklist for Remaining Steps
 
-Use `.env.local` for secrets and local live-test configuration. Do not commit `.env.local`.
+Use `.env.local` for non-secret local runtime configuration only. Do not put wallet private keys, API tokens, seed phrases, or paid RPC keys in repo-local `.env.local`.
+
+Real secrets belong outside the repo. The default destination is:
+
+```text
+~/.clearintent/clearintent.secrets.env
+```
+
+Create it from the safe in-repo template:
+
+```bash
+mkdir -p ~/.clearintent
+cp operator-secrets/clearintent.secrets.env.example ~/.clearintent/clearintent.secrets.env
+chmod 600 ~/.clearintent/clearintent.secrets.env
+```
+
+Before editing or using credentials, run:
+
+```bash
+npm run clearintent -- credentials status
+npm run --silent clearintent -- credentials status --json
+npm run validate:credentials
+```
+
+Expected behavior:
+
+- no private keys or secret values are printed
+- `.env.example` is present
+- `.env.local` is either present or clearly reported missing
+- `.env` / `.env.local` are not tracked by git
+- repo-local `.env` / `.env.local` do not contain non-empty private keys or API tokens
+- the external operator secrets file is present before live 2B/3B/4B work
+- live writes are false unless the operator intentionally enables them for `memory live-smoke`
 
 ### Currently Consumed by Code: Phase 2B 0G
 
@@ -681,7 +727,7 @@ ZERO_G_EVM_RPC=https://evmrpc-testnet.0g.ai
 ZERO_G_INDEXER_RPC=https://indexer-storage-testnet-turbo.0g.ai
 ZERO_G_STORAGE_MODE=turbo
 ZERO_G_WALLET_ADDRESS=0x...
-ZERO_G_PRIVATE_KEY=0x...
+ZERO_G_PRIVATE_KEY=0x... # external operator secrets file only
 ZERO_G_ENABLE_LIVE_WRITES=false
 ZERO_G_REQUIRE_PROOF=false
 ```
@@ -693,7 +739,7 @@ Set `ZERO_G_REQUIRE_PROOF=true` only after basic write/read succeeds and you are
 Required before 2B closeout:
 
 - funded 0G testnet wallet
-- valid private key in `.env.local`
+- valid private key in the external operator secrets file
 - explicit live-write opt-in
 - successful `memory live-smoke`
 - recorded `rootHash` and `txHash`

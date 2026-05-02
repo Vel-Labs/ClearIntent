@@ -438,6 +438,51 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(result.stdout).toContain("Onchain/live: [ ] not tested");
   });
 
+  it("checks credential safety without printing secrets", async () => {
+    const result = await runCli(["credentials", "status", "--json"]);
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      liveProvider: boolean;
+      data: {
+        credentials: {
+          secretsPrinted: boolean;
+          configured: {
+            zeroGPrivateKey: string;
+            zeroGWalletAddress: string;
+          };
+          checks: { id: string; status: string }[];
+        };
+      };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.startsWith("{")).toBe(true);
+    expect(parsed.command).toBe("credentials status");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.liveProvider).toBe(false);
+    expect(parsed.data.credentials.secretsPrinted).toBe(false);
+    expect(["present", "missing", "invalid"]).toContain(parsed.data.credentials.configured.zeroGPrivateKey);
+    expect(["present", "missing", "invalid"]).toContain(parsed.data.credentials.configured.zeroGWalletAddress);
+    expect(parsed.data.credentials.checks.map((check) => check.id)).toEqual(
+      expect.arrayContaining(["env-example", "gitignore-env", "tracked-env", "zerog-private-key", "live-writes"])
+    );
+    expect(result.stdout).not.toMatch(/0x[a-fA-F0-9]{64}/);
+  });
+
+  it("renders credential safety in human mode without secret values", async () => {
+    const result = await runCli(["credentials", "status"]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("ClearIntent credentials status");
+    expect(result.stdout).toContain("Credential safety:");
+    expect(result.stdout).toContain("Secrets printed: no");
+    expect(result.stdout).toContain("ZERO_G_PRIVATE_KEY:");
+    expect(result.stdout).not.toMatch(/0x[a-fA-F0-9]{64}/);
+  });
+
   it("exposes a blocked live smoke command until credentials and funds are present", async () => {
     const result = await runCli(["memory", "live-smoke", "--json"]);
     const parsed = JSON.parse(result.stdout) as {

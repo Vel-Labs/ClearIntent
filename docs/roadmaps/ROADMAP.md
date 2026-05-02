@@ -307,6 +307,7 @@ Key deliverables:
 Dashboard scope:
 
 - The dashboard is an audit viewer, not an admin console or backend authority service.
+- The dashboard is the preferred human starting point: connect parent wallet, create or connect an agent wallet or smart account where implemented, configure policy/escalation rules, and export or display the scoped references needed by the SDK/CLI.
 - Reown gates access by wallet session and bridges human approval/signing.
 - The dashboard reconstructs state from wallet identity, ENS records, 0G-stored evidence, onchain contract state/events through Alchemy, and KeeperHub receipts.
 - No traditional database is required for the MVP; private backend records must not become the authority source.
@@ -314,6 +315,14 @@ Dashboard scope:
 - Conditional human-review gates should be displayed as explicit policy outcomes when autonomy is allowed for routine actions but thresholds require human review.
 - Default mode should require human review for every transaction. Conditional-autonomy mode is an optional power-user lane, not a replacement for the safer default.
 - Both modes must preserve per-transaction audit trails and replayability through the dashboard and/or CLI transaction logs.
+- The agent-facing SDK/CLI should receive scoped references and configuration only: ENS identity, 0G policy/audit pointers, KeeperHub executor settings, allowed action parameters, and scoped agent-wallet/session-key identifiers where implemented. It should not receive parent-wallet secrets or unrestricted hot-wallet keys.
+
+Agent wallet scope:
+
+- The recommended secure setup is a dedicated agent wallet or smart account owned by the user's parent wallet.
+- The parent wallet remains the authority for policy/session grants, escalation approval, recovery, and revocation.
+- Smart-account/session-key enforcement is the preferred future bounded-automation layer, but it must not be claimed until implemented and verified.
+- Until then, the KeeperHub adapter and ClearIntent core policy gate remain the MVP pre-execution blocker for out-of-policy intents.
 
 ## Phase 7: Stretch Standards and Monetization
 

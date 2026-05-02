@@ -1,4 +1,5 @@
 import { stableStringify, type ResultIssue } from "../../core/src";
+import type { CredentialSafetyStatus, CredentialCheckStatus } from "./credential-safety";
 import type { CenterExecutionStatus } from "./execution-status";
 import type { CenterIdentityStatus } from "./identity-status";
 import type { CenterLocalTestSummary } from "./local-test";
@@ -79,6 +80,10 @@ export function renderHuman(result: CliCommandResult): string {
     lines.push(...renderTestSummary(explicit.data.testSummary));
   }
 
+  if (isCredentialSafetyData(explicit.data)) {
+    lines.push(...renderCredentialSafety(explicit.data.credentials));
+  }
+
   if (explicit.issues.length > 0) {
     lines.push("Issues:");
     for (const issue of explicit.issues) {
@@ -145,6 +150,10 @@ function isSignerData(data: Record<string, unknown>): data is { signer: CenterSi
 
 function isTestSummaryData(data: Record<string, unknown>): data is { testSummary: CenterLocalTestSummary } {
   return typeof data.testSummary === "object" && data.testSummary !== null;
+}
+
+function isCredentialSafetyData(data: Record<string, unknown>): data is { credentials: CredentialSafetyStatus } {
+  return typeof data.credentials === "object" && data.credentials !== null;
 }
 
 function renderMemoryStatus(memory: CenterMemoryStatus): string[] {
@@ -291,4 +300,56 @@ function formatTestStatus(status: CenterLocalTestSummary["items"][number]["local
     return "blocked";
   }
   return "not tested";
+}
+
+function renderCredentialSafety(credentials: CredentialSafetyStatus): string[] {
+  const lines = [
+    `Credential safety: ${credentials.ok ? "[PASS] pass" : "[BLOCKED] blocked"}`,
+    `Live ready: ${credentials.liveReady ? "yes" : "no"}`,
+    `Live writes enabled: ${credentials.liveWritesEnabled ? "yes" : "no"}`,
+    "Secrets printed: no",
+    "",
+    "Environment files:",
+    `- .env.example: ${credentials.envFiles.exampleExists ? "present" : "missing"}`,
+    `- .env.local: ${credentials.envFiles.localExists ? "present" : "missing"}`,
+    `- .env: ${credentials.envFiles.dotEnvExists ? "present" : "absent"}`,
+    `- external operator secrets file: ${credentials.envFiles.operatorSecretsExists ? "present" : "missing"}`,
+    `- repo-local secret keys with values: ${formatList(credentials.envFiles.repoLocalSecretKeys)}`,
+    `- tracked sensitive env files: ${formatList(credentials.envFiles.trackedSensitiveEnvFiles)}`,
+    "",
+    "Configured values:",
+    `- ZERO_G_PROVIDER_MODE: ${credentials.configured.zeroGProviderMode ?? "missing"}`,
+    `- ZERO_G_EVM_RPC: ${credentials.configured.zeroGEvmRpc ? "present" : "missing"}`,
+    `- ZERO_G_INDEXER_RPC: ${credentials.configured.zeroGIndexerRpc ? "present" : "missing"}`,
+    `- ZERO_G_STORAGE_MODE: ${credentials.configured.zeroGStorageMode ?? "missing"}`,
+    `- ZERO_G_WALLET_ADDRESS: ${credentials.configured.zeroGWalletAddress}`,
+    `- ZERO_G_PRIVATE_KEY: ${credentials.configured.zeroGPrivateKey}`,
+    `- ZERO_G_ENABLE_LIVE_WRITES: ${credentials.configured.zeroGLiveWrites ? "true" : "false"}`,
+    `- ZERO_G_REQUIRE_PROOF: ${credentials.configured.zeroGRequireProof ? "true" : "false"}`,
+    "",
+    "Checks:"
+  ];
+
+  for (const check of credentials.checks) {
+    lines.push(`- ${check.label}: ${formatCredentialCheckStatus(check.status)} - ${check.detail}`);
+  }
+
+  lines.push(`Blocking reasons: ${formatList(credentials.blockingReasons)}`);
+  lines.push(`Warnings: ${formatList(credentials.warnings)}`);
+  lines.push("Next actions:");
+  for (const action of credentials.nextActions) {
+    lines.push(`- ${action}`);
+  }
+
+  return lines;
+}
+
+function formatCredentialCheckStatus(status: CredentialCheckStatus): string {
+  if (status === "pass") {
+    return "[PASS] pass";
+  }
+  if (status === "fail") {
+    return "[FAIL] fail";
+  }
+  return "[WARN] warn";
 }

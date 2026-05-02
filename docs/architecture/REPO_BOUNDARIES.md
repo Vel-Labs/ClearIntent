@@ -90,6 +90,40 @@ No package, adapter, or demo may silently replace these shapes with local varian
 - hard-coded privileged values
 - final claims about execution success without receipts
 
+## What the hosted dashboard owns
+
+- wallet-gated human entrypoint
+- parent-wallet authentication
+- agent wallet or smart-account setup UX where implemented
+- policy and escalation configuration UX
+- ENS, 0G, onchain, KeeperHub, and signer evidence visualization
+- audit-log and blocked-intent display
+- configuration export for SDK/CLI use
+
+## What the hosted dashboard does not own
+
+- private key custody
+- canonical policy truth outside signed artifacts and durable references
+- canonical audit truth outside 0G/onchain/provider receipts
+- hidden server-side authority
+- execution submission without core verification
+- agent-readable secrets
+
+## What the agent wallet / smart account owns
+
+- bounded operating funds
+- delegated automation authority where implemented
+- session-key or permission state where implemented
+- revocation, expiry, spend-limit, target-limit, and method-limit enforcement when supported by the selected account-abstraction provider
+
+## What the parent wallet owns
+
+- ultimate user authority
+- agent wallet creation/ownership
+- escalation approvals
+- policy/session grants
+- recovery or revocation paths where implemented
+
 ## What the demo app owns
 
 - presentation

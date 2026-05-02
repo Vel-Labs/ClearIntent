@@ -24,9 +24,11 @@ Phase 4A is complete locally. `packages/keeperhub-adapter/` now provides the loc
 
 Phase 5A and 5B are complete locally. `packages/signer-adapter/` now provides deterministic ClearIntent EIP-712 typed-data generation, ClearIntent approval preview rendering, deterministic fixture signature evidence compatible with core signature evidence, display warning vocabulary, conditional review prompt semantics, `eth_signTypedData_v4` request-shape prep, typed injected-wallet issue codes, and local ERC-7730 metadata generation/validation. `tests/signer-adapter/` proves typed data, preview, fixture signature evidence, conditional review prompts, metadata, and injected-wallet request shape/status. `packages/center-cli/` exposes `signer status`, `signer preview`, `signer typed-data`, and `signer metadata` in human-readable and deterministic JSON modes. The only reached local claim levels are `signer-local-fixture`, `eip712-local-fixture`, and `erc7730-local-metadata`. Phase 5C is prepared only to `ready-for-operator-test`; real wallet signing, wallet-rendered preview, secure-device display, and vendor-approved Clear Signing remain absent.
 
+The intended product abstraction is now hosted-dashboard first, SDK/CLI second. A user should start from a stateless wallet-gated ClearIntent frontend, connect the parent wallet, create or connect a dedicated agent wallet or smart account where implemented, configure policy and escalation rules, store/resolve policy and audit pointers through 0G and ENS, then run the ClearIntent SDK/CLI with only scoped references. The agent-facing runtime may receive ENS references, 0G policy/audit pointers, KeeperHub executor configuration, allowed action parameters, and a scoped session-key or agent-wallet address where available. It must not require parent wallet seed phrases, parent wallet private keys, unrestricted hot-wallet keys, or hidden authority that bypasses ClearIntent verification. This is a product/architecture target; live smart-account/session-key enforcement remains unproven until a dedicated implementation phase records evidence.
+
 ## Immediate next action
 
-Run the operator checklist in `docs/roadmaps/OPERATOR_TESTING_2A_3A_4A_5ABC.md`, then run Phase 5C MetaMask/software-wallet signer-only validation with operator wallet evidence before returning to the Phase 2B/3B/4B live-testnet vertical path. Keep 5C at `ready-for-operator-test` until an operator wallet session signs the exact ClearIntent typed payload and records evidence.
+Run the operator checklist in `docs/roadmaps/OPERATOR_TESTING_2A_3A_4A_5ABC.md`, then run Phase 5C MetaMask/software-wallet signer-only validation with operator wallet evidence before returning to the Phase 2B/3B/4B live-testnet vertical path. Keep 5C at `ready-for-operator-test` until an operator wallet session signs the exact ClearIntent typed payload and records evidence. If the first 5C test succeeds before 2B/3B/4B live-testnet context exists, record it as `software-wallet-tested signer-only`; repeat 5C after 2B/3B/4B to reach `software-wallet-tested testnet-integrated`.
 
 Close Phase 2B live 0G Storage once local `.env` values, wallet credentials, explicit live-write opt-in, and funded testnet tokens are available. Then proceed to Phase 3B live ENS binding and Phase 4B live KeeperHub/onchain execution against the proven live evidence.
 
@@ -50,7 +52,7 @@ Phase 5 is split intentionally:
 
 - Phase 5A defines signer payload and local approval semantics: EIP-712 typed-data mapping, signer adapter interface, ClearIntent readable preview, deterministic fixture signature, display warnings, and conditional review prompt semantics. Current status: complete locally.
 - Phase 5B generates ERC-7730 / Clear Signing metadata locally without vendor or secure-display claims. Current status: complete locally.
-- Phase 5C validates a real software wallet path, with MetaMask preferred as the first injected-wallet target. Current status may be only `planned` / `ready-for-operator-test` unless operator wallet evidence exists.
+- Phase 5C validates a real software wallet path, with MetaMask preferred as the first injected-wallet target. Current status may be only `planned` / `ready-for-operator-test` unless operator wallet evidence exists. The first validation target is `software-wallet-tested signer-only`; after 2B/3B/4B live-testnet evidence exists, repeat 5C for `software-wallet-tested testnet-integrated`.
 - Phase 5D validates WalletConnect/mobile signing.
 - Phase 5E validates hardware-backed signing and any secure-display claims.
 
@@ -165,6 +167,9 @@ Now that the Center CLI skeleton is stable:
 - Phase 5C/5D/5E real wallet capability claims before actual wallet utilization testing
 - Phase 2C 0G Compute unless explicitly selected as a demo accelerator
 - demo integration
+- hosted Agent Audit dashboard implementation
+- agent-wallet or smart-account setup UX
+- live smart-account/session-key enforcement
 - webhook delivery
 - local OS notification delivery
 - Agent Audit dashboard implementation before the onchain, 0G, ENS, KeeperHub, and signer evidence sources exist

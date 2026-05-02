@@ -6,6 +6,7 @@ import {
   type ResultIssue
 } from "../../core/src";
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
+import { getCredentialSafetyStatus } from "./credential-safety";
 import { getCenterExecutionStatus } from "./execution-status";
 import { getCenterIdentityStatus } from "./identity-status";
 import { runCenterLocalTestSummary } from "./local-test";
@@ -70,6 +71,26 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
           message: item.local.detail,
           path: item.id
         }))
+    };
+  }
+  if ((group === "credentials" || group === "credential") && (command === "status" || command === "safety" || command === "doctor")) {
+    const credentials = getCredentialSafetyStatus();
+    return {
+      command: `credentials ${command}`,
+      ok: credentials.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "live-readiness",
+      liveProvider: false,
+      summary: credentials.ok
+        ? "Credential safety checks passed without printing secrets."
+        : "Credential safety checks found blockers. No secrets were printed.",
+      data: { credentials },
+      issues: credentials.blockingReasons.map((reason) => ({
+        code: "credential_safety_blocked",
+        message: reason,
+        path: "credentials"
+      }))
     };
   }
   if (group === "identity" && command === "status") {
@@ -226,7 +247,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
     ok: false,
     commandOk: false,
     authorityOk: false,
-    summary: "Unknown command. Expected center, intent, authority, test, identity, execution, keeperhub, signer, module, or memory command family.",
+    summary: "Unknown command. Expected center, intent, authority, test, credentials, identity, execution, keeperhub, signer, module, or memory command family.",
     data: {
       usage: [
         "center status",
@@ -235,6 +256,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "intent state",
         "authority evaluate",
         "test local",
+        "credentials status",
         "identity status",
         "execution status",
         "keeperhub status",

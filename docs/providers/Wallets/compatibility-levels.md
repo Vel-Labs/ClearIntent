@@ -24,8 +24,10 @@ These claim levels are lower than wallet capability levels and must not be promo
 | `eip712-local-fixture` | Deterministic EIP-712 typed-data generation and ClearIntent app/CLI preview tests. | L1 unless a real wallet signs. |
 | `erc7730-local-metadata` | Local metadata generation and deterministic validation. | L1 unless a wallet/vendor accepts and renders it. |
 | `ready-for-operator-test` | Request shape, status route, or manual instructions exist for operator-run wallet testing. | L1 until operator evidence is recorded. |
+| `software-wallet-tested signer-only` | A real software wallet signed the local ClearIntent EIP-712 fixture payload. | L2 signer compatibility only; not end-to-end/testnet-integrated proof. |
+| `software-wallet-tested testnet-integrated` | A real software wallet signed a ClearIntent EIP-712 payload bound to 2B/3B/4B live-testnet evidence. | L2 signer compatibility with live-testnet context. |
 
-`software-wallet-tested`, `walletconnect-tested`, `hardware-wallet-tested`, `secure-device-display-verified`, and `vendor-clear-signing-approved` require recorded real-wallet or vendor evidence. Local fixtures cannot satisfy those claims.
+`software-wallet-tested`, `walletconnect-tested`, `hardware-wallet-tested`, `secure-device-display-verified`, and `vendor-clear-signing-approved` require recorded real-wallet or vendor evidence. Local fixtures cannot satisfy those claims. A signer-only software wallet test proves wallet compatibility with the current local payload shape; it does not prove live 0G, live ENS, KeeperHub, onchain execution, or end-to-end ClearIntent behavior.
 
 ## Reporting format
 

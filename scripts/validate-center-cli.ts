@@ -46,6 +46,12 @@ type CenterJson = {
         };
       }[];
     };
+    credentials?: {
+      secretsPrinted?: boolean;
+      configured?: {
+        zeroGPrivateKey?: string;
+      };
+    };
   };
 };
 
@@ -140,6 +146,20 @@ async function main(): Promise<void> {
     assertEqual("test local 0G onchain status", zerog?.onchain?.status, "not-tested", failures);
   }
 
+  const credentials = await run(["run", "--silent", "clearintent", "--", "credentials", "status", "--json"]);
+  assertExit("credentials status exits 0 for safety readout", credentials, 0, failures);
+  const credentialsJson = parseJson("credentials status", credentials.stdout, failures);
+  if (credentialsJson !== undefined) {
+    assertEqual("credentials status command", credentialsJson.command, "credentials status", failures);
+    assertEqual("credentials status commandOk", credentialsJson.commandOk, true, failures);
+    assertEqual("credentials status authorityOk", credentialsJson.authorityOk, false, failures);
+    assertEqual("credentials status liveProvider", credentialsJson.liveProvider, false, failures);
+    assertEqual("credentials status secrets printed", credentialsJson.data?.credentials?.secretsPrinted, false, failures);
+    if (/0x[a-fA-F0-9]{64}/.test(credentials.stdout)) {
+      failures.push("credentials status printed a private-key-shaped value");
+    }
+  }
+
   for (const route of ["status", "preview", "typed-data", "metadata"]) {
     const signer = await run(["run", "--silent", "clearintent", "--", "signer", route, "--json"]);
     assertExit(`signer ${route} exits 0 for local readout`, signer, 0, failures);
@@ -175,6 +195,7 @@ async function main(): Promise<void> {
   console.log("PASS execution status preserves keeperhub-local-fixture and no live/onchain claims");
   console.log("PASS signer routes preserve local-only claim levels and no real-wallet claims");
   console.log("PASS test local aggregates local checks without promoting live/onchain claims");
+  console.log("PASS credentials status reports safety posture without printing secrets");
   console.log("PASS bare clearintent exposes human and AI lanes");
   console.log("center cli validation ok");
 }

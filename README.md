@@ -34,6 +34,23 @@ ClearIntent
 
 The framework primitive is the important part. The example agent proves the primitive works, but the repo should remain useful to other builders who want safe agent execution without copying our whole app.
 
+## Intended product flow
+
+The preferred user path is hosted-dashboard first, SDK/CLI second:
+
+```text
+connect parent wallet in ClearIntent dashboard
+  -> create or connect a dedicated agent wallet / smart account
+  -> configure policy and escalation rules
+  -> store/resolve policy and audit pointers through 0G and ENS
+  -> run the ClearIntent SDK or CLI with scoped references
+  -> agent proposes intents without receiving parent-wallet secrets
+```
+
+The hosted dashboard should be a stateless interface over wallet-owned authority, decentralized policy/audit records, and user-configured execution providers. It should not custody keys or become the canonical policy database.
+
+The agent-facing runtime should receive only scoped configuration: ENS identity, 0G policy/audit pointers, KeeperHub executor settings, allowed action parameters, and scoped agent-wallet/session-key identifiers where implemented. Users should not provide an LLM agent with a seed phrase, parent private key, unrestricted hot-wallet key, or raw secret stored in an agent-readable workspace.
+
 ## Repository map
 
 ```text

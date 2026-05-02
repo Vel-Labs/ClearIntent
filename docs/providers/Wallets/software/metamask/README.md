@@ -4,6 +4,10 @@ Current level: L0 researched only.
 
 Phase 5C prep status: `planned` / `ready-for-operator-test` only if request-shape/status scaffolding lands. No real MetaMask validation claim exists without operator-run evidence.
 
+First 5C target: `software-wallet-tested signer-only`, meaning MetaMask signs the local ClearIntent EIP-712 fixture payload. This proves signer compatibility with the local payload shape only.
+
+Later 5C target after 2B/3B/4B: `software-wallet-tested testnet-integrated`, meaning MetaMask signs the ClearIntent EIP-712 payload after it is bound to live-testnet 0G artifact evidence, ENS/testnet identity binding, and KeeperHub/onchain execution evidence.
+
 Target level: L2 EIP-712 signable, then L3 ClearIntent app preview verified and L4 wallet-rendered typed-data preview verified if the wallet renders the needed fields clearly.
 
 Expected path: injected provider using `eth_signTypedData_v4` or equivalent library integration.
@@ -29,7 +33,7 @@ Required evidence before promotion:
 - observed wallet display behavior
 - explicit note that signer-only validation is not end-to-end 0G/ENS/KeeperHub execution validation
 
-Do not promote this path to `software-wallet-tested` from local fixtures, mocked provider calls, or request-shape generation alone.
+Do not promote this path to `software-wallet-tested signer-only` from local fixtures, mocked provider calls, or request-shape generation alone. Do not promote it to `software-wallet-tested testnet-integrated` until 2B/3B/4B live-testnet context exists and the wallet signs the updated/bound payload.
 
 Sources:
 

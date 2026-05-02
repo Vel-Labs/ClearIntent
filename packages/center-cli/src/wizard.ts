@@ -39,6 +39,11 @@ const wizardItems: WizardItem[] = [
     args: ["test", "local"]
   },
   {
+    label: "Credential safety",
+    description: "Check local .env and live-provider credential posture without printing secrets.",
+    args: ["credentials", "status"]
+  },
+  {
     label: "Identity status",
     description: "Inspect the Phase 3A ENS identity fixture route.",
     args: ["identity", "status"]
@@ -84,6 +89,7 @@ export function renderLanding(): string {
     "  npm run --silent clearintent -- execution status --json",
     "  npm run --silent clearintent -- signer status --json",
     "  npm run --silent clearintent -- test local --json",
+    "  npm run --silent clearintent -- credentials status --json",
     "  Emits deterministic JSON with no CLI prose.",
     "",
     "Common commands:",

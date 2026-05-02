@@ -189,10 +189,24 @@ async function collectRepoFiles(repoPath: string, files: string[]): Promise<void
     const child = repoPath === "." ? entry.name : path.join(repoPath, entry.name);
     if (entry.isDirectory()) {
       await collectRepoFiles(child, files);
-    } else if (entry.isFile()) {
+    } else if (entry.isFile() && includeRepoTreeFile(child)) {
       files.push(child);
     }
   }
+}
+
+function includeRepoTreeFile(repoPath: string): boolean {
+  const basename = path.basename(repoPath);
+  if (basename === ".env" || basename === ".env.local") {
+    return false;
+  }
+  if (basename.startsWith(".env.") && !basename.endsWith(".example")) {
+    return false;
+  }
+  if (repoPath.startsWith("operator-secrets/") && basename.endsWith(".env")) {
+    return false;
+  }
+  return true;
 }
 
 async function pathExists(repoPath: string): Promise<boolean> {
