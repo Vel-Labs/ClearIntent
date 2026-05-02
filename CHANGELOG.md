@@ -2,6 +2,12 @@
 
 All notable repo changes should be logged here.
 
+## 2026-05-02
+
+- Closed Phase 3B live ENS binding at `ens-live-bound` for `guardian.agent.clearintent.eth`, with live ENS record resolution, required ClearIntent text records present, and expected policy hash verification against the 0G-backed policy artifact.
+- Recorded ENS resolver multicall evidence: transaction `0x1dce685d1af441208b5ae22f890cbf3e7ed38b2865c04701c874e1f40d5f861b`, block `25005501`, records `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version`.
+- Added the Phase 3B closeout audit and updated roadmap/current-state routing so Phase 4B is unblocked by 0G/ENS prerequisites but remains open until KeeperHub live run/transaction evidence and canonical receipt conversion are recorded.
+
 ## 2026-05-01
 
 - Documented the intended hosted-dashboard-first, SDK/CLI-second product abstraction: parent-wallet login, dedicated agent wallet or smart-account setup, policy/escalation configuration, 0G/ENS-backed pointers, and scoped agent-facing runtime inputs.
@@ -13,6 +19,7 @@ All notable repo changes should be logged here.
 - Added backward-compatible ENS live config aliases so older `.env.local` blocks using `ENS_EVM_RPC`, `CLEARINTENT_ENS_NAME`, and `CLEARINTENT_EXPECTED_POLICY_HASH` still drive `identity live-status`.
 - Added Center CLI `memory live-bindings` to upload demo policy, audit pointer, and agent-card artifacts to 0G and print the ENS text-record values needed for `ens-live-bound`.
 - Added ENS Public Resolver multicall preparation for ClearIntent text-record binding through `identity bind-records`, enabling a future parent-wallet frontend to set all agent binding records in one wallet transaction.
+- Added gated local ENS multicall submission through `identity send-bind-records`, requiring explicit `ENS_ENABLE_LIVE_WRITES=true` and an external `ENS_SIGNER_PRIVATE_KEY` for dedicated demo wallets.
 
 ## 2026-04-30
 

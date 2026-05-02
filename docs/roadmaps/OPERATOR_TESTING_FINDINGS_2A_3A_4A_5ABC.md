@@ -1,4 +1,4 @@
-# Operator Testing Findings: 2A, 3A, 4A, 5A, 5B, and 5C
+# Operator Testing Findings: 2A, 2B, 3A, 3B, 4A, 4B, 5A, 5B, and 5C
 
 This findings log summarizes operator-run evidence gathered while following `docs/roadmaps/OPERATOR_TESTING_2A_3A_4A_5ABC.md`.
 
@@ -367,12 +367,13 @@ Blockers found: none for cross-layer local scope.
 | 5B metadata | pass | `erc7730-local-metadata` | Local metadata only. |
 | Cross-layer JSON sequence | pass | local claims only | Agent/automation lane is coherent. |
 | 2B live 0G smoke | pass | `0g-write-read-verified` | Proof-enabled live upload/readback succeeded. `rootHash=0x8ee47b16e03de745ebf2e65e94ed3b7341395f506a5fb7c8e299f9974aa22484`; `txHash=0x024cc777830963d7c23500024554ed7692f3cb7562ec44014780f68bfdaa66b7`. |
+| 3B live ENS binding | pass | `ens-live-bound` | `guardian.agent.clearintent.eth` resolves to `0x00DAfA45939d6Ff57E134499DB2a5AE28cc25ad7`; required records are present; `policy.hash` matches expected; ENS tx `0x1dce685d1af441208b5ae22f890cbf3e7ed38b2865c04701c874e1f40d5f861b`; block `25005501`. |
+| 4B live KeeperHub execution | open | none yet | 0G/ENS prerequisites are satisfied; live KeeperHub run or transaction evidence remains required. |
 
 ## Next Operator Step
 
 Proceed to online/live testing gates in this order:
 
 1. Keep `ZERO_G_ENABLE_LIVE_WRITES=false` unless intentionally running another upload.
-2. Proceed to Phase 3B live ENS binding against the proven 2B storage capability.
-3. Proceed to Phase 4B live KeeperHub/onchain execution after the identity binding is ready.
-4. Repeat 5C MetaMask/software-wallet validation as testnet-integrated only after 3B/4B evidence exists.
+2. Proceed to Phase 4B live KeeperHub/onchain execution now that the 0G/ENS binding is ready.
+3. Repeat 5C MetaMask/software-wallet validation as testnet-integrated only after 4B evidence exists.

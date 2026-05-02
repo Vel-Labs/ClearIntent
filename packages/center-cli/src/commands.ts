@@ -8,7 +8,12 @@ import {
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
 import { getCredentialSafetyStatus } from "./credential-safety";
 import { getCenterExecutionStatus } from "./execution-status";
-import { getCenterIdentityBindingStatus, getCenterIdentityStatus, getCenterLiveIdentityStatus } from "./identity-status";
+import {
+  getCenterIdentityBindingStatus,
+  getCenterIdentityStatus,
+  getCenterLiveIdentityStatus,
+  sendCenterIdentityBindingRecords
+} from "./identity-status";
 import { runCenterLocalTestSummary } from "./local-test";
 import {
   getCenterMemoryStatus,
@@ -150,6 +155,26 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
       summary: binding.ok
         ? "ENS text-record multicall is prepared for parent-wallet signature."
         : "ENS text-record multicall preparation is blocked.",
+      data: { binding },
+      issues: [...binding.blockingReasons, ...binding.degradedReasons].map((reason) => ({
+        code: binding.blockingReasons.includes(reason) ? "identity_blocked" : "identity_degraded",
+        message: reason,
+        path: "ens"
+      }))
+    };
+  }
+  if (group === "identity" && command === "send-bind-records") {
+    const binding = await sendCenterIdentityBindingRecords();
+    return {
+      command: "identity send-bind-records",
+      ok: binding.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "ens-live-read",
+      liveProvider: true,
+      summary: binding.ok
+        ? "ENS text-record multicall transaction was submitted."
+        : "ENS text-record multicall submission is blocked or failed.",
       data: { binding },
       issues: [...binding.blockingReasons, ...binding.degradedReasons].map((reason) => ({
         code: binding.blockingReasons.includes(reason) ? "identity_blocked" : "identity_degraded",
@@ -322,6 +347,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "credentials status",
         "identity status",
         "identity bind-records",
+        "identity send-bind-records",
         "execution status",
         "keeperhub status",
         "signer status",

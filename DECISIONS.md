@@ -15,6 +15,7 @@ Root `DECISIONS.md` summarizes and routes. Dated files hold the detailed entries
 - The authority lifecycle is the product. Guardian Agent is the working example, not the whole system.
 - ENS is the canonical agent identity layer for the hackathon build.
 - 0G owns policy memory and audit trail for the hackathon build.
+- Live ENS identity binding is discovery and policy binding, not execution approval. `Authority: blocked` remains correct for `identity live-status` even when `ens-live-bound` succeeds.
 - Phase 2C 0G Compute is optional advisory scope and does not block ENS identity work.
 - Phase 3 is split into 3A local/mock ENS identity scaffold and 3B live ENS binding after Phase 2B live 0G closeout.
 - Phase 4 is split into 4A local/mock KeeperHub execution scaffold and 4B live KeeperHub/onchain execution after local adapter semantics and live credentials/evidence are ready.
@@ -36,6 +37,7 @@ Root `DECISIONS.md` summarizes and routes. Dated files hold the detailed entries
 - `docs/decisions/2026-04-26.md`
 - `docs/decisions/2026-04-27.md`
 - `docs/decisions/2026-04-29.md`
+- `docs/decisions/2026-05-02.md`
 
 ## Open Decision Questions
 

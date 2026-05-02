@@ -2,7 +2,7 @@
 
 ENS is the ClearIntent provider for canonical agent identity, metadata discovery, role/subname routing, and optional ENSIP-25 alignment.
 
-Current ClearIntent claim level: `ens-local-fixture` locally; Phase 3B live-read route is implemented but blocked on live ENS config/records.
+Current ClearIntent claim level: `ens-live-bound` for `guardian.agent.clearintent.eth`. Live ENS binding resolves the selected agent identity, required ClearIntent text records, and the expected 0G-backed policy hash. This is identity/policy discovery, not execution approval.
 
 ## Read first
 
@@ -30,7 +30,18 @@ npm run clearintent -- identity live-status
 npm run --silent clearintent -- identity live-status --json
 ```
 
-The route is config-driven through `ENS_PROVIDER_RPC` or `PRIVATE_EVM_RPC_URL`, `ENS_CHAIN_ID`, `ENS_NETWORK`, `ENS_NAME`, and optional `ENS_EXPECTED_POLICY_HASH`. For operator files created before the Phase 3B live read route, `ENS_EVM_RPC`, `CLEARINTENT_ENS_NAME`, and `CLEARINTENT_EXPECTED_POLICY_HASH` remain accepted aliases. It currently blocks cleanly until live ENS config and records are available. Do not claim `ens-live-read` or `ens-live-bound` until the command reads the selected name and records the resulting claim level in the Phase 3B closeout audit.
+The route is config-driven through `ENS_PROVIDER_RPC` or `PRIVATE_EVM_RPC_URL`, `ENS_CHAIN_ID`, `ENS_NETWORK`, `ENS_NAME`, and optional `ENS_EXPECTED_POLICY_HASH`. For operator files created before the Phase 3B live read route, `ENS_EVM_RPC`, `CLEARINTENT_ENS_NAME`, and `CLEARINTENT_EXPECTED_POLICY_HASH` remain accepted aliases.
+
+Recorded Phase 3B evidence:
+
+- ENS name: `guardian.agent.clearintent.eth`
+- Resolved address: `0x00DAfA45939d6Ff57E134499DB2a5AE28cc25ad7`
+- ENS transaction: `0x1dce685d1af441208b5ae22f890cbf3e7ed38b2865c04701c874e1f40d5f861b`
+- ENS block: `25005501`
+- Claim level: `ens-live-bound`
+- Live 0G claim: `bound`
+
+Do not treat this as execution approval. `identity live-status` intentionally keeps `Authority: blocked` because identity discovery and policy binding are not signer approval or executor authorization.
 
 The remaining live binding records should come from 0G, not hand-authored placeholders:
 
@@ -48,6 +59,14 @@ npm run clearintent -- identity bind-records
 
 This route encodes all ClearIntent text-record updates as one resolver `multicall(bytes[])` transaction. It does not send the transaction or require an ENS-owner private key; the connected parent wallet must still sign and submit it. Frontend setup should reuse this adapter helper so users can bind `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version` in one wallet prompt when their resolver supports `multicall`.
 
+For local demo-only submission with a dedicated ENS manager wallet, the CLI also exposes a gated sender:
+
+```bash
+npm run clearintent -- identity send-bind-records
+```
+
+This route requires `ENS_ENABLE_LIVE_WRITES=true` plus `ENS_SIGNER_PRIVATE_KEY` in the external operator secrets file. It should not be used with a primary wallet key; the preferred product path remains browser-based parent-wallet signing.
+
 ## Taxonomy
 
 ### Resolution
@@ -64,15 +83,20 @@ ENS text records are key-value records for arbitrary associated data. ENS docs l
 
 ClearIntent usage: define a small ClearIntent-specific key set and keep values content-addressed or hash-bound where possible.
 
-Candidate keys:
+Implemented keys:
 
 | Key | Intended value |
 | --- | --- |
-| `clearintent.agent.card` | URL or content address for agent card JSON |
-| `clearintent.policy.uri` | 0G policy artifact URI |
-| `clearintent.policy.hash` | hash of canonical policy artifact |
-| `clearintent.audit.latest` | latest audit bundle URI |
-| `clearintent.framework.version` | ClearIntent package/schema version |
+| `agent.card` | 0G agent-card artifact URI |
+| `policy.uri` | 0G policy artifact URI |
+| `policy.hash` | hash of canonical policy artifact |
+| `audit.latest` | latest audit pointer URI |
+| `clearintent.version` | ClearIntent package/schema version |
+
+Candidate future key:
+
+| Key | Intended value |
+| --- | --- |
 | `clearintent.executor` | expected executor name or address pointer |
 
 Sources: [Text Records](https://docs.ens.domains/web/records), [ENSIP-5 Text Records](https://docs.ens.domains/ensip/5).

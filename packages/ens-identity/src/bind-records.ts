@@ -1,6 +1,7 @@
 import { ENS_IDENTITY_RECORD_KEYS } from "./record-keys";
 import { loadEnsLiveConfig } from "./live-resolver";
 import type { EnsIdentityRecordKey } from "./record-keys";
+import type { ContractRunner } from "ethers";
 
 export type EnsBindingRecordValues = Record<EnsIdentityRecordKey, string>;
 
@@ -31,11 +32,16 @@ export type EnsBindingPreparationStatus = {
   degradedReasons: string[];
   summary: string;
   checks: {
-    id: "config" | "resolver" | "records" | "multicall";
+    id: "config" | "resolver" | "records" | "multicall" | "authorization";
     label: string;
     status: "pass" | "blocking" | "degraded";
     detail: string;
   }[];
+};
+
+export type EnsBindingSubmitStatus = EnsBindingPreparationStatus & {
+  transactionHash?: string;
+  blockNumber?: number;
 };
 
 type EnsResolverWithAddress = {
@@ -115,6 +121,99 @@ export async function getEnsBindingPreparationStatus(
     summary: "ENS text-record multicall is prepared for parent-wallet signature.",
     checks
   };
+}
+
+export async function sendEnsBindingRecords(env: NodeJS.ProcessEnv = process.env): Promise<EnsBindingSubmitStatus> {
+  const prepared = await getEnsBindingPreparationStatus(env);
+  const checks: EnsBindingSubmitStatus["checks"] = [...prepared.checks];
+  const blockingReasons = [...prepared.blockingReasons];
+
+  const liveWritesEnabled = parseBoolean(env.ENS_ENABLE_LIVE_WRITES) || parseBoolean(env.ENS_ENABLE_RECORD_WRITES);
+  checks.push({
+    id: "multicall",
+    label: "ENS live write gate",
+    status: liveWritesEnabled ? "pass" : "blocking",
+    detail: liveWritesEnabled
+      ? "ENS live record writes are explicitly enabled."
+      : "ENS live record writes are disabled; set ENS_ENABLE_LIVE_WRITES=true only for intentional ENS updates."
+  });
+  if (!liveWritesEnabled) {
+    blockingReasons.push("ens_live_writes_disabled");
+  }
+
+  const config = loadEnsLiveConfig(env);
+  if (config.rpcUrl === undefined) {
+    blockingReasons.push("missing_rpc_url");
+  }
+
+  const privateKey = normalizePrivateKey(env.ENS_SIGNER_PRIVATE_KEY);
+  if (privateKey === undefined) {
+    blockingReasons.push("missing_ens_signer_private_key");
+  }
+
+  if (prepared.tx === undefined || blockingReasons.length > 0 || config.rpcUrl === undefined || privateKey === undefined) {
+    return {
+      ...prepared,
+      ok: false,
+      checks,
+      blockingReasons: [...new Set(blockingReasons)],
+      summary: "ENS text-record multicall submission is blocked."
+    };
+  }
+
+  try {
+    const { ethers } = await import("ethers");
+    const provider = new ethers.JsonRpcProvider(config.rpcUrl, "mainnet");
+    const signer = new ethers.Wallet(privateKey, provider);
+    const managerAddress = await resolveEnsManagerAddress(provider, prepared.ensName);
+    const signerAddress = await signer.getAddress();
+    const signerIsManager = managerAddress !== undefined && signerAddress.toLowerCase() === managerAddress.toLowerCase();
+    checks.push({
+      id: "authorization",
+      label: "ENS signer authorization",
+      status: signerIsManager ? "pass" : "blocking",
+      detail: signerIsManager
+        ? "ENS signer is the current manager/controller for the selected name."
+        : `ENS signer ${signerAddress} is not the current manager/controller ${managerAddress ?? "unknown"}.`
+    });
+    if (!signerIsManager) {
+      return {
+        ...prepared,
+        ok: false,
+        checks,
+        blockingReasons: ["ens_signer_not_manager"],
+        degradedReasons: [],
+        summary: "ENS text-record multicall submission is blocked because the signer does not control the selected ENS name."
+      };
+    }
+
+    const tx = await signer.sendTransaction({
+      to: prepared.tx.to,
+      value: 0,
+      data: prepared.tx.data
+    });
+    const receipt = await tx.wait();
+
+    return {
+      ...prepared,
+      ok: true,
+      checks,
+      transactionHash: tx.hash,
+      blockNumber: receipt?.blockNumber,
+      blockingReasons: [],
+      degradedReasons: receipt === null ? ["receipt_unavailable"] : [],
+      summary: "ENS text-record multicall transaction was submitted."
+    };
+  } catch (error) {
+    return {
+      ...prepared,
+      ok: false,
+      checks,
+      blockingReasons: ["ens_submit_failed"],
+      degradedReasons: [],
+      summary: error instanceof Error ? error.message : String(error)
+    };
+  }
 }
 
 export async function prepareEnsTextRecordMulticall(input: {
@@ -209,6 +308,25 @@ async function getResolver(
   return jsonRpcProvider.getResolver(ensName);
 }
 
+async function resolveEnsManagerAddress(provider: ContractRunner, ensName: string | undefined): Promise<string | undefined> {
+  if (ensName === undefined) {
+    return undefined;
+  }
+
+  const { ethers } = await import("ethers");
+  const ensRegistryAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
+  const nameWrapperAddress = "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401";
+  const node = ethers.namehash(ensName);
+  const registry = new ethers.Contract(ensRegistryAddress, ["function owner(bytes32 node) view returns (address)"], provider);
+  const registryOwner = await registry.owner(node);
+  if (registryOwner.toLowerCase() !== nameWrapperAddress.toLowerCase()) {
+    return registryOwner;
+  }
+
+  const wrapper = new ethers.Contract(nameWrapperAddress, ["function ownerOf(uint256 id) view returns (address)"], provider);
+  return wrapper.ownerOf(BigInt(node));
+}
+
 function blockedStatus(
   ensName: string | undefined,
   resolverAddress: string | undefined,
@@ -231,4 +349,16 @@ function blockedStatus(
 function nonEmpty(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed === undefined || trimmed.length === 0 ? undefined : trimmed;
+}
+
+function normalizePrivateKey(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (trimmed === undefined || trimmed.length === 0 || !/^(0x)?[a-fA-F0-9]{64}$/.test(trimmed)) {
+    return undefined;
+  }
+  return trimmed.startsWith("0x") ? trimmed : `0x${trimmed}`;
+}
+
+function parseBoolean(value: string | undefined): boolean {
+  return value?.toLowerCase() === "true";
 }

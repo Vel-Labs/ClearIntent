@@ -2,7 +2,7 @@
 
 KeeperHub is the ClearIntent provider for reliable onchain execution after ClearIntent has resolved identity, loaded policy, created a typed intent, reviewed risk, and collected a valid signature.
 
-Current ClearIntent claim level: `Planned`.
+Current ClearIntent claim level: `keeperhub-local-fixture`. Phase 4B is open but unblocked by 0G/ENS prerequisites after Phase 3B reached `ens-live-bound`.
 
 ## Read first
 
@@ -19,6 +19,20 @@ Current ClearIntent claim level: `Planned`.
 | Agent tool interface | MCP server, Claude Code plugin, agentic wallets | Useful if Guardian Agent calls KeeperHub through tools rather than direct REST. |
 | Programmatic integration | REST API, CLI | Use API/CLI for deterministic adapter tests and demos. |
 | Wallet/gas reliability | Gas management, Turnkey/Para wallet docs | Keep wallet trust model visible; do not hide signer/executor custody implications. |
+
+## Current repo evidence
+
+Phase 4A is complete locally through `packages/keeperhub-adapter/` and Center CLI `execution status` / `keeperhub status`. This proves adapter semantics, workflow mapping, local submit/monitor simulation, and canonical receipt conversion only.
+
+Phase 4B still needs a selected live path:
+
+- KeeperHub API, CLI, MCP, or direct-execution surface
+- live run or transaction evidence
+- run/log/status monitoring evidence
+- canonical `ExecutionReceipt` conversion
+- audit persistence of the execution receipt
+
+The required 0G/ENS prerequisite is ready: `guardian.agent.clearintent.eth` reached `ens-live-bound` and resolves live 0G policy, audit, and agent-card artifacts.
 
 ## Taxonomy
 
@@ -71,6 +85,6 @@ Sources: [AI tools overview](https://docs.keeperhub.com/ai-tools), [MCP server](
 
 ## Local follow-ups
 
-- Define a minimal KeeperHub adapter interface in `packages/core/` before implementation.
-- Decide whether Phase 4 uses REST API, CLI, MCP, or a layered adapter supporting more than one.
-- Add fixtures for workflow creation, manual run, failed run, and receipt capture.
+- Select the Phase 4B live path: REST API, CLI, MCP, direct execution, or a layered adapter supporting more than one.
+- Bind the executor identity or workflow reference into the 0G/ENS evidence path when the live KeeperHub target is selected.
+- Capture one live run or transaction and convert it into a canonical `ExecutionReceipt`.

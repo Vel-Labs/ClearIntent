@@ -32,6 +32,12 @@ Required evidence:
 - contract addresses if deployed
 - explanation of 0G Storage and Compute usage
 
+Current validation:
+
+- 0G Storage live smoke reached `0g-write-read-verified`.
+- Phase 3B published the demo policy, audit pointer, and agent card to 0G and bound those artifacts through ENS.
+- 0G Compute remains deferred; do not claim compute usage unless Phase 2C lands with evidence.
+
 ### Track 2: Best Autonomous Agents, Swarms & iNFT Innovations
 
 ClearIntent qualification claim:
@@ -70,6 +76,13 @@ Required evidence:
 - functional resolution path
 - no hard-coded values in the demo for identity-critical fields
 - live demo or video showing ENS improving identity or discoverability
+
+Current validation:
+
+- `guardian.agent.clearintent.eth` reached `ens-live-bound`.
+- Live ENS records include `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version`.
+- `policy.hash` matches the expected policy hash, and the record values point to live 0G artifacts.
+- ENS transaction: `0x1dce685d1af441208b5ae22f890cbf3e7ed38b2865c04701c874e1f40d5f861b`.
 
 ### Track 2: Most Creative Use of ENS
 
@@ -126,6 +139,11 @@ Required evidence:
 - public repo with README and architecture
 - write-up explaining how KeeperHub is used
 - project name, team members, contact info
+
+Current validation:
+
+- Phase 4A local adapter semantics are complete at `keeperhub-local-fixture`.
+- Phase 4B remains open until live KeeperHub run or transaction evidence is captured and converted into a canonical `ExecutionReceipt`.
 
 ### Builder Feedback Bounty
 

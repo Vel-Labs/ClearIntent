@@ -2,7 +2,7 @@
 
 0G is the ClearIntent provider for decentralized policy memory, audit storage, and optional compute/risk reflection.
 
-Current ClearIntent claim level: `Planned`.
+Current ClearIntent claim level: `0g-write-read-verified` for live smoke storage and `bound` when read through the Phase 3B ENS identity binding.
 
 ## Read first
 
@@ -60,7 +60,13 @@ Target claim level: `0g-write-read-verified`.
 
 Fallback claim level: `0g-write-read` with proof verification documented as degraded or deferred.
 
-Current evidence: Phase 2B reached `0g-write-read-verified` for live smoke storage. Proof-enabled readback succeeded with `rootHash=0x8ee47b16e03de745ebf2e65e94ed3b7341395f506a5fb7c8e299f9974aa22484` and `txHash=0x024cc777830963d7c23500024554ed7692f3cb7562ec44014780f68bfdaa66b7`. This is smoke evidence, not final demo artifact publication.
+Current evidence: Phase 2B reached `0g-write-read-verified` for live smoke storage. Proof-enabled readback succeeded with `rootHash=0x8ee47b16e03de745ebf2e65e94ed3b7341395f506a5fb7c8e299f9974aa22484` and `txHash=0x024cc777830963d7c23500024554ed7692f3cb7562ec44014780f68bfdaa66b7`.
+
+Phase 3B then published the demo binding artifacts:
+
+- policy: `0g://0xb2c27a2ad27370c254b2661d8f495179678eb4e86c142a9cc3409258ee5970fe`, transaction `0x82754923c801e443f9c8e5d0e9a858cc567f8762fc3b5491b6b2cd508a9dda9b`
+- audit: `0g://0x5bc520dd74132481c5320d44a3fbda763d01426cc1458263b4160f859f0bcca0`, transaction `0xc44067601a2f0b4fcbd51d9d890decdb314d1e5af4ad915eb199b15421c8f0f0`
+- agent card: `0g://0xd97899dfc09879726aaa1aead10ae01947d316ff381453c8ae127be579b9f8c2`, transaction `0x65e3b96e50788759384dfad8cd89ad254f28a8a8a3243c8948e81f10cbe74ab8`
 
 ### Phase 2C: optional 0G Compute
 
@@ -98,7 +104,7 @@ After live smoke evidence is available, `memory live-bindings` publishes the dem
 npm run clearintent -- memory live-bindings
 ```
 
-The command remains gated by `ZERO_G_ENABLE_LIVE_WRITES=true`, funded 0G credentials, and live readback. Use `ZERO_G_REQUIRE_PROOF=true` for the strongest claim. If `KEEPERHUB_EXECUTOR_ADDRESS` is absent, the upload still produces ENS/0G records but reports `keeperhub_executor_unbound` so the KeeperHub adapter can be bound explicitly before final demo claims.
+The command remains gated by `ZERO_G_ENABLE_LIVE_WRITES=true`, funded 0G credentials, and live readback. Use `ZERO_G_REQUIRE_PROOF=true` for the strongest claim. If `KEEPERHUB_EXECUTOR_ADDRESS` is absent, the upload still produces ENS/0G records but reports `keeperhub_executor_unbound` so the KeeperHub adapter can be bound explicitly before final execution claims.
 
 Sources: [Storage SDK](https://docs.0g.ai/docs/developer-hub/building-on-0g/storage/sdk), [Storage CLI](https://docs.0g.ai/docs/developer-hub/building-on-0g/storage/storage-cli), [Storage Web Starter Kit](https://github.com/0gfoundation/0g-storage-web-starter-kit).
 

@@ -12,7 +12,7 @@ This is the high-visibility roadmap index for ClearIntent. Detailed phase sequen
 
 ## Current Phase
 
-Phase 5A Signer Payload and Local Approval Scaffold plus Phase 5B ERC-7730 / Clear Signing Metadata Local Scaffold are complete locally. Phase 2B live 0G Storage smoke reached `0g-write-read-verified`. Phase 3B live ENS resolver/CLI routing is midpoint-ready and blocked only on live ENS config/records. Live-gated targets remain Phase 3B live ENS evidence, Phase 4B live KeeperHub/onchain execution, and Phase 5C/5D/5E real wallet validation.
+Phase 5A Signer Payload and Local Approval Scaffold plus Phase 5B ERC-7730 / Clear Signing Metadata Local Scaffold are complete locally. Phase 2B live 0G Storage smoke reached `0g-write-read-verified`. Phase 3B live ENS binding is complete at `ens-live-bound` for `guardian.agent.clearintent.eth`, with live 0G policy/audit/agent-card artifacts bound through ENS text records. Live-gated targets now focus on Phase 4B live KeeperHub/onchain execution and Phase 5C/5D/5E real wallet validation.
 
 Completed baseline:
 
@@ -26,18 +26,19 @@ Completed baseline:
 - Phase 1.5 Center CLI skeleton with fixture-backed command routing, human-readable terminal output, deterministic `--json` output, and local module doctor metadata
 - Phase 2A local 0G policy memory and audit scaffold with deterministic `packages/zerog-memory/`, local write/read/hash validation, audit-bundle rollup, Center CLI memory commands, and `local-adapter` claim level
 - Phase 2B live 0G Storage smoke with proof-enabled upload/readback/hash validation at claim level `0g-write-read-verified`
-- Phase 3B live ENS resolver, `identity live-status`, and parent-wallet-oriented `identity bind-records` multicall preparation for ClearIntent ENS text records
 - Phase 3A ENS Agent Identity local scaffold with `packages/ens-identity/`, local/mock resolver, agent card validation, required ENS text-record mapping, fixture tests, Center CLI `identity status`, and `ens-local-fixture` claim level
+- Phase 3B live ENS binding with `identity live-status`, parent-wallet-oriented `identity bind-records` / `identity send-bind-records`, one Public Resolver multicall over ClearIntent text records, `guardian.agent.clearintent.eth`, and `ens-live-bound` policy-hash verification against live 0G artifacts
 - Phase 4A KeeperHub Execution local scaffold with `packages/keeperhub-adapter/`, typed execution adapter interface, local workflow mapping, submit/monitor simulation, canonical receipt conversion, fail-closed tests, Center CLI `execution status` / `keeperhub status`, and `keeperhub-local-fixture` claim level
 - Phase 5A/5B local signer payload, approval preview, fixture signature, request-shape prep, and ERC-7730 metadata scaffold with `packages/signer-adapter/`, Center CLI signer routes, focused tests, and claim levels constrained to `signer-local-fixture`, `eip712-local-fixture`, and `erc7730-local-metadata`
 
 Immediate next action:
 
-- Submit the prepared Phase 3B ENS text-record multicall or equivalent manual record update, run `identity live-status` for `ens-live-bound`, then Phase 4B live KeeperHub/onchain execution.
+- Proceed to Phase 4B live KeeperHub/onchain execution now that the required 0G/ENS binding evidence exists. Capture the selected KeeperHub path, live run or transaction evidence, canonical receipt conversion, and audit persistence level.
 - Phase 5 plans: `docs/roadmaps/phase-5-signer-readable-approval/5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md`, `docs/roadmaps/phase-5-signer-readable-approval/5B_ERC7730_METADATA_LOCAL_PLAN.md`, and `docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md`.
 - Phase 5A audits: `docs/audits/phase-5-signer-readable-approval/5a.5-midpoint-audit.md` and `docs/audits/phase-5-signer-readable-approval/5a.9-closeout-audit.md`.
 - Phase 5B audits: `docs/audits/phase-5-signer-readable-approval/5b.5-midpoint-audit.md` and `docs/audits/phase-5-signer-readable-approval/5b.9-closeout-audit.md`.
 - Phase 2B closeout audit: `docs/audits/phase-2-zerog-policy-memory-audit/2b.9-closeout-audit.md`
+- Phase 3B closeout audit: `docs/audits/phase-3-ens-agent-identity/3b.9-closeout-audit.md`
 - Completed Phase 1.5 package: `docs/roadmaps/phase-1.5-center-cli-skeleton/`
 - Completed Phase 2A closeout audit: `docs/audits/phase-2-zerog-policy-memory-audit/2a.9-closeout-audit.md`
 - Completed Phase 3A closeout audit: `docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md`

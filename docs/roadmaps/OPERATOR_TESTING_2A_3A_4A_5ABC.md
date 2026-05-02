@@ -1,6 +1,6 @@
-# Operator Testing Checklist: 2A, 3A, 4A, 5A, 5B, and 5C
+# Operator Testing Checklist: 2A, 2B, 3A, 3B, 4A, 4B, 5A, 5B, and 5C
 
-This checklist is for human-operated verification after the local 2A, 3A, 4A, 5A, and 5B scaffolds have landed, and before advancing to 2B, 3B, 4B, 5D, 5E, or later demo work.
+This checklist is for human-operated verification after the local 2A, 3A, 4A, 5A, and 5B scaffolds have landed, and while live 2B, 3B, 4B, 5C, 5D, 5E, or later demo work is validated.
 
 Use this file as a working log. Paste command output, wallet observations, blocker notes, and links to evidence under each section.
 
@@ -10,12 +10,23 @@ Use this file as a working log. Paste command output, wallet observations, block
 | --- | --- | --- | --- |
 | Phase 2A 0G memory | `local-adapter` | Local write/read/hash/audit-bundle semantics. | Live 0G upload, readback, proof, or testnet persistence. |
 | Phase 3A ENS identity | `ens-local-fixture` | Local ENS-shaped records, agent-card parsing, policy pointer/hash extraction. | Live ENS reads or live 0G-bound identity. |
+| Phase 3B ENS binding | `ens-live-bound` | `guardian.agent.clearintent.eth` resolves live ENS records to 0G-backed `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version`; expected policy hash matches. | Execution approval, KeeperHub execution, smart-account/session-key enforcement, or wallet signing. |
 | Phase 4A KeeperHub execution | `keeperhub-local-fixture` | Local execution request/receipt semantics. | Live KeeperHub/API/onchain execution. |
+| Phase 4B KeeperHub execution | open / unblocked | 0G/ENS prerequisites are satisfied for a live KeeperHub path. | Completion until live run or transaction evidence, canonical receipt conversion, and audit persistence are recorded. |
 | Phase 5A signer payload | `signer-local-fixture`, `eip712-local-fixture` | Deterministic typed data, approval preview, fixture signature evidence, display warnings. | Real wallet signing or wallet-rendered preview. |
 | Phase 5B metadata | `erc7730-local-metadata` | Local metadata generation and validation. | Wallet acceptance, secure-device display, or vendor approval. |
 | Phase 5C MetaMask/software wallet | `ready-for-operator-test` only | Request shape and issue mapping are prepared. | `software-wallet-tested signer-only` until an operator wallet signs the exact local fixture payload; `software-wallet-tested testnet-integrated` until 2B/3B/4B live-testnet evidence is bound and retested. |
 
 Do not promote any claim from local fixture output alone.
+
+Phase 3B validation artifact:
+
+- ENS name: `guardian.agent.clearintent.eth`
+- ENS transaction: `0x1dce685d1af441208b5ae22f890cbf3e7ed38b2865c04701c874e1f40d5f861b`
+- ENS block: `25005501`
+- Resolved address: `0x00DAfA45939d6Ff57E134499DB2a5AE28cc25ad7`
+- Claim level: `ens-live-bound`
+- Live 0G claim: `bound`
 
 ## Evidence Log Header
 
@@ -768,11 +779,14 @@ CLEARINTENT_POLICY_URI=
 CLEARINTENT_POLICY_HASH=
 CLEARINTENT_AUDIT_LATEST=
 CLEARINTENT_VERSION=0.1.0
+ENS_ENABLE_LIVE_WRITES=false
 ```
 
 `ENS_EVM_RPC`, `CLEARINTENT_ENS_NAME`, and `CLEARINTENT_EXPECTED_POLICY_HASH` are backward-compatible aliases for older local operator files. Prefer the shorter `ENS_PROVIDER_RPC`, `ENS_NAME`, and `ENS_EXPECTED_POLICY_HASH` names for new setup.
 
 `identity bind-records` consumes the binding values above and prepares one ENS Public Resolver `multicall(bytes[])` transaction. It is a transaction-prep route only; a parent wallet or ENS manager still signs the transaction.
+
+`identity send-bind-records` submits the prepared multicall only when `ENS_ENABLE_LIVE_WRITES=true` and `ENS_SIGNER_PRIVATE_KEY` is present in the external operator secrets file. Use this only for a dedicated demo ENS manager wallet.
 
 Operator needs before 3B:
 

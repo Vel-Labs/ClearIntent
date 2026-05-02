@@ -312,6 +312,39 @@ describe("ClearIntent Center CLI skeleton", () => {
     ]);
   });
 
+  it("keeps ENS binding submission blocked without explicit live-write opt-in", async () => {
+    const result = await runCliWithEnv(["identity", "send-bind-records", "--json"], {
+      CLEARINTENT_SECRETS_FILE: "/tmp/clearintent-test-missing-secrets.env",
+      ENS_NAME: "guardian.agent.clearintent.eth",
+      ENS_RESOLVER_ADDRESS: "0x4444444444444444444444444444444444444444",
+      ENS_PROVIDER_RPC: "mock://ens",
+      ENS_ENABLE_LIVE_WRITES: "false",
+      CLEARINTENT_AGENT_CARD_URI: "0g://agent-card",
+      CLEARINTENT_POLICY_URI: "0g://policy",
+      CLEARINTENT_POLICY_HASH: "0x1111111111111111111111111111111111111111111111111111111111111111",
+      CLEARINTENT_AUDIT_LATEST: "0g://audit",
+      CLEARINTENT_VERSION: "0.1.0",
+      ENS_SIGNER_PRIVATE_KEY: ""
+    });
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      ok: boolean;
+      data: { binding: { blockingReasons: string[]; transactionHash?: string } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(parsed.command).toBe("identity send-bind-records");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.data.binding.blockingReasons).toEqual(
+      expect.arrayContaining(["ens_live_writes_disabled", "missing_ens_signer_private_key"])
+    );
+    expect(parsed.data.binding.transactionHash).toBeUndefined();
+  });
+
   it("renders identity status with explicit fixture and no-live-claim language", async () => {
     const result = await runCli(["identity", "status"]);
 

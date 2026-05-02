@@ -9,6 +9,9 @@ Root `DECISIONS.md` is the high-visibility decision index and current summary. D
 ```text
 2026-04-25.md
 2026-04-26.md
+2026-04-27.md
+2026-04-29.md
+2026-05-02.md
 ```
 
 ## Rule

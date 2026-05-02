@@ -76,6 +76,18 @@ Status: complete. Midpoint audit: `../../audits/phase-3-ens-agent-identity/3a.5-
 
 ## Phase 3B: Live ENS Binding
 
+Status: complete at `ens-live-bound`. Closeout audit: `../../audits/phase-3-ens-agent-identity/3b.9-closeout-audit.md`.
+
+Validated evidence:
+
+- ENS name: `guardian.agent.clearintent.eth`
+- Resolved address: `0x00DAfA45939d6Ff57E134499DB2a5AE28cc25ad7`
+- ENS transaction: `0x1dce685d1af441208b5ae22f890cbf3e7ed38b2865c04701c874e1f40d5f861b`
+- ENS block: `25005501`
+- Claim level: `ens-live-bound`
+- Live 0G claim: `bound`
+- Required records: `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, `clearintent.version`
+
 Network posture:
 
 - Run live/testnet record reads first against the selected ENS-compatible test environment.

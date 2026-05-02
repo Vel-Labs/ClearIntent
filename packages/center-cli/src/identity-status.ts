@@ -32,6 +32,8 @@ export type CenterIdentityBindingStatus = {
     method: "multicall(bytes[])";
     summary: string;
   };
+  transactionHash?: string;
+  blockNumber?: number;
   records?: Record<string, string>;
   summary: string;
   checks: {
@@ -72,6 +74,7 @@ type EnsIdentityApi = {
   resolveEnsIdentity?: (resolver: unknown, input: { ensName: string; expectedPolicyHash?: string }) => Promise<EnsResolutionResult>;
   getEnsLiveReadStatus?: (env?: NodeJS.ProcessEnv) => CenterIdentityStatus | Promise<CenterIdentityStatus>;
   getEnsBindingPreparationStatus?: (env?: NodeJS.ProcessEnv) => CenterIdentityBindingStatus | Promise<CenterIdentityBindingStatus>;
+  sendEnsBindingRecords?: (env?: NodeJS.ProcessEnv) => CenterIdentityBindingStatus | Promise<CenterIdentityBindingStatus>;
 };
 
 export async function getCenterIdentityStatus(): Promise<CenterIdentityStatus> {
@@ -147,6 +150,19 @@ export async function getCenterIdentityBindingStatus(env: NodeJS.ProcessEnv = pr
     return normalizeIdentityBindingStatus(await api.getEnsBindingPreparationStatus(env));
   } catch (error) {
     return unavailableIdentityBindingStatus("ens_binding_prepare_failed", error instanceof Error ? error.message : String(error));
+  }
+}
+
+export async function sendCenterIdentityBindingRecords(env: NodeJS.ProcessEnv = process.env): Promise<CenterIdentityBindingStatus> {
+  const api = await loadEnsIdentityApi();
+  if (api?.sendEnsBindingRecords === undefined) {
+    return unavailableIdentityBindingStatus("ens_binding_send_api_unavailable", "packages/ens-identity does not expose sendEnsBindingRecords.");
+  }
+
+  try {
+    return normalizeIdentityBindingStatus(await api.sendEnsBindingRecords(env));
+  } catch (error) {
+    return unavailableIdentityBindingStatus("ens_binding_send_failed", error instanceof Error ? error.message : String(error));
   }
 }
 

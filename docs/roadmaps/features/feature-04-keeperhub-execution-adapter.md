@@ -76,6 +76,14 @@ Audit target: local workflow mapping, local submit/monitor simulation, typed rec
 
 ## Phase 4B: Live KeeperHub / Onchain Execution
 
+Status: open. Phase 4B is unblocked by the Phase 2B/3B storage and identity prerequisites, but it is not complete until KeeperHub live execution evidence is captured.
+
+Current prerequisite evidence:
+
+- Phase 2B live 0G smoke reached `0g-write-read-verified`.
+- Phase 3B live ENS binding reached `ens-live-bound` for `guardian.agent.clearintent.eth`.
+- ENS records now bind the ClearIntent policy, audit pointer, and agent card to live 0G artifacts.
+
 Network posture:
 
 - Run testnet KeeperHub/onchain execution first.

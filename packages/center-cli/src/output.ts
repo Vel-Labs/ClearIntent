@@ -286,6 +286,13 @@ function renderIdentityBindingStatus(binding: CenterIdentityBindingStatus): stri
     }
   }
 
+  if (binding.transactionHash !== undefined) {
+    lines.push(`ENS binding transaction hash: ${binding.transactionHash}`);
+  }
+  if (binding.blockNumber !== undefined) {
+    lines.push(`ENS binding block number: ${binding.blockNumber}`);
+  }
+
   lines.push(`ENS binding blocking reasons: ${formatList(binding.blockingReasons)}`);
   lines.push(`ENS binding degraded reasons: ${formatList(binding.degradedReasons)}`);
   return lines;

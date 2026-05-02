@@ -67,6 +67,7 @@ docs/audits/phase-2-zerog-policy-memory-audit/2b.9-closeout-audit.md
 docs/audits/phase-3-ens-agent-identity/3a.5-midpoint-audit.md
 docs/audits/phase-3-ens-agent-identity/3a.9-closeout-audit.md
 docs/audits/phase-3-ens-agent-identity/3b.5-midpoint-audit.md
+docs/audits/phase-3-ens-agent-identity/3b.9-closeout-audit.md
 docs/audits/phase-4-keeperhub-execution-adapter/4a.5-midpoint-audit.md
 docs/audits/phase-4-keeperhub-execution-adapter/4a.9-closeout-audit.md
 docs/audits/phase-5-signer-readable-approval/5a.5-midpoint-audit.md
@@ -77,6 +78,7 @@ docs/decisions/2026-04-25.md
 docs/decisions/2026-04-26.md
 docs/decisions/2026-04-27.md
 docs/decisions/2026-04-29.md
+docs/decisions/2026-05-02.md
 docs/decisions/README.md
 docs/governance/AUDIT_PHILOSOPHY.md
 docs/governance/README.md

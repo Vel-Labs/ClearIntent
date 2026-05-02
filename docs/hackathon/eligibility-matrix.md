@@ -10,9 +10,9 @@
 | Contract deployment addresses | README + submission form | Planned if deployed |
 | AI usage disclosure | `AI_USAGE.md` | Scaffolded |
 | 0G framework example agent | `examples/guardian-agent/` | Planned |
-| 0G Storage/Compute explanation | `docs/hackathon/vendor-tracks.md` | Scaffolded |
-| ENS real identity/discovery | `packages/ens-identity/` | Planned |
-| ENS creative use | subname role-gate or VC pointer | Planned |
+| 0G Storage/Compute explanation | `docs/hackathon/vendor-tracks.md`, `docs/audits/phase-2-zerog-policy-memory-audit/2b.9-closeout-audit.md`, `docs/audits/phase-3-ens-agent-identity/3b.9-closeout-audit.md` | 0G Storage validated; Compute deferred |
+| ENS real identity/discovery | `packages/ens-identity/`, `docs/audits/phase-3-ens-agent-identity/3b.9-closeout-audit.md` | Validated at `ens-live-bound` |
+| ENS creative use | `guardian.agent.clearintent.eth` subname with 0G-bound policy/audit/card text records | Validated for identity/policy discovery; role subnames optional |
 | KeeperHub integration write-up | `docs/hackathon/vendor-tracks.md` + README | Scaffolded |
 | KeeperHub feedback | `KEEPERHUB_FEEDBACK.md` | Planned |
 | Version control history | git log | Planned |
