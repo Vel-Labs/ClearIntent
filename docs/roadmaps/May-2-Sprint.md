@@ -25,6 +25,15 @@ The sprint should keep ClearIntent honest: the validated surface today is CLI-fi
 - Phase 5A/5B signer payload and ERC-7730 metadata are complete locally.
 - Phase 5C/5D/5E wallet validation remains open.
 
+## Phase Routing Update
+
+The May 2 route is now split:
+
+- Phase 6: authority dashboard and wallet validator. It proves the wallet-facing human approval path, canonical payload rendering, Phase 5C software-wallet validation, and provider evidence reflection.
+- Phase 7: UX/setup wizard. It guides agent-account setup, policy configuration, ENS/0G binding, KeeperHub routing, escalation, SDK/CLI handoff, and ready-state flow after Phase 6 is materially working.
+
+The older idea of Phase 6 as the full Guardian Agent planner/critic/executor example is deferred behind those two surfaces.
+
 ## Hard Product Rule
 
 Every agent-originated transaction or intent flow must carry a canonical ClearIntent payload before execution.
@@ -125,39 +134,29 @@ Done when:
 - the parent wallet signs setup actions interactively
 - the agent account address can be displayed and later bound to ENS
 
-## Step 3: Build ClearIntent Frontend Wizard
+## Step 3: Build ClearIntent Authority Dashboard and Wallet Validator
 
-Goal: make the setup process human-usable while preserving stateless/non-custodial authority boundaries.
+Goal: make the approval path human-usable while preserving stateless/non-custodial authority boundaries.
 
-Wizard flow:
+Phase 6 flow:
 
-1. Connect parent wallet.
-2. Create or select parent-owned agent smart account.
-3. Name the agent account, for example `velcrafting.agent.clearintent.eth`.
-4. Create/update ENS subname records:
-   - agent wallet address
-   - `agent.card`
-   - `policy.uri`
-   - `policy.hash`
-   - `audit.latest`
-   - `clearintent.version`
-5. Store policy, agent card, and audit pointers through 0G.
-6. Select KeeperHub execution path.
-7. Configure webhook/escalation destination if available.
-8. Generate SDK install instructions and an agent intro prompt.
-9. Run a test intent.
-10. Show ready state.
+1. Connect parent wallet or show explicit unconnected state.
+2. Render the canonical ClearIntent payload before approval.
+3. Prepare/display the EIP-712 wallet request for Phase 5C software-wallet validation.
+4. Reflect ENS, 0G, KeeperHub, signer, and wallet evidence from configured/provider state.
+5. Show missing, degraded, demo, and reported-event states honestly.
+6. Ingest KeeperHub events only as reported/non-authoritative unless authenticity and replay checks pass.
 
-Ready-state display should include:
+Evidence display should include:
 
 - parent authority wallet
-- agent smart account
+- agent wallet or smart account where implemented
 - ENS name
 - ENS text records as an onchain metadata reflection panel
 - 0G policy URI/hash
 - latest audit URI
 - KeeperHub workflow/executor
-- session authority status and expiry where implemented
+- session authority status and expiry where implemented, without claiming enforcement early
 - escalation channel
 - policy mode
 
@@ -173,13 +172,33 @@ resolved agent address
 0G artifact tx hashes where available
 ```
 
-This panel is the user-facing reflection of the onchain/decentralized metadata and should be visible before the agent is marked ready.
+This panel is the user-facing reflection of the onchain/decentralized metadata and should be visible before the user trusts an agent-facing handoff.
 
 Done when:
 
 - a user can understand what account controls what
+- Phase 5C has a browser-based software-wallet validation path
 - no frontend database is treated as authority truth
 - all important state resolves from wallet session, ENS, 0G, onchain state, and KeeperHub evidence
+
+## Step 3B: Build ClearIntent UX Setup Wizard
+
+Goal: make the setup process guided after the Phase 6 authority/wallet surface is materially working.
+
+Wizard flow:
+
+1. Connect parent wallet.
+2. Create or select parent-owned agent smart account.
+3. Name the agent account, for example `velcrafting.agent.clearintent.eth`.
+4. Create/update ENS subname records.
+5. Store policy, agent card, and audit pointers through 0G.
+6. Select KeeperHub execution path.
+7. Configure webhook/escalation destination if available.
+8. Generate SDK install instructions and an agent intro prompt.
+9. Run a test intent.
+10. Show ready state.
+
+Each wizard step must be classified as `live-read`, `wallet-signed-action`, `operator-external`, `disabled`, or `deferred` before implementation.
 
 ## Step 4: Configure Policy Parameters
 

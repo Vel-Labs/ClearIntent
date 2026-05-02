@@ -283,41 +283,42 @@ Audits:
 - 5B midpoint: `docs/audits/phase-5-signer-readable-approval/5b.5-midpoint-audit.md`
 - 5B closeout: `docs/audits/phase-5-signer-readable-approval/5b.9-closeout-audit.md`
 
-## Phase 6: Guardian Agent Example and Agent Audit Dashboard
+## Phase 6: Authority Dashboard and Wallet Validator
 
-Goal: ship the working example agent and a narrow wallet-gated Agent Audit dashboard that proves the framework through a clear chain of intent.
+Goal: ship the wallet-gated authority dashboard and browser-based wallet validation harness needed to prove the human approval path after Phases 1 through 5B.
 
-Primary file: `docs/roadmaps/features/feature-06-guardian-agent-example.md`
+Primary file: `docs/roadmaps/features/feature-06-authority-dashboard-wallet-validator.md`
+
+Implementation plan: `docs/roadmaps/phase-6-authority-wallet-validator/IMPLEMENTATION_PLAN.md`
 
 Dependencies:
 
-- Phases 1 through 5 minimally working
+- Phases 1 through 5B locally working
+- Phase 5C prepared for operator wallet testing
 
 Key deliverables:
 
-- `examples/guardian-agent/`
-- `apps/web/` Next.js Agent Audit dashboard
-- planner + critic + executor roles
-- demo script with progressive wallet surface comparison
-- live demo link or reproducible local demo
-- Reown wallet authentication and signing session entrypoint
+- `apps/web/` Next.js authority dashboard
+- intentional repo governance/scaffold opening for frontend scope
+- generic EIP-1193/MetaMask-first wallet validation path unless Reown is explicitly selected later
+- canonical ClearIntent payload preview before wallet approval
+- Phase 5C software-wallet validation support
+- hooks for later Phase 5D/5E validation without claiming those surfaces early
 - ENS-derived identity and metadata display
 - 0G policy/audit artifact reads
 - Alchemy-backed onchain authority contract reads and event display
-- KeeperHub execution receipt display
+- KeeperHub workflow/run and event evidence display with authenticity boundaries
 
 Dashboard scope:
 
-- The dashboard is an audit viewer, not an admin console or backend authority service.
-- The dashboard is the preferred human starting point: connect parent wallet, create or connect an agent wallet or smart account where implemented, configure policy/escalation rules, and export or display the scoped references needed by the SDK/CLI.
-- Reown gates access by wallet session and bridges human approval/signing.
+- The dashboard is an authority viewer and wallet validator, not an admin console, setup wizard, or backend authority service.
+- The dashboard is the preferred human validation point: connect parent wallet, inspect the canonical ClearIntent payload, request wallet approval, and verify displayed evidence.
+- Generic EIP-1193/MetaMask is the default first wallet path for Phase 5C. Reown remains optional until a later assignment locks it.
 - The dashboard reconstructs state from wallet identity, ENS records, 0G-stored evidence, onchain contract state/events through Alchemy, and KeeperHub receipts.
 - No traditional database is required for the MVP; private backend records must not become the authority source.
-- The first screen should show the chain of intent: proposed intent, policy check, risk report, human review checkpoint, signature, onchain verification, execution, and audit evidence.
-- Conditional human-review gates should be displayed as explicit policy outcomes when autonomy is allowed for routine actions but thresholds require human review.
-- Default mode should require human review for every transaction. Conditional-autonomy mode is an optional power-user lane, not a replacement for the safer default.
-- Both modes must preserve per-transaction audit trails and replayability through the dashboard and/or CLI transaction logs.
-- The agent-facing SDK/CLI should receive scoped references and configuration only: ENS identity, 0G policy/audit pointers, KeeperHub executor settings, allowed action parameters, and scoped agent-wallet/session-key identifiers where implemented. It should not receive parent-wallet secrets or unrestricted hot-wallet keys.
+- The first screen should show wallet connection, payload preview, policy/audit evidence, KeeperHub claim boundary, and missing/degraded state clearly.
+- KeeperHub events are reported/non-authoritative until authenticated and replay-checked.
+- The dashboard must not claim smart-account/session-key enforcement, WalletConnect/mobile validation, or hardware-wallet validation until those are separately proven.
 
 Agent wallet scope:
 
@@ -326,11 +327,43 @@ Agent wallet scope:
 - Smart-account/session-key enforcement is the preferred future bounded-automation layer, but it must not be claimed until implemented and verified.
 - Until then, the KeeperHub adapter and ClearIntent core policy gate remain the MVP pre-execution blocker for out-of-policy intents.
 
-## Phase 7: Stretch Standards and Monetization
+## Phase 7: UX Setup Wizard and Operator Flow
+
+Goal: turn the validated authority dashboard into a guided operator setup flow.
+
+Primary file: `docs/roadmaps/features/feature-07-ux-wizard-flow.md`
+
+Implementation plan: `docs/roadmaps/phase-7-ux-wizard-flow/IMPLEMENTATION_PLAN.md`
+
+Dependencies:
+
+- Phase 6 authority dashboard and wallet validator
+- Phase 5C software-wallet evidence path
+- Phase 4B KeeperHub claim boundary closed or explicitly labeled workflow-only
+
+Key deliverables:
+
+- setup wizard with explicit step status
+- parent-owned agent wallet or smart-account setup UX where implemented
+- policy parameter UX mapped to canonical `AgentPolicy` truth
+- ENS and 0G binding flow through approved wallet/operator paths
+- KeeperHub workflow/executor setup
+- webhook/escalation setup
+- SDK/CLI and agent handoff prompt with scoped references only
+- test intent and ready/degraded/demo state display
+
+Wizard scope:
+
+- Each step must be classified as `live-read`, `wallet-signed-action`, `operator-external`, `disabled`, or `deferred`.
+- The wizard must not request seed phrases, parent private keys, or unrestricted hot-wallet keys.
+- The wizard must not mark setup ready unless evidence exists.
+- The wizard prepares the operator path for a later Guardian Agent end-to-end demo; it does not itself prove planner/critic/executor autonomy.
+
+## Phase 8: Stretch Standards and Monetization
 
 Goal: add optional future-facing layers without endangering the core demo.
 
-Primary file: `docs/roadmaps/features/feature-07-stretch-standards.md`
+Primary file: `docs/roadmaps/features/feature-08-stretch-standards.md`
 
 Candidate stretch layers:
 

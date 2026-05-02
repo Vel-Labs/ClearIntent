@@ -12,7 +12,7 @@ This is the high-visibility roadmap index for ClearIntent. Detailed phase sequen
 
 ## Current Phase
 
-Phase 5A Signer Payload and Local Approval Scaffold plus Phase 5B ERC-7730 / Clear Signing Metadata Local Scaffold are complete locally. Phase 2B live 0G Storage smoke reached `0g-write-read-verified`. Phase 3B live ENS binding is complete at `ens-live-bound` for `guardian.agent.clearintent.eth`, with live 0G policy/audit/agent-card artifacts bound through ENS text records. Phase 4B has reached `keeperhub-live-submitted` for workflow `r8hbrox9eorgvvlunk72b` and corrected execution/run `089to8oqegw0r48i63vbj`; the monitor route reports terminal status `executed` with no transaction hash. Phase 4B remains open until the claim boundary is closed as workflow-execution proof or extended to transaction-backed onchain evidence. Live-gated targets now focus on Phase 4B receipt/claim closeout and Phase 5C/5D/5E real wallet validation.
+Phase 5A Signer Payload and Local Approval Scaffold plus Phase 5B ERC-7730 / Clear Signing Metadata Local Scaffold are complete locally. Phase 2B live 0G Storage smoke reached `0g-write-read-verified`. Phase 3B live ENS binding is complete at `ens-live-bound` for `guardian.agent.clearintent.eth`, with live 0G policy/audit/agent-card artifacts bound through ENS text records. Phase 4B has reached `keeperhub-live-submitted` for workflow `r8hbrox9eorgvvlunk72b` and corrected execution/run `089to8oqegw0r48i63vbj`; the monitor route reports terminal status `executed` with no transaction hash. Phase 4B remains open until the claim boundary is closed as workflow-execution proof or extended to transaction-backed onchain evidence. Phase 6 is now the authority dashboard and wallet validator needed to test Phase 5C/5D/5E honestly; Phase 7 is the guided UX/setup wizard.
 
 Completed baseline:
 
@@ -54,8 +54,9 @@ Phase 5C status: request-shape/status/docs prep is allowed only as `planned` / `
 3. ENS Agent Identity Layer: `docs/roadmaps/features/feature-03-ens-agent-identity.md`
 4. KeeperHub Execution Adapter: `docs/roadmaps/features/feature-04-keeperhub-execution-adapter.md`
 5. Wallet Signer Adapters and Human-Readable Approval: `docs/roadmaps/features/feature-05-hardware-signer-readable-approval.md`
-6. Guardian Agent Example and Agent Audit Dashboard: `docs/roadmaps/features/feature-06-guardian-agent-example.md`
-7. Stretch Standards and Monetization: `docs/roadmaps/features/feature-07-stretch-standards.md`
+6. Authority Dashboard and Wallet Validator: `docs/roadmaps/features/feature-06-authority-dashboard-wallet-validator.md`
+7. UX Setup Wizard and Operator Flow: `docs/roadmaps/features/feature-07-ux-wizard-flow.md`
+8. Stretch Standards and Monetization: `docs/roadmaps/features/feature-08-stretch-standards.md`
 
 ## Roadmap Rule
 

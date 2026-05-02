@@ -1,12 +1,14 @@
-# Feature 07: Stretch Standards
+# Feature 08: Stretch Standards
 
 ## Purpose
 
-Add future-facing standards only after the core demo is stable.
+Add future-facing standards only after the authority dashboard, wallet validation, setup wizard, and core demo path are stable.
 
 ## Dependencies
 
-- Features 1 through 6 materially working
+- Feature 06 authority dashboard and wallet validator materially working
+- Feature 07 UX/setup wizard materially working
+- Guardian Agent demo path either complete or explicitly scoped away from the stretch claim
 
 ## Candidate extensions
 
@@ -36,22 +38,22 @@ Stretch features must not break the MVP. If a stretch feature is only partially 
 
 ## Subphases
 
-### 7.1 Select one stretch
+### 8.1 Select one stretch
 
 Pick the highest-value, lowest-risk extension.
 
-### 7.2 Interface only
+### 8.2 Interface only
 
 Add interface and docs first.
 
-### 7.3 Minimal proof
+### 8.3 Minimal proof
 
 Build the smallest verifiable demo.
 
-### 7.5 Midpoint audit
+### 8.5 Midpoint audit
 
 Audit target: extension does not create false eligibility claims.
 
-### 7.9 Closeout audit
+### 8.9 Closeout audit
 
 Audit target: extension is either demo-proven or clearly marked as roadmap.

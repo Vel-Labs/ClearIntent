@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "repoName": "ClearIntent",
   "purpose": "Reusable authority layer for autonomous onchain agents. Agents produce bounded intents, humans approve through explicit review and readable signing flows, and executors act only after policy, nonce, deadline, and authority checks pass.",
-  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, Phase 1.5 Center CLI skeleton, Phase 2A local 0G policy memory/audit scaffold, Phase 3A ENS Agent Identity local scaffold, Phase 4A KeeperHub Execution Local Scaffold, and Phase 5A/5B signer payload/local approval plus ERC-7730 metadata scaffold are complete locally. Phase 5C is prepared only to ready-for-operator-test request-shape/status/docs. Phase 2B live 0G Storage, Phase 3B live ENS binding, Phase 4B live KeeperHub/onchain execution, and real wallet validation remain live/operator-gated.",
+  "currentStatus": "Governance, contract authority, validation baseline, Phase 1 contract/core stability handoff, Phase 1.5 Center CLI skeleton, Phase 2A local 0G policy memory/audit scaffold, Phase 2B live 0G Storage, Phase 3A local ENS Agent Identity scaffold, Phase 3B live ENS binding, Phase 4A KeeperHub Execution Local Scaffold, and Phase 5A/5B signer payload/local approval plus ERC-7730 metadata scaffold are complete. Phase 4B has workflow-execution evidence but no transaction hash. Phase 5C is prepared only to ready-for-operator-test request-shape/status/docs. Phase 6 is the authority dashboard and wallet validator needed for real wallet validation; Phase 7 is the guided UX/setup wizard.",
   "canonicalPaths": {
     "agentPolicy": "AGENTS.md",
     "repoProfile": "REPO_PROFILE.json",
@@ -57,7 +57,11 @@
     "phase3bAuditDirectory": "docs/audits/phase-3-ens-agent-identity/",
     "phase4RoadmapPackage": "docs/roadmaps/phase-4-keeperhub-execution-adapter/",
     "phase5RoadmapPackage": "docs/roadmaps/phase-5-signer-readable-approval/",
-    "phase4bAuditDirectory": "docs/audits/phase-4-keeperhub-execution-adapter/"
+    "phase4bAuditDirectory": "docs/audits/phase-4-keeperhub-execution-adapter/",
+    "phase6RoadmapPackage": "docs/roadmaps/phase-6-authority-wallet-validator/",
+    "phase6AuditDirectory": "docs/audits/phase-6-authority-wallet-validator/",
+    "phase7RoadmapPackage": "docs/roadmaps/phase-7-ux-wizard-flow/",
+    "phase7AuditDirectory": "docs/audits/phase-7-ux-wizard-flow/"
   },
   "readFirstFiles": [
     "AGENTS.md",

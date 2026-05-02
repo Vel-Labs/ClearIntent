@@ -175,13 +175,16 @@ Responsibilities:
 
 - stateless wallet-gated entrypoint for humans
 - parent-wallet authentication
-- agent wallet or smart-account creation/connection where implemented
-- policy configuration and escalation-mode UX
+- Phase 6 authority dashboard and wallet validation
+- Phase 7 agent wallet or smart-account creation/connection where implemented
+- Phase 7 policy configuration and escalation-mode UX
 - ENS/0G/onchain/KeeperHub evidence visualization
 - audit-log and blocked-intent display
 - configuration export for local SDK/CLI runtime
 
 Rule: the hosted frontend is an interface over wallet-owned authority and decentralized/provider evidence. It must not custody secrets, store private authority records as canonical truth, or become the hidden policy source.
+
+Phase split: Phase 6 proves the authority dashboard, canonical payload preview, wallet approval validation, and provider evidence reflection. Phase 7 builds the guided setup wizard on top of that validated surface.
 
 Preferred product flow:
 

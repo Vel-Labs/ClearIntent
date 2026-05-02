@@ -10,16 +10,18 @@ ClearIntent is not betting on one wallet. It makes agent authority portable acro
 
 ## Current Repository State
 
-This scaffold is documentation, contracts, and validation tooling first. Phase 1 established the canonical `contracts/` authority layer and executable `packages/core/` authority primitives. Phase 1.5 added the Center CLI. Phase 2A added local 0G policy memory/audit semantics. Phase 3A added the local ENS identity scaffold at `ens-local-fixture` claim level. Phase 4A added the local KeeperHub execution scaffold at `keeperhub-local-fixture` claim level. Phase 2B live 0G proof, Phase 3B live ENS binding, and Phase 4B live KeeperHub/onchain execution remain unproven.
+This scaffold is documentation, contracts, and validation tooling first. Phase 1 established the canonical `contracts/` authority layer and executable `packages/core/` authority primitives. Phase 1.5 added the Center CLI. Phase 2A added local 0G policy memory/audit semantics. Phase 2B reached live 0G write/read proof. Phase 3A added the local ENS identity scaffold, and Phase 3B reached live ENS binding for `guardian.agent.clearintent.eth`. Phase 4A added the local KeeperHub execution scaffold, and Phase 4B has workflow-execution evidence but no transaction hash. Phase 5A/5B are complete locally; Phase 5C/5D/5E need real wallet-facing validation.
 
-The first implementation target is a working example agent that demonstrates:
+The next implementation target is the Phase 6 authority dashboard and wallet validator. It should demonstrate:
 
 1. ENS-resolved agent identity and metadata.
 2. 0G-backed policy memory, audit storage, and risk reflection.
 3. Bounded EIP-712 intent generation.
 4. Human-readable approval metadata.
-5. Software wallet, WalletConnect, smart-account, or hardware-backed signing through explicit signer adapters.
-6. KeeperHub execution after policy and signature verification.
+5. Software-wallet validation through explicit signer adapters.
+6. KeeperHub execution evidence boundaries after policy and signature verification.
+
+The Phase 7 target is the guided UX/setup wizard. The full Guardian Agent planner/critic/executor demo comes after the authority dashboard and wizard can provide scoped references safely.
 
 ## What this repo should become
 

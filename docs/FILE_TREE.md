@@ -169,8 +169,9 @@ docs/roadmaps/features/feature-02-zerog-policy-memory-audit.md
 docs/roadmaps/features/feature-03-ens-agent-identity.md
 docs/roadmaps/features/feature-04-keeperhub-execution-adapter.md
 docs/roadmaps/features/feature-05-hardware-signer-readable-approval.md
-docs/roadmaps/features/feature-06-guardian-agent-example.md
-docs/roadmaps/features/feature-07-stretch-standards.md
+docs/roadmaps/features/feature-06-authority-dashboard-wallet-validator.md
+docs/roadmaps/features/feature-07-ux-wizard-flow.md
+docs/roadmaps/features/feature-08-stretch-standards.md
 docs/roadmaps/phase-1.5-center-cli-skeleton/EXECUTION_PROMPT.md
 docs/roadmaps/phase-1.5-center-cli-skeleton/IMPLEMENTATION_PLAN.md
 docs/roadmaps/phase-1d-core-lifecycle-state-api/FRESH_AGENT_HANDOFF.md
@@ -181,7 +182,8 @@ docs/roadmaps/phase-4-keeperhub-execution-adapter/IMPLEMENTATION_PLAN.md
 docs/roadmaps/phase-5-signer-readable-approval/5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md
 docs/roadmaps/phase-5-signer-readable-approval/5B_ERC7730_METADATA_LOCAL_PLAN.md
 docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md
-docs/roadmaps/phase-6-guardian-agent-example/6.6_FRONTEND_DASHBOARD_PLAN.md
+docs/roadmaps/phase-6-authority-wallet-validator/IMPLEMENTATION_PLAN.md
+docs/roadmaps/phase-7-ux-wizard-flow/IMPLEMENTATION_PLAN.md
 docs/templates/AGENT_ASSIGNMENT_TEMPLATE.md
 docs/templates/CLOSEOUT_AUDIT_TEMPLATE.md
 docs/templates/CONTRACT_CORE_STABILITY_HANDOFF_PROMPT.md

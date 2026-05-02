@@ -13,6 +13,7 @@ Root `DECISIONS.md` summarizes and routes. Dated files hold the detailed entries
 - ClearIntent is vendor-neutral. Integrations such as Ledger, Trezor, Tangem, MetaMask, WalletConnect, Rainbow, ENS, 0G, KeeperHub, ERC-7730, ERC-8004, ERC-7857, and x402 are adapters or standards, not the product identity.
 - Signer support is wallet-neutral. ClearIntent supports clear-signing-ready EIP-712 typed intents and human-readable approval metadata, while reporting wallet-rendered and secure-screen guarantees by tested capability level.
 - The authority lifecycle is the product. Guardian Agent is the working example, not the whole system.
+- Phase 6 is the authority dashboard and wallet validator; Phase 7 is the UX/setup wizard. The full Guardian Agent planner/critic/executor demo is downstream of those surfaces.
 - ENS is the canonical agent identity layer for the hackathon build.
 - 0G owns policy memory and audit trail for the hackathon build.
 - Live ENS identity binding is discovery and policy binding, not execution approval. `Authority: blocked` remains correct for `identity live-status` even when `ens-live-bound` succeeds.

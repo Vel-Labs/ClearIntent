@@ -24,16 +24,19 @@ phase-5-signer-readable-approval/
   5A_SIGNER_PAYLOAD_LOCAL_APPROVAL_PLAN.md
   5B_ERC7730_METADATA_LOCAL_PLAN.md
   5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md
-phase-6-guardian-agent-example/
-  6.6_FRONTEND_DASHBOARD_PLAN.md
-features/
+	phase-6-authority-wallet-validator/
+	  IMPLEMENTATION_PLAN.md
+	phase-7-ux-wizard-flow/
+	  IMPLEMENTATION_PLAN.md
+	features/
   feature-01-core-authority-kernel.md
   feature-02-zerog-policy-memory-audit.md
   feature-03-ens-agent-identity.md
   feature-04-keeperhub-execution-adapter.md
   feature-05-hardware-signer-readable-approval.md  (Wallet Signer Adapters and Readable Approval)
-  feature-06-guardian-agent-example.md  (Guardian Agent Example and Agent Audit Dashboard)
-  feature-07-stretch-standards.md
+	  feature-06-authority-dashboard-wallet-validator.md  (Authority Dashboard and Wallet Validator)
+	  feature-07-ux-wizard-flow.md
+	  feature-08-stretch-standards.md
 ```
 
 ## Rule

@@ -26,11 +26,16 @@ Phase 4A is complete locally. `packages/keeperhub-adapter/` now provides the loc
 
 Phase 5A and 5B are complete locally. `packages/signer-adapter/` now provides deterministic ClearIntent EIP-712 typed-data generation, ClearIntent approval preview rendering, deterministic fixture signature evidence compatible with core signature evidence, display warning vocabulary, conditional review prompt semantics, `eth_signTypedData_v4` request-shape prep, typed injected-wallet issue codes, and local ERC-7730 metadata generation/validation. `tests/signer-adapter/` proves typed data, preview, fixture signature evidence, conditional review prompts, metadata, and injected-wallet request shape/status. `packages/center-cli/` exposes `signer status`, `signer preview`, `signer typed-data`, and `signer metadata` in human-readable and deterministic JSON modes. The only reached local claim levels are `signer-local-fixture`, `eip712-local-fixture`, and `erc7730-local-metadata`. Phase 5C is prepared only to `ready-for-operator-test`; real wallet signing, wallet-rendered preview, secure-device display, and vendor-approved Clear Signing remain absent.
 
-The intended product abstraction is now hosted-dashboard first, SDK/CLI second. A user should start from a stateless wallet-gated ClearIntent frontend, connect the parent wallet, create or connect a dedicated agent wallet or smart account where implemented, configure policy and escalation rules, store/resolve policy and audit pointers through 0G and ENS, then run the ClearIntent SDK/CLI with only scoped references. The agent-facing runtime may receive ENS references, 0G policy/audit pointers, KeeperHub executor configuration, allowed action parameters, and a scoped session-key or agent-wallet address where available. It must not require parent wallet seed phrases, parent wallet private keys, unrestricted hot-wallet keys, or hidden authority that bypasses ClearIntent verification. This is a product/architecture target; live smart-account/session-key enforcement remains unproven until a dedicated implementation phase records evidence.
+The intended product abstraction is now hosted-dashboard first, SDK/CLI second. The phase boundary is split intentionally:
+
+- Phase 6 is the authority dashboard and wallet validator. It lets a human connect a wallet, inspect the canonical ClearIntent payload, validate the Phase 5C software-wallet approval path, and reflect ENS/0G/KeeperHub/signer evidence without making the frontend the authority source.
+- Phase 7 is the UX/setup wizard. It builds the guided operator flow for agent account setup, policy configuration, ENS/0G binding, KeeperHub routing, escalation, SDK/CLI handoff, and ready-state display after Phase 6 proves the authority/wallet surface.
+
+The agent-facing runtime may receive ENS references, 0G policy/audit pointers, KeeperHub executor configuration, allowed action parameters, and a scoped session-key or agent-wallet address where available. It must not require parent wallet seed phrases, parent wallet private keys, unrestricted hot-wallet keys, or hidden authority that bypasses ClearIntent verification. Live smart-account/session-key enforcement remains unproven until a dedicated implementation phase records evidence.
 
 ## Immediate next action
 
-Proceed with Phase 4B claim-boundary closeout. The 0G/ENS prerequisite evidence exists, the simplified live KeeperHub workflow accepted submit `089to8oqegw0r48i63vbj`, and the monitor route reports terminal status `executed` without transaction evidence. The next gap is deciding whether to close Phase 4B as workflow-execution proof or extend it to a small transaction-backed run. Phase 5C signer validation should be repeated as `software-wallet-tested testnet-integrated` only after the selected 4B claim boundary is closed.
+Proceed with Phase 4B claim-boundary closeout in parallel with Phase 6 authority dashboard/wallet-validator preparation. The 0G/ENS prerequisite evidence exists, the simplified live KeeperHub workflow accepted submit `089to8oqegw0r48i63vbj`, and the monitor route reports terminal status `executed` without transaction evidence. The next KeeperHub gap is deciding whether to close Phase 4B as workflow-execution proof or extend it to a small transaction-backed run. Phase 5C signer validation can use the Phase 6 dashboard as the wallet-facing harness, with `testnet-integrated` claims deferred until the selected 4B claim boundary is closed.
 
 Phase 2 is split intentionally:
 
@@ -102,7 +107,7 @@ Rationale for the next route:
 - Phase 2B can finish quickly once testnet funds are available, but waiting on tokens should not block local ENS identity shape.
 - Phase 3A made ENS identity fixture-driven and testable before live 3B binding or demo integration.
 - Phase 4A made execution fixture-driven and testable before live KeeperHub/onchain execution or Guardian Agent wiring.
-- Future ENS, KeeperHub, signer, notification, and demo layers should plug into the Center/module shape instead of creating fragmented operator surfaces.
+- Future ENS, KeeperHub, signer, notification, frontend, wizard, and demo layers should plug into the Center/module shape instead of creating fragmented operator surfaces.
 
 Structure for usage:
 
@@ -143,22 +148,24 @@ npm run check
 
 ## Recommended sequencing
 
-1. Run Phase 5C MetaMask/software-wallet signer-only validation using `docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md` if an operator wallet session is available; keep status `ready-for-operator-test` until real evidence exists.
-2. Implement Phase 4B live/testnet KeeperHub/onchain execution against the proven adapter semantics and completed 0G/ENS binding.
-3. Start Phase 6.6 frontend dashboard planning/execution from `docs/roadmaps/phase-6-guardian-agent-example/6.6_FRONTEND_DASHBOARD_PLAN.md` once the operator confirms the app stack and Alchemy setup thread is underway.
+1. Close or explicitly bound Phase 4B as workflow-execution proof versus transaction-backed onchain evidence.
+2. Start Phase 6 authority dashboard/wallet-validator execution from `docs/roadmaps/phase-6-authority-wallet-validator/IMPLEMENTATION_PLAN.md`, including intentional `apps/web/` governance opening and workspace/script decisions.
+3. Use Phase 6 to run Phase 5C MetaMask/software-wallet signer-only validation when an operator wallet session is available; keep status `ready-for-operator-test` until real evidence exists.
 4. Repeat Phase 5C as testnet-integrated after 4B live evidence, then run Phase 5D/5E WalletConnect and hardware utilization validation when the operator devices/sessions are available.
-5. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
+5. Start Phase 7 UX/setup wizard from `docs/roadmaps/phase-7-ux-wizard-flow/IMPLEMENTATION_PLAN.md` only after the Phase 6 authority/wallet surface is materially working.
+6. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
 
 ## Recommended parallelization
 
 Now that the Center CLI skeleton is stable:
 
 - one agent can prepare Phase 4B live KeeperHub/onchain execution against completed 0G/ENS evidence
-- one agent can prepare Phase 5C software-wallet validation around the 2B/3B evidence, keeping testnet-integrated claims deferred until 4B exists
-- one agent can build the frontend Overview visual system from the Phase 6.6 plan
-- one agent can build the Wizard skeleton from the Phase 6.6 plan
-- one agent can build the KeeperHub event ingest stub from the Phase 6.6 plan
+- one agent can prepare Phase 5C software-wallet validation around the 2B/3B evidence and Phase 6 dashboard harness, keeping testnet-integrated claims deferred until 4B exists
+- one agent can build the frontend Overview visual system from the Phase 6 authority dashboard plan
+- one agent can build the authority/evidence state model from the Phase 6 plan
+- one agent can build the KeeperHub event ingest stub from the Phase 6 plan
 - one agent can prepare the Alchemy Account Kit adapter boundary while the operator configures Alchemy credentials separately
+- one later agent can build the Phase 7 Wizard skeleton after Phase 6 state and wallet validation are stable
 - one human should own integration and final demo truth
 
 ## Do not start yet
@@ -166,9 +173,9 @@ Now that the Center CLI skeleton is stable:
 - Phase 4B live KeeperHub/onchain execution before Phase 4A local scaffold and required live credentials/evidence are ready
 - Phase 5C/5D/5E real wallet capability claims before actual wallet utilization testing
 - Phase 2C 0G Compute unless explicitly selected as a demo accelerator
-- demo integration beyond the Phase 6.6 planned dashboard path
-- hosted Agent Audit dashboard implementation without the Phase 6.6 plan and explicit execution assignment
-- agent-wallet or smart-account setup UX outside the Alchemy Account Kit boundary in the Phase 6.6 plan
+- demo integration beyond the Phase 6 authority dashboard and Phase 7 wizard paths
+- hosted authority dashboard implementation without the Phase 6 plan and explicit execution assignment
+- agent-wallet or smart-account setup UX before the Phase 7 wizard plan or outside the Alchemy Account Kit boundary
 - live smart-account/session-key enforcement
 - webhook delivery
 - local OS notification delivery

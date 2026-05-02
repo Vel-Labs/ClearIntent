@@ -4,11 +4,12 @@ All notable repo changes should be logged here.
 
 ## 2026-05-02
 
+- Reframed roadmap sequencing so Phase 6 is the authority dashboard and wallet validator for Phase 5C/5D/5E evidence, Phase 7 is the UX/setup wizard, and stretch standards move to Phase 8.
 - Added the exported KeeperHub Phase 4B `ClearIntent Execution Gate` workflow artifact with disabled webhook nodes for later `clearintent.xyz` event ingest, preserving the current manual-trigger/programmatic-submit architecture.
 - Recorded first KeeperHub Phase 4B live submit evidence at claim level `keeperhub-live-submitted`: workflow `r8hbrox9eorgvvlunk72b`, execution/run `p5w6v9tydmv80ss4zfr0r`, initially accepted as `running`, with transaction evidence still absent.
 - Added `keeperhub live-run-status` to query KeeperHub execution status and logs for `KEEPERHUB_EXECUTION_ID` / `KEEPERHUB_RUN_ID`; the first monitored run returned terminal status `failed` with zero logs, preserving the boundary between submitted workflow evidence and transaction-backed execution proof.
 - Recorded corrected KeeperHub workflow execution evidence for simplified run `089to8oqegw0r48i63vbj`, which reached terminal status `executed` with no transaction hash; the claim remains workflow-execution proof, not onchain execution proof.
-- Added the Phase 6.6 frontend dashboard and setup wizard implementation plan, covering the Overview-first dashboard, guided Wizard, Alchemy Account Kit boundary, KeeperHub event ingest stub, canonical payload rendering, parallel agent ownership, validation gates, and deferred smart-account/session-key claims.
+- Replaced the mixed Phase 6.6 frontend/setup-wizard plan with `docs/roadmaps/phase-6-authority-wallet-validator/IMPLEMENTATION_PLAN.md` and routed the guided wizard to `docs/roadmaps/phase-7-ux-wizard-flow/IMPLEMENTATION_PLAN.md`.
 - Closed Phase 3B live ENS binding at `ens-live-bound` for `guardian.agent.clearintent.eth`, with live ENS record resolution, required ClearIntent text records present, and expected policy hash verification against the 0G-backed policy artifact.
 - Recorded ENS resolver multicall evidence: transaction `0x1dce685d1af441208b5ae22f890cbf3e7ed38b2865c04701c874e1f40d5f861b`, block `25005501`, records `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version`.
 - Added the Phase 3B closeout audit and updated roadmap/current-state routing so Phase 4B is unblocked by 0G/ENS prerequisites but remains open until KeeperHub live run/transaction evidence and canonical receipt conversion are recorded.

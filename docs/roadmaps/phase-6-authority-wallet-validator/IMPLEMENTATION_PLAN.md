@@ -1,16 +1,21 @@
-# Phase 6.6 Frontend Dashboard and Setup Wizard Implementation Plan
+# Phase 6 Authority Dashboard and Wallet Validator Implementation Plan
 
 ## Purpose
 
-Build the first ClearIntent frontend as a wallet-gated authority dashboard and setup wizard. The app should make the chain of custody visible before an agent acts:
+Build the first ClearIntent frontend as a wallet-gated authority dashboard and wallet-validation harness.
+
+This phase is not the full setup wizard and not the full Guardian Agent planner/critic/executor demo. It exists because Phases 5C/5D/5E need a real human wallet-facing surface to validate the approval experience derived from Phases 1 through 5B.
+
+The dashboard should make the authority chain visible before an agent acts:
 
 ```text
 parent wallet
--> parent-owned agent smart account
--> ENS identity
--> 0G policy/audit/card refs
+-> connected wallet session
 -> ClearIntent canonical payload
--> KeeperHub execution gate
+-> EIP-712 wallet approval request
+-> ENS identity evidence
+-> 0G policy/audit/card refs
+-> KeeperHub execution evidence boundary
 -> wallet/webhook/CLI review surfaces
 ```
 
@@ -18,29 +23,32 @@ The dashboard must render real connected-wallet and resolved provider state. It 
 
 ## Why now
 
+- Phases 1 through 5B are complete enough to expose the authority path to a human.
+- Phase 5C software-wallet validation is only `ready-for-operator-test`; it needs a browser/wallet surface to capture real wallet-rendered evidence.
 - 0G storage reached `0g-write-read-verified`.
 - ENS binding reached `ens-live-bound` for `guardian.agent.clearintent.eth`.
 - KeeperHub workflow execution reached `keeperhub-live-submitted` with corrected run `089to8oqegw0r48i63vbj` reporting terminal workflow status `executed` and no transaction hash.
-- Phase 5A/5B signer payload and ERC-7730 metadata are complete locally.
-- The hackathon demo now needs a human-facing command center that explains and visualizes the validated evidence.
-
-Skipping this phase leaves ClearIntent CLI-first and makes the custody/value story harder to evaluate in a short demo.
+- The hackathon demo needs a human-facing authority surface before the full setup wizard and Guardian Agent flow can be honest.
 
 ## Goals
 
-- Create a web frontend shell using the dark operational visual direction selected from dashboard mockup option 3.
+- Create `apps/web/` as an intentional repo scope change, with scaffold/governance updates.
+- Create a dark operational frontend shell using the selected dashboard direction.
 - Make `Overview` the initial page with concise value explanation and real authority-state cards.
-- Add a guided `Wizard` path for wallet connection, agent account setup, ENS/0G/KeeperHub configuration, policy parameters, webhook/escalation, SDK handoff, and test intent.
-- Add an evidence reflection panel that reconstructs state from wallet session, ENS records, 0G refs, KeeperHub workflow/run evidence, and future event ingest.
-- Add `POST /api/keeperhub/events` as the KeeperHub-specific event ingest stub.
-- Keep Alchemy Account Kit integration isolated so the operator can configure Alchemy credentials/API keys separately while the frontend shell and state model are built.
+- Add a wallet-validation path for Phase 5C software-wallet testing.
+- Render the canonical ClearIntent payload before wallet approval.
+- Add evidence reflection for wallet session, ENS records, 0G refs, KeeperHub workflow/run evidence, signer status, and future event ingest.
+- Add `POST /api/keeperhub/events` as a KeeperHub-specific event ingest stub with authenticity boundaries.
+- Keep Alchemy Account Kit integration isolated so operator credentials/API keys remain out of repo and frontend semantics do not become authority truth.
 - Preserve the hard product rule: every agent-originated flow renders the canonical ClearIntent payload and no frontend component invents separate authority meaning.
 
 ## Non-goals
 
+- Do not implement the full setup wizard in Phase 6. Phase 7 owns the UX/setup wizard flow.
 - Do not implement a private database as authority truth.
 - Do not claim smart-account/session-key enforcement until Alchemy account creation and permissioning are implemented and tested.
-- Do not claim Ledger Clear Signing or hardware-wallet support in this phase.
+- Do not claim Ledger Clear Signing, WalletConnect/mobile validation, or hardware-wallet support in this phase.
+- Do not implement planner/critic/executor Guardian Agent roles.
 - Do not implement x402, MCP server, marketplace, iNFT, zk, or monetization surfaces.
 - Do not execute onchain transactions from the frontend in the first pass.
 - Do not require or request seed phrases, parent private keys, or unrestricted hot-wallet keys.
@@ -49,6 +57,8 @@ Skipping this phase leaves ClearIntent CLI-first and makes the custody/value sto
 
 - Contracts/core lifecycle and authority evaluation exist locally.
 - Center CLI can render identity, 0G, KeeperHub, signer, and credential state.
+- Phase 5A/5B signer payload and ERC-7730 metadata are complete locally.
+- Phase 5C is prepared only to `ready-for-operator-test`; real wallet evidence is absent.
 - ENS live records exist for `guardian.agent.clearintent.eth`.
 - 0G policy/audit/card artifacts are bound through ENS text records.
 - KeeperHub simplified gate workflow executes at workflow level but has no transaction hash or executor binding.
@@ -56,48 +66,38 @@ Skipping this phase leaves ClearIntent CLI-first and makes the custody/value sto
 - `clearintent.xyz` domain exists but the site/API is not deployed yet.
 - Alchemy project/services have been selected by the operator; Account Kit implementation remains pending.
 
-## Core intent
-
-This phase makes ClearIntent understandable and usable by a human operator. It must show:
-
-- what controls what
-- what is configured
-- what is missing
-- what evidence is live
-- what is degraded
-- what the agent is allowed to receive
-
-It must not turn the web app into the authority source. The frontend is a renderer, wizard, and event ingress surface over verifiable state.
-
 ## Canonical distinctions
 
-- `Overview` vs `Wizard`: Overview explains value and displays current state. Wizard changes setup state.
+- `Authority dashboard` vs `Setup wizard`: Phase 6 validates display, evidence, and wallet approval. Phase 7 performs guided setup.
 - `Connected` vs `Configured`: a wallet connection is not a completed ClearIntent setup.
 - `Workflow executed` vs `Onchain transaction executed`: KeeperHub run `089to8oqegw0r48i63vbj` proves workflow execution only.
-- `Parent wallet` vs `Agent smart account`: parent wallet owns/administers; agent account operates inside policy.
+- `Reported event` vs `Trusted evidence`: KeeperHub webhook events are reported/non-authoritative unless authenticated and replay-checked.
+- `Parent wallet` vs `Agent smart account`: parent wallet owns/administers; agent account operates inside policy where implemented.
 - `Policy artifact` vs `Policy mode`: 0G stores the artifact; UI exposes mode and parameters.
-- `Webhook ingest` vs `Notification fanout`: `/api/keeperhub/events` ingests KeeperHub events; later `/api/events` or user configuration can fan out to Discord/Telegram/email.
 - `Canonical ClearIntent payload` vs wallet-specific rendering: frontend, MetaMask, Ledger metadata, webhook, CLI, and 0G must derive from the same payload.
-
-## Expected outcome
-
-When this phase is done, a user can open the dashboard, connect a wallet, understand what ClearIntent does, see which authority layers are configured, start a guided setup, and receive/display KeeperHub event payloads once the webhook is enabled. The first app can run in demo mode only when explicitly labeled; default data must come from wallet/provider state or show missing-state placeholders.
-
-## Human and agent surfaces
-
-This phase is primarily a frontend/API phase. Center CLI changes are not required unless needed to expose frontend state.
-
-If a CLI helper is added later, it should follow the three-layer rule:
-
-- Direct human command: `npm run clearintent -- agent context`
-- Agent JSON command: `npm run --silent clearintent -- agent context --json`
-- Guided wizard entry: bare `npm run clearintent` should list the helper
-
-For this phase, the deferred CLI helper is documented but not required for frontend shell completion.
 
 ## Milestone cadence
 
-### 6.6.1 Frontend scaffold and visual system
+### 6.1 Governance and workspace opening
+
+**Files likely owned:**
+
+- Modify: `REPO_PROFILE.json`
+- Modify: `docs/FILE_TREE.md`
+- Modify: `package.json`
+- Modify: `tsconfig.json` or add app-local TypeScript config as needed
+- Modify: `docs/roadmaps/README.md`
+- Modify: `ROADMAP.md`
+- Modify: `docs/roadmaps/ROADMAP.md`
+- Modify: `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
+
+**Expected outcome:**
+
+- `apps/web/` is no longer forbidden early scope once implementation begins.
+- Package/workspace strategy is explicit before parallel workers create app files.
+- Root scripts define the intended web commands when the app scaffold lands.
+
+### 6.2 Frontend scaffold and visual system
 
 **Files likely owned:**
 
@@ -106,8 +106,6 @@ For this phase, the deferred CLI helper is documented but not required for front
 - Create: `apps/web/src/app/` or equivalent Next.js app structure
 - Create: `apps/web/src/components/`
 - Create: `apps/web/src/lib/`
-- Modify: root `package.json` scripts if workspace support is added
-- Modify: `tsconfig.json` only if needed for app/workspace references
 
 **Expected outcome:**
 
@@ -115,7 +113,7 @@ For this phase, the deferred CLI helper is documented but not required for front
 - Dark operational layout exists with sidebar, top status strip, Overview page, and empty-state components.
 - No fake completed authority data appears by default.
 
-### 6.6.2 State model and evidence surfaces
+### 6.3 State model and evidence surfaces
 
 **Files likely owned:**
 
@@ -126,71 +124,44 @@ For this phase, the deferred CLI helper is documented but not required for front
 
 **Expected outcome:**
 
-- App can represent `unconnected`, `connected-unconfigured`, `partially-configured`, `configured`, and `degraded` states.
+- App can represent `unconnected`, `connected-unconfigured`, `partially-configured`, `configured`, `degraded`, and `demo` states.
 - Overview cards display real or explicitly missing values for parent wallet, agent account, ENS, 0G, KeeperHub, policy, audit, session authority, and escalation.
 - The value explanation is concise and operational, not a marketing hero.
 
-### 6.6.3 Wallet connection and Alchemy boundary
+### 6.4 Wallet connection and software-wallet validator
 
 **Files likely owned:**
 
 - Create: `apps/web/src/lib/wallet/`
 - Create: `apps/web/src/lib/alchemy/`
 - Create: `apps/web/src/components/wallet/`
-- Modify: `docs/providers/Wallets/smart-accounts/README.md` if the implementation choice is narrowed
+- Create: `apps/web/src/components/payload-preview/`
+- Modify: `docs/providers/Wallets/software/metamask/README.md` if evidence requirements are narrowed
+- Modify: `docs/providers/Wallets/smart-accounts/README.md` if the Account Kit boundary is narrowed
 
 **Expected outcome:**
 
 - Parent wallet connection exists or is stubbed behind a clear adapter boundary.
-- Alchemy Account Kit config is isolated behind env variables and a small provider module.
-- The app can show parent wallet connected state.
+- Generic EIP-1193/MetaMask is the default Phase 5C validation path unless a later assignment selects Reown explicitly.
+- The app can render the canonical ClearIntent payload and prepare/display the EIP-712 request shape for operator testing.
 - If Account Kit credentials are not configured yet, the app reports `Alchemy not configured` rather than failing obscurely.
 
-**Operator-owned parallel task:**
-
-- Configure Alchemy Account Kit/API keys and provide env names/values out of repo.
-- Confirm selected chain/testnet and smart-account account type.
-- Confirm whether session keys are in this phase or deferred to a follow-up.
-
-### 6.6.4 Wizard skeleton
-
-**Files likely owned:**
-
-- Create: `apps/web/src/components/wizard/`
-- Create: `apps/web/src/lib/wizard-state.ts`
-
-**Expected outcome:**
-
-Wizard steps exist:
-
-1. Connect parent wallet.
-2. Create or select parent-owned agent smart account.
-3. Configure policy parameters.
-4. Publish 0G policy/card/audit refs.
-5. Bind ENS records.
-6. Configure KeeperHub workflow.
-7. Configure webhook/escalation.
-8. Generate SDK install and agent intro prompt.
-9. Run test intent.
-10. Ready state.
-
-Incomplete provider steps must be visibly disabled, planned, or degraded. Do not silently skip them.
-
-### 6.6.5 Midpoint audit
+### 6.5 Midpoint audit
 
 **Audit artifact:**
 
-- Create: `docs/audits/phase-6-guardian-agent-example/6.6.5-frontend-midpoint-audit.md`
+- Create: `docs/audits/phase-6-authority-wallet-validator/6.5-midpoint-audit.md`
 
 **Audit target:**
 
 - Overview does not show fake completion data.
-- Wizard does not request secrets.
+- Dashboard does not request secrets.
 - Frontend state model separates connected, configured, degraded, and demo states.
+- Wallet validation does not claim 5C evidence until operator testing records it.
 - Alchemy integration is isolated from ClearIntent authority semantics.
 - The dashboard states the KeeperHub claim boundary correctly: workflow execution proof, no onchain transaction proof.
 
-### 6.6.6 Provider reads and event ingest
+### 6.6 Provider reads and event ingest
 
 **Files likely owned:**
 
@@ -203,88 +174,74 @@ Incomplete provider steps must be visibly disabled, planned, or degraded. Do not
 
 **Expected outcome:**
 
-- `POST /api/keeperhub/events` accepts the KeeperHub event payload shape:
-
-```json
-{
-  "source": "keeperhub",
-  "project": "clearintent",
-  "schemaVersion": "clearintent.keeperhub-event.v1",
-  "eventType": "clearintent.execution.completed",
-  "status": "completed",
-  "shouldExecute": true
-}
-```
-
-- Endpoint validates shape and returns deterministic JSON.
+- Frontend provider modules are thin wrappers over `packages/ens-identity`, `packages/zerog-memory`, and `packages/keeperhub-adapter` exports or documented read-only boundaries.
+- `POST /api/keeperhub/events` validates the KeeperHub event payload shape and returns deterministic JSON.
+- The ingest route has an explicit authenticity plan: token/signature validation, timestamp or nonce replay protection, and source binding before events can be treated as trusted evidence.
+- Until authenticity is proven, UI labels latest events as reported/non-authoritative.
 - No long-term private DB authority is introduced. If temporary in-memory or local display state is used, it is labeled non-authoritative.
-- UI can render latest event in Overview/Execution view.
 
-### 6.6.7 Agent handoff and canonical payload preview
+### 6.7 Phase 5C validation pass
 
 **Files likely owned:**
 
-- Create: `apps/web/src/components/agent-handoff/`
-- Create: `apps/web/src/components/payload-preview/`
-- Modify: `docs/roadmaps/May-2-Sprint.md` if prompt shape changes
+- Modify: `docs/roadmaps/phase-5-signer-readable-approval/5C_SOFTWARE_WALLET_METAMASK_VALIDATION_PLAN.md`
+- Create or modify: Phase 5C audit artifact if operator evidence exists
+- Modify: wallet provider notes as needed
 
 **Expected outcome:**
 
-- Wizard generates an agent setup prompt for OpenClaw/Codex/Claude.
-- Handoff exposes references, not secrets:
-  - repo link
-  - SDK install command
-  - agent ENS identity
-  - policy URI/hash
-  - KeeperHub workflow/config reference
-  - webhook/escalation reference
-  - allowed/forbidden action summary
-- Payload preview renders the canonical ClearIntent fields intended for frontend, EIP-712, ERC-7730-compatible metadata, webhook, and 0G audit.
+- Phase 5C can be tested through a real wallet-facing dashboard path.
+- Evidence is labeled `signer-only` or `testnet-integrated`.
+- No WalletConnect/mobile or hardware-wallet claim is made from Phase 6.
 
-### 6.6.8 Demo readiness and deployment prep
+### 6.8 Demo readiness and docs hardening
 
 **Files likely owned:**
 
-- Create or modify: deployment config if needed
 - Modify: `docs/hackathon/submission-checklist.md`
 - Modify: `docs/hackathon/wallet-demo-strategy.md`
 - Modify: `docs/providers/KeeperHub/README.md`
+- Modify: `docs/architecture/ARCHITECTURE.md`
+- Modify: `CHANGELOG.md`
+- Modify: `DECISIONS.md` and `docs/decisions/2026-05-02.md` if authority or phase-boundary decisions change
 
 **Expected outcome:**
 
-- Local dev server runs.
-- Dashboard displays the actual validated evidence:
-  - `guardian.agent.clearintent.eth`
+- Local dev server runs once app scripts exist.
+- Dashboard displays actual validated evidence or missing/degraded states:
+  - configured ENS name such as `guardian.agent.clearintent.eth`
   - 0G refs
   - policy hash
   - KeeperHub workflow `r8hbrox9eorgvvlunk72b`
   - KeeperHub run `089to8oqegw0r48i63vbj`
   - no transaction hash
 - Webhook can remain disabled until deploy, but route implementation exists.
+- Phase 7 setup wizard scope is routed clearly.
 
-### 6.6.9 Closeout audit
+### 6.9 Closeout audit
 
 **Audit artifact:**
 
-- Create: `docs/audits/phase-6-guardian-agent-example/6.6.9-frontend-closeout-audit.md`
+- Create: `docs/audits/phase-6-authority-wallet-validator/6.9-closeout-audit.md`
 
 **Audit target:**
 
 - App boots locally.
-- Overview and Wizard behave correctly in unconnected and connected states.
+- Overview behaves correctly in unconnected and connected states.
 - No dummy authority state is shown as real.
-- `/api/keeperhub/events` validates KeeperHub events.
+- `/api/keeperhub/events` validates KeeperHub events and labels unauthenticated events correctly.
+- Wallet validation path can support Phase 5C evidence capture.
 - Alchemy setup state is clear and does not overclaim session-key enforcement.
-- Docs and roadmap route remaining smart-account/session-key, wallet, hardware, and deploy work.
+- Docs route the Phase 7 setup wizard and later Guardian Agent demo work.
 
 ## Parallel agent ownership
 
 Use disjoint write scopes if multiple agents work in parallel:
 
 - Worker A: `apps/web/src/components/overview/`, layout shell, visual system.
-- Worker B: `apps/web/src/components/wizard/`, wizard state, setup step copy.
+- Worker B: `apps/web/src/lib/clearintent-state.ts`, `apps/web/src/lib/evidence-model.ts`, state fixtures.
 - Worker C: `apps/web/src/app/api/keeperhub/events/route.ts`, event schema, event display components.
-- Worker D: `apps/web/src/lib/alchemy/`, wallet/account-kit adapter boundary only.
+- Worker D: `apps/web/src/lib/wallet/`, `apps/web/src/lib/alchemy/`, wallet/account-kit adapter boundary only.
 - Worker E: docs/audit updates only after implementation evidence exists.
 
 No two workers should edit the same component folder unless explicitly coordinated.
@@ -341,12 +298,15 @@ Stop and document a blocker if:
 - The frontend would become the only place where policy truth lives.
 - The dashboard cannot distinguish demo data from live provider data.
 - The implementation would require onchain transaction claims not yet supported by Phase 4B evidence.
+- Phase 5C validation would claim wallet-rendered evidence without operator-run proof.
 
 ## Deferred scope
 
+- Phase 7 setup wizard and operator flow.
 - Full smart-account/session-key enforcement.
 - Ledger hardware-wallet validation.
 - WalletConnect/mobile validation.
+- Guardian Agent planner/critic/executor implementation.
 - x402 payment flow.
 - MCP server.
 - Hosted API authority beyond the KeeperHub event ingest stub.
