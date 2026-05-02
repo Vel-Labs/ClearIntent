@@ -5,7 +5,9 @@ import {
   createLocalKeeperHubExecutionAdapter,
   deterministicLocalWorkflowId,
   getCenterExecutionStatus,
+  getKeeperHubLiveStatus,
   KEEPERHUB_LOCAL_FIXTURE_CLAIM,
+  submitKeeperHubLiveWorkflow,
   type VerifiedExecutionIntent
 } from "../../packages/keeperhub-adapter/src";
 import { createContractValidator, type AgentIntent } from "../../packages/core/src";
@@ -181,4 +183,88 @@ describe("KeeperHub local execution adapter", () => {
     expect(centerStatus.liveProviderDisabled).toBe(true);
     expect(centerStatus.liveExecutionProven).toBe(false);
   });
+
+  it("reports KeeperHub live readiness blockers without printing secrets", async () => {
+    const status = await getKeeperHubLiveStatus({
+      env: {
+        KEEPERHUB_API_TOKEN: "",
+        KEEPERHUB_WORKFLOW_ID: "",
+        KEEPERHUB_ENABLE_LIVE_PROBE: "false"
+      } as NodeJS.ProcessEnv
+    });
+
+    expect(status.ok).toBe(false);
+    expect(status.claimLevel).toBe("keeperhub-live-readiness");
+    expect(status.liveProvider).toBe(false);
+    expect(status.blockingReasons).toEqual(expect.arrayContaining(["missing_api_token", "missing_workflow_id"]));
+    expect(JSON.stringify(status)).not.toContain("kh_");
+  });
+
+  it("probes a configured KeeperHub workflow without submitting execution", async () => {
+    const calls: string[] = [];
+    const status = await getKeeperHubLiveStatus({
+      env: liveKeeperHubEnv({ KEEPERHUB_ENABLE_LIVE_PROBE: "true" }),
+      fetchImpl: async (url) => {
+        calls.push(url);
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ data: { id: "wf_demo", name: "ClearIntent demo", visibility: "private" } })
+        };
+      }
+    });
+
+    expect(status.blockingReasons).toEqual([]);
+    expect(status.workflow?.id).toBe("wf_demo");
+    expect(calls).toEqual(["https://app.keeperhub.com/api/workflows/wf_demo"]);
+    expect(status.liveExecutionProven).toBe(false);
+  });
+
+  it("keeps KeeperHub live submit gated until explicit opt-in", async () => {
+    const status = await submitKeeperHubLiveWorkflow({
+      env: liveKeeperHubEnv({ KEEPERHUB_ENABLE_LIVE_SUBMIT: "false" }),
+      fetchImpl: async () => {
+        throw new Error("fetch should not be called while submit is gated");
+      }
+    });
+
+    expect(status.ok).toBe(false);
+    expect(status.blockingReasons).toEqual(expect.arrayContaining(["live_submit_disabled"]));
+    expect(status.submission).toBeUndefined();
+  });
+
+  it("submits a verified fixture intent to KeeperHub and returns degraded receipt until tx evidence exists", async () => {
+    const status = await submitKeeperHubLiveWorkflow({
+      env: liveKeeperHubEnv({ KEEPERHUB_ENABLE_LIVE_SUBMIT: "true" }),
+      fetchImpl: async (url, init) => {
+        expect(url).toBe("https://app.keeperhub.com/api/workflow/wf_demo/execute");
+        expect(init?.method).toBe("POST");
+        expect(init?.headers?.Authorization).toBe("Bearer kh_test");
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ executionId: "exec_demo", runId: "run_demo", status: "pending" })
+        };
+      }
+    });
+
+    expect(status.claimLevel).toBe("keeperhub-live-submitted");
+    expect(status.submission?.executionId).toBe("exec_demo");
+    expect(status.receipt).toMatchObject({ status: "degraded", degradedReason: "missing_transaction_evidence" });
+    expect(status.degradedReasons).toEqual(expect.arrayContaining(["missing_transaction_evidence"]));
+  });
 });
+
+function liveKeeperHubEnv(overrides: Record<string, string> = {}): NodeJS.ProcessEnv {
+  return {
+    KEEPERHUB_API_TOKEN: "kh_test",
+    KEEPERHUB_WORKFLOW_ID: "wf_demo",
+    KEEPERHUB_EXECUTOR_ADDRESS: "0x2222222222222222222222222222222222222222",
+    CLEARINTENT_ENS_NAME: "guardian.agent.clearintent.eth",
+    CLEARINTENT_AGENT_CARD_URI: "0g://agent-card",
+    CLEARINTENT_POLICY_URI: "0g://policy",
+    CLEARINTENT_POLICY_HASH: "0x1111111111111111111111111111111111111111111111111111111111111111",
+    CLEARINTENT_AUDIT_LATEST: "0g://audit",
+    ...overrides
+  } as NodeJS.ProcessEnv;
+}

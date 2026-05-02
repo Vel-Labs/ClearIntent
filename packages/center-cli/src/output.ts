@@ -20,6 +20,7 @@ export type CliCommandResult = {
     | "ens-local-fixture"
     | "ens-live-read"
     | "keeperhub-local-fixture"
+    | "keeperhub-live"
     | "signer-local-fixture";
   fixtureSource?: string;
   liveProvider?: boolean;
@@ -309,21 +310,39 @@ function formatIdentityCheckStatus(status: CenterIdentityStatus["checks"][number
 }
 
 function renderExecutionStatus(execution: CenterExecutionStatus): string[] {
-  return [
+  const lines = [
     `Execution claim level: ${execution.claimLevel}`,
     `Execution local fixture: ${execution.localFixtureAvailable ? "available" : "unavailable"}`,
     `Execution live provider: ${execution.liveProvider ? "enabled" : "disabled"}`,
     `Execution live proof: ${execution.liveExecutionProven ? "yes" : "no"}`,
     `KeeperHub authority approval: ${execution.authorityApprovalProvidedByKeeperHub ? "yes" : "no"}`,
+    ...(execution.workflowId === undefined ? [] : [`KeeperHub workflow ID: ${execution.workflowId}`]),
+    ...(execution.executionMode === undefined ? [] : [`KeeperHub execution mode: ${execution.executionMode}`]),
+    ...(execution.executorAddress === undefined ? [] : [`KeeperHub executor address: ${execution.executorAddress}`]),
+    ...(execution.clearIntentEnsName === undefined ? [] : [`ClearIntent ENS binding: ${execution.clearIntentEnsName}`]),
     `Execution summary: ${execution.summary}`,
     ...execution.checks.map((check) => `- ${check.label}: ${formatExecutionCheckStatus(check.status)} - ${check.detail}`),
+    ...(execution.submission === undefined
+      ? []
+      : [
+          "KeeperHub submission:",
+          `- executionId = ${execution.submission.executionId ?? "none"}`,
+          `- runId = ${execution.submission.runId ?? "none"}`,
+          `- status = ${execution.submission.status ?? "none"}`,
+          `- transactionHash = ${execution.submission.transactionHash ?? "none"}`
+        ]),
+    `Execution blocking reasons: ${formatList(execution.blockingReasons)}`,
     `Execution degraded reasons: ${formatList(execution.degradedReasons)}`
   ];
+  return lines;
 }
 
 function formatExecutionCheckStatus(status: CenterExecutionStatus["checks"][number]["status"]): string {
   if (status === "pass") {
     return "[PASS] pass";
+  }
+  if (status === "blocking") {
+    return "[BLOCKED] blocking";
   }
   return "[DEGRADED] degraded";
 }

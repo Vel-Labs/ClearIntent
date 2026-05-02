@@ -46,6 +46,15 @@ Do not let wallet UI, KeeperHub, or frontend code invent separate authority mean
 
 Goal: prove KeeperHub is the execution backend/orchestrator after ClearIntent approval, not the policy verifier.
 
+Status: in progress. The first CLI routes now exist and are gated:
+
+```bash
+npm run clearintent -- keeperhub live-status
+npm run clearintent -- keeperhub live-submit
+```
+
+Current operator state: KeeperHub token and 0G/ENS binding are present, but live execution is blocked until `KEEPERHUB_WORKFLOW_ID` is configured. Executor binding is currently degraded until `KEEPERHUB_EXECUTOR_ADDRESS` is configured.
+
 Build or validate CLI routes such as:
 
 ```bash
@@ -140,12 +149,27 @@ Ready-state display should include:
 - parent authority wallet
 - agent smart account
 - ENS name
+- ENS text records as an onchain metadata reflection panel
 - 0G policy URI/hash
 - latest audit URI
 - KeeperHub workflow/executor
 - session authority status and expiry where implemented
 - escalation channel
 - policy mode
+
+The frontend should not assume users can easily browse raw 0G artifacts from 0G explorer surfaces. It should reconstruct a clear "what is established" view from ENS records and 0G refs:
+
+```text
+agent.card
+policy.uri
+policy.hash
+audit.latest
+clearintent.version
+resolved agent address
+0G artifact tx hashes where available
+```
+
+This panel is the user-facing reflection of the onchain/decentralized metadata and should be visible before the agent is marked ready.
 
 Done when:
 

@@ -7,9 +7,9 @@ It is intentionally thin:
 - it consumes public primitives from `packages/core`
 - it renders fixture-backed authority state for humans
 - it emits deterministic JSON for agents and automation with `--json`
-- it exposes local module metadata, local ENS identity status, local KeeperHub execution status, and doctor checks for future adapters
+- it exposes local module metadata, live 0G/ENS readiness, local KeeperHub execution status, gated KeeperHub live readiness/submit checks, and doctor checks for future adapters
 
-It does not implement live ENS, live 0G, live KeeperHub/onchain execution, signer, webhook, OS notification, browser UI, hosted service, or demo integration behavior.
+It does not implement MCP, hosted API authority, webhook delivery, OS notification, browser UI, or smart-account setup behavior.
 
 ## Local Usage
 
@@ -36,6 +36,8 @@ npm run --silent clearintent -- identity status --json
 npm run clearintent -- execution status
 npm run --silent clearintent -- execution status --json
 npm run clearintent -- keeperhub status
+npm run clearintent -- keeperhub live-status
+npm run clearintent -- keeperhub live-submit
 npm run clearintent -- signer status
 npm run clearintent -- signer preview
 npm run clearintent -- signer typed-data
@@ -89,6 +91,10 @@ Blocked fixture output means the fixture is missing required evidence or intenti
 `identity status` is a Phase 3A local fixture readout. It reports `Mode: ens-local-fixture`, `Live provider: disabled`, no live ENS claim, no live 0G claim, and `Authority: blocked` because identity discovery is not authority approval.
 
 `execution status` and `keeperhub status` are Phase 4A local fixture readouts. They report `Mode: keeperhub-local-fixture`, `Live provider: disabled`, no live KeeperHub/onchain claim, no KeeperHub authority approval, and `Authority: blocked` because execution status is inspection, not approval.
+
+`keeperhub live-status` is the Phase 4B live readiness route. It checks KeeperHub API token shape, workflow ID, optional executor address, and the required 0G/ENS binding references without submitting execution. Set `KEEPERHUB_ENABLE_LIVE_PROBE=true` only when intentionally probing the workflow through KeeperHub's read endpoint.
+
+`keeperhub live-submit` is gated by `KEEPERHUB_ENABLE_LIVE_SUBMIT=true`. Without that gate it reports `live_submit_disabled` and does not call KeeperHub. When enabled, it submits the selected workflow only after ClearIntent fixture verification/signature evidence is available, then converts the response into canonical execution receipt shape where possible.
 
 `signer status`, `signer preview`, `signer typed-data`, and `signer metadata` are Phase 5A/5B local signer inspection routes. They report `Mode: signer-local-fixture`, `Live provider: disabled`, `Authority: blocked`, and no real-wallet, wallet-rendered preview, secure-device display, or vendor-approved Clear Signing claim. Claim levels are limited to local signer fixture, local EIP-712 fixture, and local ERC-7730 metadata vocabulary.
 

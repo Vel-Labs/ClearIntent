@@ -27,12 +27,12 @@ export function getCenterExecutionStatus(): CenterExecutionStatus {
 export function buildCenterExecutionStatus(status: ExecutionAdapterStatus): CenterExecutionStatus {
   return {
     ok: status.localFixtureAvailable,
-    claimLevel: status.claimLevel,
-    providerMode: status.providerMode,
+    claimLevel: "keeperhub-local-fixture",
+    providerMode: "local",
     localFixtureAvailable: status.localFixtureAvailable,
-    liveProvider: status.liveProvider,
-    liveProviderDisabled: status.liveProviderDisabled,
-    liveExecutionProven: status.liveExecutionProven,
+    liveProvider: false,
+    liveProviderDisabled: true,
+    liveExecutionProven: false,
     authorityApprovalProvidedByKeeperHub: status.authorityApprovalProvidedByKeeperHub,
     summary: status.summary,
     checks: [

@@ -34,6 +34,29 @@ Phase 4B still needs a selected live path:
 
 The required 0G/ENS prerequisite is ready: `guardian.agent.clearintent.eth` reached `ens-live-bound` and resolves live 0G policy, audit, and agent-card artifacts.
 
+Current CLI routes:
+
+```bash
+npm run clearintent -- keeperhub live-status
+npm run clearintent -- keeperhub live-submit
+```
+
+`keeperhub live-status` is read-only unless `KEEPERHUB_ENABLE_LIVE_PROBE=true`, in which case it may call KeeperHub's workflow lookup endpoint. `keeperhub live-submit` is always blocked unless `KEEPERHUB_ENABLE_LIVE_SUBMIT=true`.
+
+Phase 4B environment:
+
+```env
+KEEPERHUB_API_BASE_URL=https://app.keeperhub.com/api
+KEEPERHUB_API_TOKEN=<external secrets only>
+KEEPERHUB_WORKFLOW_ID=
+KEEPERHUB_EXECUTION_MODE=workflow
+KEEPERHUB_EXECUTOR_ADDRESS=
+KEEPERHUB_ENABLE_LIVE_PROBE=false
+KEEPERHUB_ENABLE_LIVE_SUBMIT=false
+```
+
+The initial live-status output in the operator environment has token and 0G/ENS binding present, but is blocked on `KEEPERHUB_WORKFLOW_ID` and degraded by missing executor binding plus disabled live probe.
+
 ## Taxonomy
 
 ### Workflow model

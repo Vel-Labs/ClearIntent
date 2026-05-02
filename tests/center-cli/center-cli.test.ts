@@ -398,6 +398,73 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(parsed.data.execution.degradedReasons).toEqual(expect.arrayContaining(["live_provider_unavailable"]));
   });
 
+  it("exposes KeeperHub live status blockers without submitting execution", async () => {
+    const result = await runCliWithEnv(["keeperhub", "live-status", "--json"], {
+      CLEARINTENT_SECRETS_FILE: "/tmp/clearintent-test-missing-secrets.env",
+      KEEPERHUB_API_TOKEN: "",
+      KEEPERHUB_WORKFLOW_ID: "",
+      KEEPERHUB_ENABLE_LIVE_PROBE: "false",
+      KEEPERHUB_ENABLE_LIVE_SUBMIT: "false",
+      CLEARINTENT_AGENT_CARD_URI: "",
+      CLEARINTENT_POLICY_URI: "",
+      CLEARINTENT_EXPECTED_POLICY_URI: "",
+      CLEARINTENT_POLICY_HASH: "",
+      CLEARINTENT_EXPECTED_POLICY_HASH: "",
+      CLEARINTENT_AUDIT_LATEST: "",
+      CLEARINTENT_EXPECTED_AUDIT_URI: ""
+    });
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      mode: string;
+      liveProvider: boolean;
+      data: { execution: { claimLevel: string; providerMode: string; blockingReasons: string[]; degradedReasons: string[] } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.startsWith("{")).toBe(true);
+    expect(parsed.command).toBe("keeperhub live-status");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.mode).toBe("keeperhub-live");
+    expect(parsed.liveProvider).toBe(true);
+    expect(parsed.data.execution.claimLevel).toBe("keeperhub-live-readiness");
+    expect(parsed.data.execution.providerMode).toBe("live");
+    expect(parsed.data.execution.blockingReasons).toEqual(
+      expect.arrayContaining(["missing_api_token", "missing_workflow_id", "missing_clearintent_binding"])
+    );
+  });
+
+  it("keeps KeeperHub live-submit gated without explicit opt-in", async () => {
+    const result = await runCliWithEnv(["keeperhub", "live-submit", "--json"], {
+      CLEARINTENT_SECRETS_FILE: "/tmp/clearintent-test-missing-secrets.env",
+      KEEPERHUB_API_TOKEN: "kh_test",
+      KEEPERHUB_WORKFLOW_ID: "wf_demo",
+      KEEPERHUB_EXECUTOR_ADDRESS: "0x2222222222222222222222222222222222222222",
+      CLEARINTENT_AGENT_CARD_URI: "0g://agent-card",
+      CLEARINTENT_POLICY_URI: "0g://policy",
+      CLEARINTENT_POLICY_HASH: "0x1111111111111111111111111111111111111111111111111111111111111111",
+      CLEARINTENT_AUDIT_LATEST: "0g://audit",
+      KEEPERHUB_ENABLE_LIVE_SUBMIT: "false"
+    });
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      commandOk: boolean;
+      authorityOk: boolean;
+      ok: boolean;
+      data: { execution: { blockingReasons: string[]; submission?: unknown } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(parsed.command).toBe("keeperhub live-submit");
+    expect(parsed.commandOk).toBe(true);
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.data.execution.blockingReasons).toEqual(expect.arrayContaining(["live_submit_disabled"]));
+    expect(parsed.data.execution.submission).toBeUndefined();
+  });
+
   it("renders execution status with explicit local fixture and no-live-claim language", async () => {
     const result = await runCli(["keeperhub", "status"]);
 

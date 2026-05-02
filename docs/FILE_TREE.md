@@ -227,6 +227,8 @@ packages/ens-identity/src/record-keys.ts
 packages/ens-identity/src/resolve.ts
 packages/ens-identity/src/types.ts
 packages/keeperhub-adapter/src/index.ts
+packages/keeperhub-adapter/src/live-config.ts
+packages/keeperhub-adapter/src/live-status.ts
 packages/keeperhub-adapter/src/local-execution-adapter.ts
 packages/keeperhub-adapter/src/receipt.ts
 packages/keeperhub-adapter/src/status.ts

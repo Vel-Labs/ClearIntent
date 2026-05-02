@@ -53,7 +53,13 @@ const envKeys = {
   requireProof: "ZERO_G_REQUIRE_PROOF"
 } as const;
 
-const repoLocalSecretKeys = ["ZERO_G_PRIVATE_KEY", "KEEPERHUB_API_TOKEN", "PRIVATE_EVM_RPC_URL", "ENS_SIGNER_PRIVATE_KEY"] as const;
+const repoLocalSecretKeys = [
+  "ZERO_G_PRIVATE_KEY",
+  "KEEPERHUB_API_TOKEN",
+  "KEEPERHUB_WEBHOOK_TOKEN",
+  "PRIVATE_EVM_RPC_URL",
+  "ENS_SIGNER_PRIVATE_KEY"
+] as const;
 
 export function getCredentialSafetyStatus(cwd = process.cwd(), env: NodeJS.ProcessEnv = process.env): CredentialSafetyStatus {
   const dotEnvExists = existsSync(path.join(cwd, ".env"));

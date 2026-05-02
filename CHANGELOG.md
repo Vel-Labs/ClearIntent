@@ -8,6 +8,7 @@ All notable repo changes should be logged here.
 - Recorded ENS resolver multicall evidence: transaction `0x1dce685d1af441208b5ae22f890cbf3e7ed38b2865c04701c874e1f40d5f861b`, block `25005501`, records `agent.card`, `policy.uri`, `policy.hash`, `audit.latest`, and `clearintent.version`.
 - Added the Phase 3B closeout audit and updated roadmap/current-state routing so Phase 4B is unblocked by 0G/ENS prerequisites but remains open until KeeperHub live run/transaction evidence and canonical receipt conversion are recorded.
 - Added `docs/roadmaps/May-2-Sprint.md` to capture the next implementation leg: KeeperHub CLI completion, parent-owned agent smart accounts, frontend wizard, canonical ClearIntent payload rendering, software-wallet validation, and hardware-wallet validation.
+- Added KeeperHub Phase 4B CLI routes for `keeperhub live-status` and gated `keeperhub live-submit`, including live config parsing, workflow readiness checks, 0G/ENS binding prerequisite checks, explicit submit opt-in through `KEEPERHUB_ENABLE_LIVE_SUBMIT`, and canonical receipt conversion for accepted live submissions.
 
 ## 2026-05-01
 

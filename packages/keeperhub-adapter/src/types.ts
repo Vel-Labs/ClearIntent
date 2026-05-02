@@ -1,16 +1,31 @@
 import type { AgentIntent, ExecutionReceipt, ResultIssue, SignatureEvidence } from "../../core/src";
 
 export const KEEPERHUB_LOCAL_FIXTURE_CLAIM = "keeperhub-local-fixture" as const;
+export const KEEPERHUB_LIVE_READINESS_CLAIM = "keeperhub-live-readiness" as const;
+export const KEEPERHUB_LIVE_SUBMITTED_CLAIM = "keeperhub-live-submitted" as const;
+export const KEEPERHUB_LIVE_EXECUTED_CLAIM = "keeperhub-live-executed" as const;
 
-export type KeeperHubClaimLevel = typeof KEEPERHUB_LOCAL_FIXTURE_CLAIM;
-export type ExecutionProviderMode = "local";
-export type ExecutionRunStatus = "submitted" | "executed" | "failed" | "degraded";
+export type KeeperHubClaimLevel =
+  | typeof KEEPERHUB_LOCAL_FIXTURE_CLAIM
+  | typeof KEEPERHUB_LIVE_READINESS_CLAIM
+  | typeof KEEPERHUB_LIVE_SUBMITTED_CLAIM
+  | typeof KEEPERHUB_LIVE_EXECUTED_CLAIM;
+export type ExecutionProviderMode = "local" | "live";
+export type ExecutionRunStatus = "pending" | "running" | "submitted" | "executed" | "failed" | "degraded";
 
 export type ExecutionIssueCode =
   | "missing_verification"
   | "missing_signature"
   | "unsupported_executor"
   | "missing_workflow_id"
+  | "missing_api_token"
+  | "invalid_api_token"
+  | "invalid_executor_address"
+  | "missing_clearintent_binding"
+  | "live_probe_not_enabled"
+  | "live_probe_failed"
+  | "live_submit_disabled"
+  | "live_submit_failed"
   | "failed_run"
   | "missing_transaction_evidence"
   | "missing_receipt"
@@ -64,8 +79,8 @@ export type ExecutionAdapterStatus = {
   claimLevel: KeeperHubClaimLevel;
   providerMode: ExecutionProviderMode;
   localFixtureAvailable: boolean;
-  liveProvider: false;
-  liveProviderDisabled: true;
+  liveProvider: boolean;
+  liveProviderDisabled: boolean;
   liveExecutionProven: false;
   authorityApprovalProvidedByKeeperHub: false;
   summary: string;

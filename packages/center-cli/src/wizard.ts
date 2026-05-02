@@ -59,6 +59,11 @@ const wizardItems: WizardItem[] = [
     args: ["execution", "status"]
   },
   {
+    label: "KeeperHub live status",
+    description: "Inspect the Phase 4B KeeperHub live readiness route without submitting execution.",
+    args: ["keeperhub", "live-status"]
+  },
+  {
     label: "Signer status",
     description: "Inspect local signer fixture, typed-data, and metadata claim posture.",
     args: ["signer", "status"]
@@ -93,6 +98,7 @@ export function renderLanding(): string {
     "  npm run --silent clearintent -- identity status --json",
     "  npm run --silent clearintent -- identity live-status --json",
     "  npm run --silent clearintent -- execution status --json",
+    "  npm run --silent clearintent -- keeperhub live-status --json",
     "  npm run --silent clearintent -- signer status --json",
     "  npm run --silent clearintent -- test local --json",
     "  npm run --silent clearintent -- credentials status --json",
