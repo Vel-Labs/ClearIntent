@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildNavItems, getDashboardAccessStage, pageAfterWalletConnect } from "../../apps/web/src/components/shell/dashboard-app";
+import { buildNavItems, getDashboardAccessStage, pageAfterWalletConnect, resetStaleSetupStatus } from "../../apps/web/src/components/shell/dashboard-app";
 import { buildBoundedEventRegistryContext } from "../../apps/web/src/lib/bounded-event-registry";
 import type { AgentSetupDiscoveryRecord } from "../../apps/web/src/lib/setup-discovery";
 
@@ -35,6 +35,12 @@ describe("dashboard navigation gating", () => {
   it("returns completed operators to evidence after reconnecting a cached setup", () => {
     expect(pageAfterWalletConnect("complete")).toBe("provider-evidence");
     expect(pageAfterWalletConnect("in-progress")).toBe("setup");
+  });
+
+  it("does not keep stale complete status when a connected wallet has no matching setup", () => {
+    expect(resetStaleSetupStatus("complete")).toBe("not-started");
+    expect(pageAfterWalletConnect(resetStaleSetupStatus("complete"))).toBe("setup");
+    expect(resetStaleSetupStatus("in-progress")).toBe("in-progress");
   });
 
   it("separates KeeperHub ingest from bounded user registry context", () => {

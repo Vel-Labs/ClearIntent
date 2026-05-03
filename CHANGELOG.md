@@ -4,6 +4,7 @@ All notable repo changes should be logged here.
 
 ## 2026-05-03
 
+- Reset stale dashboard-complete resume state when the connected wallet has no matching complete setup, preventing live-site wizard actions from staying disabled for new wallet tests.
 - Scoped setup wizard resume restoration to the connected parent wallet and added a Start over reset action so browser-local resume state cannot trap a new wallet/name test in an old journey.
 - Added operator-provided Discord webhook forwarding for Settings demo events, with browser-local URL entry, server-side Discord URL validation, redacted status display, and no export of the webhook secret.
 - Added `/api/events` as the clean public event ingest route for user-facing webhook configuration while keeping the older `/api/keeperhub/events` route as a KeeperHub compatibility wrapper.

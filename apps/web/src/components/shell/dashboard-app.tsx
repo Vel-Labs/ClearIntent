@@ -59,9 +59,12 @@ export function DashboardApp() {
     setWallet(nextWallet);
     if (nextWallet.status === "connected") {
       const walletSetups = refreshDiscovery(nextWallet.account);
-      const nextSetupStatus = hasCompleteAgentSetup(walletSetups) ? "complete" : setupStatus;
+      const nextSetupStatus = hasCompleteAgentSetup(walletSetups) ? "complete" : resetStaleSetupStatus(setupStatus);
       if (hasCompleteAgentSetup(walletSetups)) {
         setSetupStatus(nextSetupStatus);
+      } else if (setupStatus === "complete") {
+        setSetupStatus(nextSetupStatus);
+        setActiveSetupStep(0);
       }
       setSelectedPage(pageAfterWalletConnect(nextSetupStatus));
     }
@@ -124,6 +127,10 @@ export function getDashboardAccessStage(connected: boolean, setupStatus: SetupWi
 
 export function pageAfterWalletConnect(setupStatus: SetupWizardStatus): DashboardPage {
   return setupStatus === "complete" ? "provider-evidence" : "setup";
+}
+
+export function resetStaleSetupStatus(setupStatus: SetupWizardStatus): SetupWizardStatus {
+  return setupStatus === "complete" ? "not-started" : setupStatus;
 }
 
 export function buildNavItems(accessStage: DashboardAccessStage): ShellNavItem[] {
