@@ -12,3 +12,4 @@ apps/**/.next/
 !.env.*.example
 operator-secrets/*.env
 !operator-secrets/*.env.example
+.playwright-mcp

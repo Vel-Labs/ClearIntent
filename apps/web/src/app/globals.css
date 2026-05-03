@@ -63,7 +63,6 @@ a {
 
 .brand span,
 .nav-item,
-.status-strip,
 .muted {
   color: var(--muted);
 }
@@ -104,23 +103,10 @@ a {
 
 .main {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
   min-width: 0;
   max-height: 100vh;
   padding: 22px;
   overflow: hidden;
-}
-
-.status-strip {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--panel);
-  padding: 12px 14px;
 }
 
 .page-stack {
@@ -128,7 +114,6 @@ a {
   overflow: auto;
   display: grid;
   gap: 18px;
-  margin-top: 18px;
   padding-bottom: 24px;
 }
 
@@ -155,6 +140,348 @@ a {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+}
+
+.overview-page {
+  gap: 16px;
+}
+
+.overview-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.overview-hero-copy {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  min-height: 360px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 13%, transparent), transparent 38%),
+    var(--panel);
+  padding: 28px;
+}
+
+.overview-hero-copy h1 {
+  margin: 0;
+  max-width: 720px;
+  font-size: 42px;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.overview-hero-copy p {
+  margin: 0;
+  max-width: 640px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.journey-card {
+  display: grid;
+  grid-template-rows: auto auto minmax(120px, 1fr) auto;
+  gap: 16px;
+  min-height: 620px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-radius: 8px;
+  background: var(--panel-strong);
+  padding: 22px;
+}
+
+.journey-card-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.journey-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tldr-trigger {
+  cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 7px 10px;
+}
+
+.journey-card h2 {
+  margin: 4px 0 0;
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.journey-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.journey-card-copy {
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  min-height: 120px;
+}
+
+.journey-start-note {
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  padding: 12px;
+}
+
+.journey-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+}
+
+.carousel-controls {
+  display: flex;
+  gap: 8px;
+  padding-top: 3px;
+}
+
+.carousel-controls button {
+  cursor: pointer;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  padding: 0;
+}
+
+.carousel-controls button.active {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.journey-visual {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-content: start;
+  align-items: start;
+}
+
+.journey-node-wrap {
+  display: grid;
+  align-items: start;
+}
+
+.journey-node {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  height: 100%;
+  min-height: 92px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #080b13;
+  padding: 14px;
+  text-align: left;
+}
+
+.journey-node span {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid color-mix(in srgb, var(--accent) 52%, var(--border));
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.journey-node strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.journey-node p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.journey-node small {
+  display: inline-block;
+  margin-top: 7px;
+  color: var(--warning);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.unlock-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.unlock-step {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 70%, black);
+  padding: 14px;
+  opacity: 0.62;
+}
+
+.unlock-step.available {
+  opacity: 1;
+  background: var(--panel);
+}
+
+.unlock-step > span {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.unlock-step strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.unlock-step p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.modal-backdrop {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 62%);
+  padding: 24px;
+}
+
+.tldr-modal {
+  display: grid;
+  gap: 18px;
+  width: min(980px, 100%);
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--border));
+  border-radius: 8px;
+  background: var(--panel-strong);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 55%);
+  padding: 22px;
+}
+
+.tldr-modal-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tldr-modal h2 {
+  margin: 4px 0 0;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.modal-unlock-strip {
+  margin-top: 4px;
+}
+
+.modal-unlock-strip .unlock-step {
+  min-height: 112px;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.modal-unlock-strip .unlock-step p {
+  max-width: 230px;
+  line-height: 1.4;
+}
+
+.modal-unlock-strip .unlock-step > span {
+  margin: 0 auto;
+}
+
+.tldr-action-row {
+  display: flex;
+  justify-content: center;
+}
+
+.tldr-connect {
+  min-width: 180px;
+}
+
+.tldr-footnote {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.overview-focus-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.visual-tile {
+  display: grid;
+  gap: 10px;
+  min-height: 160px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 16px;
+}
+
+.visual-mark {
+  width: 52px;
+  height: 52px;
+  border: 1px solid color-mix(in srgb, var(--accent) 48%, var(--border));
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, transparent 45%, color-mix(in srgb, var(--accent) 52%, transparent) 45% 55%, transparent 55%),
+    linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--warning) 52%, transparent) 45% 55%, transparent 55%),
+    #080b13;
+}
+
+.visual-tile h2 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.visual-tile p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .landing-hero {
@@ -263,13 +590,6 @@ a {
   gap: 10px;
 }
 
-.top-actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
 .button {
   cursor: pointer;
   border: 1px solid var(--border);
@@ -282,6 +602,21 @@ a {
 .button.primary {
   border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
   color: #dffff9;
+}
+
+.button.glow {
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent),
+    0 0 30px color-mix(in srgb, var(--accent) 52%, transparent);
+}
+
+.button.ghost {
+  background: transparent;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
 }
 
 pre {
@@ -929,7 +1264,6 @@ pre {
   line-height: 1.35;
 }
 
-
 @media (max-width: 860px) {
   .app-frame {
     grid-template-columns: 1fr;
@@ -949,9 +1283,43 @@ pre {
     overflow: visible;
   }
 
+  .overview-hero,
   .landing-hero,
   .history-layout {
     grid-template-columns: 1fr;
+  }
+
+  .overview-hero-copy {
+    min-height: auto;
+    padding: 20px;
+  }
+
+  .overview-hero-copy h1 {
+    font-size: 32px;
+  }
+
+  .journey-card {
+    grid-template-rows: auto auto minmax(96px, auto) auto;
+    min-height: auto;
+  }
+
+  .journey-visual,
+  .unlock-strip,
+  .overview-focus-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .journey-node-wrap {
+    min-height: auto;
+  }
+
+  .journey-node {
+    min-height: 118px;
+  }
+
+  .journey-actions {
+    display: grid;
+    justify-content: stretch;
   }
 
   .landing-hero h1 {
@@ -961,9 +1329,7 @@ pre {
   .evidence-row {
     grid-template-columns: 1fr;
   }
-}
 
-@media (max-width: 860px) {
   .wizard-intro {
     text-align: left;
     justify-items: start;

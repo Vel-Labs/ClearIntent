@@ -1,156 +1,252 @@
+"use client";
+
+import { useMemo, useState } from "react";
+
 type OverviewPageProps = {
   connected: boolean;
+  onGetStarted: () => void;
 };
 
-const demoTypedData = {
-  primaryType: "ClearIntentAgentIntent",
-  domain: {
-    name: "ClearIntent",
-    version: "1",
-    chainId: 11155111,
-    verifyingContract: "0x6666666666666666666666666666666666666666"
+type JourneyNode = {
+  title: string;
+  detail: string;
+  note?: string;
+};
+
+type JourneySlide = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  summary: string;
+  nodes: JourneyNode[];
+};
+
+const journeySlides: JourneySlide[] = [
+  {
+    id: "connect",
+    eyebrow: "Step 1",
+    title: "Connect parent wallet",
+    summary:
+      "Start from the wallet that owns authority. ClearIntent does not ask for seed phrases or parent keys; it uses the connected wallet to begin a guided setup for identity, policy, and transaction validation.",
+    nodes: [
+      {
+        title: "Select authority wallet",
+        detail: "Choose which wallet will be the authority for the agentic wallet."
+      },
+      {
+        title: "Connect dashboard",
+        detail: "Use any wallet of your choice to connect to the ClearIntent dashboard."
+      },
+      {
+        title: "Start setup wizard",
+        detail: "The wizard guides identity, policy, and transaction validation setup."
+      }
+    ]
   },
-  message: {
-    intentId: "demo-intent-001",
-    policyHash: "0x2222222222222222222222222222222222222222222222222222222222222222",
-    signer: "0x4444444444444444444444444444444444444444",
-    executor: "0x5555555555555555555555555555555555555555",
-    actionType: "demo.transfer",
-    valueLimit: "0",
-    identity: "demo.agent.clearintent.eth"
+  {
+    id: "delegate",
+    eyebrow: "Step 2",
+    title: "Create agent lane",
+    summary:
+      "Create a readable ENS identity, then connect it to a parent-owned agentic wallet. The wizard validates name availability before continuing and clearly marks the approval steps.",
+    nodes: [
+      {
+        title: "Verify ENS name",
+        detail: "Check availability of a ClearIntent ENS name before continuing."
+      },
+      {
+        title: "Create sub-wallet",
+        detail: "Alchemy creates the agentic wallet controlled by the parent wallet.",
+        note: "Transaction approval required"
+      },
+      {
+        title: "Bind ENS identity",
+        detail: "Attach the selected ENS name to your agentic wallet.",
+        note: "Transaction approval required"
+      }
+    ]
+  },
+  {
+    id: "policy",
+    eyebrow: "Step 3",
+    title: "Publish policy evidence",
+    summary:
+      "Store policy agreements through 0G, a decentralized data layer used here for policy and audit artifacts. ClearIntent records the audit pointer and policy transaction evidence so later actions can be replayed.",
+    nodes: [
+      {
+        title: "Store policy on 0G",
+        detail: "0G stores the policy agreement as decentralized data ClearIntent can reference later."
+      },
+      {
+        title: "Record audit pointer",
+        detail: "The audit pointer is recorded onto your agentic wallet's ENS records."
+      },
+      {
+        title: "Confirm onchain policy",
+        detail: "The policy is confirmed onchain and a policy transaction hash is provided."
+      }
+    ]
+  },
+  {
+    id: "operate",
+    eyebrow: "Step 4",
+    title: "Approve bounded actions",
+    summary:
+      "Preview the intent payload, route validation through KeeperHub, and share agent-action events through your preferred webhook destinations. Agents Act, Humans Verify. That is ClearIntent.",
+    nodes: [
+      {
+        title: "Preview intent payload",
+        detail: "Show the proposed action, limits, policy hash, signer, executor, and evidence before approval."
+      },
+      {
+        title: "Validate through KeeperHub",
+        detail: "KeeperHub acts as the mediator for validation before agent actions continue."
+      },
+      {
+        title: "Share action alerts",
+        detail: "Configure a webhook for agent actions to be shared via Discord, Telegram, or wherever you like."
+      }
+    ]
   }
-};
+];
 
-export function OverviewPage({ connected }: OverviewPageProps) {
+const unlockStates = [
+  { label: "Overview", value: "Teaches you about ClearIntent." },
+  { label: "Parent wallet", value: "Gets you set up for informed agentic signing." },
+  { label: "Full website", value: "Unlocks the dashboard after setup is complete." }
+];
+
+export function OverviewPage({ connected, onGetStarted }: OverviewPageProps) {
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [tldrOpen, setTldrOpen] = useState(false);
+  const activeSlide = journeySlides[activeSlideIndex];
+  const nextSlideIndex = useMemo(() => (activeSlideIndex + 1) % journeySlides.length, [activeSlideIndex]);
+
   return (
-    <div className="page-stack">
-      <header className="landing-hero">
-        <div className="section-header">
-          <h1>Give autonomous agents a human authority layer.</h1>
+    <div className="page-stack overview-page">
+      <header className="overview-hero">
+        <div className="overview-hero-copy">
+          <span className="muted">Wallet-gated authority setup</span>
+          <h1>Start with the parent wallet. Unlock the agent journey from there.</h1>
           <p>
-            ClearIntent helps a person connect a parent wallet, configure a bounded agent account, require readable
-            approval, and preserve an audit trail before an agent-controlled transaction is allowed to move forward.
+            ClearIntent turns autonomous-agent setup into a guided custody path: parent authority, bounded agent account,
+            policy evidence, readable approval, and replayable execution records.
           </p>
           <div className="actions">
-            <span className="badge warning">{connected ? "wallet connected" : "connect a parent wallet to begin setup"}</span>
-            <span className="badge">non-custodial by design</span>
+            <span className="badge warning">{connected ? "wallet connected" : "connect parent wallet to begin"}</span>
+            <span className="badge">non-custodial</span>
           </div>
         </div>
-        <div className="hero-panel">
-          <h2>What ClearIntent protects</h2>
-          <div className="evidence-list">
-            <Row label="Parent wallet" value="Remains the user authority and escalation signer." />
-            <Row label="Agent account" value="Acts only inside explicit policy boundaries once configured." />
-            <Row label="Payload" value="One canonical ClearIntent payload drives wallet, CLI, audit, and execution views." />
-            <Row label="Audit trail" value="Policy, approval, signature, receipt, and intervention evidence stay replayable." />
+
+        <section className="journey-card" aria-label="ClearIntent visual journey">
+          <div className="journey-card-header">
+            <div>
+              <span className="muted">{activeSlide.eyebrow}</span>
+              <h2>{activeSlide.title}</h2>
+            </div>
+            <div className="journey-header-actions">
+              <button className="tldr-trigger" onClick={() => setTldrOpen(true)} type="button">
+                TLDR
+              </button>
+              <div className="carousel-controls" aria-label="Journey carousel controls">
+                {journeySlides.map((slide, index) => (
+                  <button
+                    aria-label={`Show ${slide.title}`}
+                    aria-pressed={index === activeSlideIndex}
+                    className={index === activeSlideIndex ? "active" : ""}
+                    key={slide.id}
+                    onClick={() => setActiveSlideIndex(index)}
+                    type="button"
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
+
+          <div className="journey-visual">
+            {activeSlide.nodes.map((node, index) => (
+              <div className="journey-node-wrap" key={node.title}>
+                <div className="journey-node">
+                  <span>{index + 1}</span>
+                  <div>
+                    <strong>{node.title}</strong>
+                    <p>{node.detail}</p>
+                    {node.note ? <small>{node.note}</small> : null}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="journey-card-copy">
+            <p>{activeSlide.summary}</p>
+            {activeSlideIndex === journeySlides.length - 1 ? (
+              <p className="journey-start-note">
+                Clicking Get Started will prompt you to connect wallet and start the setup wizard.
+              </p>
+            ) : null}
+          </div>
+
+          <div className="journey-actions">
+            {activeSlideIndex > 0 ? (
+              <button className="button ghost" onClick={() => setActiveSlideIndex(activeSlideIndex - 1)} type="button">
+                Previous step
+              </button>
+            ) : null}
+            {activeSlideIndex === journeySlides.length - 1 ? (
+              <button className="button primary glow" onClick={onGetStarted} type="button">
+                Get Started
+              </button>
+            ) : null}
+            <button className="button ghost" onClick={() => setActiveSlideIndex(nextSlideIndex)} type="button">
+              Next step
+            </button>
+          </div>
+        </section>
       </header>
 
-      <section className="grid" aria-label="ClearIntent high level overview">
-        <InfoCard
-          title="1. Configure authority"
-          text="Use Setup Wizard to connect a parent wallet, bind identity, store policy references, choose execution routing, and configure alert layers."
-        />
-        <InfoCard
-          title="2. Review every intent"
-          text="Before approval, humans see the canonical payload, policy hash, signer, executor, and action bounds in a digestible review surface."
-        />
-        <InfoCard
-          title="3. Execute with evidence"
-          text="KeeperHub, ENS, 0G, signer, and wallet evidence are reflected back to the connected wallet experience without making the frontend authority truth."
-        />
-      </section>
-
-      <section className="panel">
-        <h2>What happens after connecting</h2>
-        <p>
-          The sidebar expands from a public Overview into Setup Wizard, Provider Evidence, Intent History, Human
-          Intervention, and Settings. Those pages are meant to be based on wallet identity, delegation state, provider
-          evidence, and onchain interactions after setup is complete.
-        </p>
-      </section>
-
-      <section className="grid" aria-label="Phase boundary">
-        <div className="panel">
-          <h2>Public state</h2>
-          <div className="evidence-list">
-            <Row label="Wallet" value={connected ? "Connected" : "Not connected"} />
-            <Row label="Setup" value="Not complete" />
-            <Row label="Authority source" value="Signed artifacts, provider evidence, and receipts. Not frontend-local state." />
-          </div>
-        </div>
-        <div className="panel">
-          <h2>Connected pages</h2>
-          <div className="evidence-list">
-            <Row label="Setup Wizard" value="The new user journey for configuring ClearIntent." />
-            <Row label="Provider Evidence" value="The connected-wallet view after setup completion." />
-            <Row label="Intent History" value="Historical delegated-account transactions and audit payloads." />
-            <Row label="Human Intervention" value="Explicit escalation and review events." />
-          </div>
-        </div>
-        <div className="panel">
-          <h2>Still not claimed</h2>
-          <p>
-            This baseline does not claim WalletConnect, Ledger Clear Signing, hardware-wallet validation,
-            smart-account/session-key enforcement, or Phase 7 write-capable setup completion.
-          </p>
-        </div>
-      </section>
-
-      <section className="grid" aria-label="Payload preview">
-        <div className="panel" style={{ gridColumn: "span 2" }}>
-          <div className="section-header">
-            <Badge tone="warning">Demo payload / approval preview</Badge>
-            <h2>ClearIntent payload preview</h2>
-            <p>
-              This is the kind of canonical payload a human should inspect before wallet approval. It is demo-only until
-              a connected wallet and selected intent are supplied by the validation flow.
-            </p>
-          </div>
-          <div className="page-stack">
-            <div className="evidence-list">
-              <Row label="Primary type" value={demoTypedData.primaryType} />
-              <Row label="Signer" value={demoTypedData.message.signer} />
-              <Row label="Executor" value={demoTypedData.message.executor} />
-              <Row label="Policy hash" value={demoTypedData.message.policyHash} />
-              <Row label="Wallet proof" value="App preview only. Wallet-rendered field visibility requires operator-run evidence." />
+      {tldrOpen ? (
+        <div className="modal-backdrop" role="presentation">
+          <section aria-labelledby="tldr-title" aria-modal="true" className="tldr-modal" role="dialog">
+            <div className="tldr-modal-header">
+              <div>
+                <span className="muted">Guided journey</span>
+                <h2 id="tldr-title">TLDR</h2>
+              </div>
+              <button className="button ghost" onClick={() => setTldrOpen(false)} type="button">
+                Close
+              </button>
             </div>
-            <pre>{JSON.stringify(demoTypedData, null, 2)}</pre>
-          </div>
+            <div className="unlock-strip modal-unlock-strip" aria-label="Dashboard unlock path">
+              {unlockStates.map((state, index) => (
+                <div className={`unlock-step ${connected || index === 0 ? "available" : ""}`} key={state.label}>
+                  <span>{index + 1}</span>
+                  <div>
+                    <strong>{state.label}</strong>
+                    <p>{state.value}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="tldr-footnote">
+              Connect a parent wallet, complete the setup wizard, then unlock the dashboard pages for evidence,
+              history, human intervention, and settings.
+            </p>
+            <div className="tldr-action-row">
+              <button
+                className={`button ${connected ? "ghost" : "primary glow"} tldr-connect`}
+                onClick={() => {
+                  setTldrOpen(false);
+                  onGetStarted();
+                }}
+                type="button"
+              >
+                {connected ? "Wallet connected" : "Connect Wallet"}
+              </button>
+            </div>
+          </section>
         </div>
-
-        <div className="panel">
-          <Badge tone="warning">setup required</Badge>
-          <h2>Connected experience</h2>
-          <p>
-            Once a parent wallet is connected and setup is complete, ClearIntent should show provider evidence, intent
-            history, human intervention events, and settings for alert routing.
-          </p>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function InfoCard({ text, title }: { text: string; title: string }) {
-  return (
-    <article className="panel">
-      <h2>{title}</h2>
-      <p>{text}</p>
-    </article>
-  );
-}
-
-function Badge({ children, tone }: { children: string; tone: "ok" | "warning" | "danger" }) {
-  return <span className={`badge ${tone}`}>{children}</span>;
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="evidence-row">
-      <span className="label">{label}</span>
-      <span className="value">{value}</span>
+      ) : null}
     </div>
   );
 }
