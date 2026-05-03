@@ -1,0 +1,108 @@
+{
+  "artifact_version": "1",
+  "review_label": "Local THC Check",
+  "generated_at": "2026-05-03T15:21:49Z",
+  "repository": "/Users/steven/Desktop/Coding/ClearIntent",
+  "reviewed_revision": "f5b97a17bd972259fef143a18e0010a1c7bdade5",
+  "precheck_worktree_clean": true,
+  "artifact_commit": "",
+  "rubric_version": "Vel-Labs/thc-methodology@617d28cbf2806c54c3948a825551e4ba90fa481d",
+  "skill_name": "THC_Check",
+  "skill_source": "https://github.com/Vel-Labs/thc-methodology/tree/617d28cbf2806c54c3948a825551e4ba90fa481d/skills/THC_Check",
+  "report_path": "docs/thc/LOCAL_CHECK.md",
+  "report_sha256": "9830372c2f0f93b6939a57cbd360a1633d0866e274e2b4f9e29810c4c99fbe72",
+  "evidence": [
+    {
+      "path": "README.md",
+      "sha256": "8ef9bcac33c62625ca9dd602d3daa3afe784f4c9a4498a98c8bc541d17c1bc78",
+      "notes": "Project purpose, current evidence boundaries, setup commands, provider usage, package map, and near goals."
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "74d83a8147b1f8f0b5d22d7ecef57cace76d53a50bc3a972d3958527b159dc97",
+      "notes": "Agent operating rules, authority boundaries, security posture, repo-local skills, and done criteria."
+    },
+    {
+      "path": "REPO_PROFILE.json",
+      "sha256": "7b25991677a4b0cbdd8a5783a849875043937dd7adac40952685ad01c043fbd1",
+      "notes": "Machine-readable repo purpose, canonical paths, read-first files, commands, and governance locks."
+    },
+    {
+      "path": "contracts/README.md",
+      "sha256": "ff9cc39889d61368b30df3b27ab54b89731ac6463419c092b47689e4150ac481",
+      "notes": "Canonical authority contract boundary and repo-local contract validation commands."
+    },
+    {
+      "path": "contracts/authority-lifecycle.md",
+      "sha256": "05c314ca3e8a4de68fc94b5476b2e6062d30cf2b7690696329eab3b301b3f7e4",
+      "notes": "Lifecycle states, blocking evidence, fail-closed behavior, human review gate, and provider boundaries."
+    },
+    {
+      "path": "docs/architecture/ARCHITECTURE.md",
+      "sha256": "daa5822bf7c04d445e71cfac642bc3336ca250be14acf6ae3a4ee16bc8f1bd54",
+      "notes": "System planes, critical lifecycle, dashboard boundary, and authority-vs-autonomy thesis."
+    },
+    {
+      "path": "docs/architecture/REPO_BOUNDARIES.md",
+      "sha256": "52c566612f0a6bc720bcabc6e8d1af0e8287fe6d6592b6f4d13e6e839f95370b",
+      "notes": "Ownership and non-ownership boundaries for contracts, core, CLI, adapters, dashboard, wallets, and agents."
+    },
+    {
+      "path": "docs/roadmaps/CURRENT_STATE_AND_NEXT.md",
+      "sha256": "5ad105b866d761a246885f149a4c9137c39a0d596e0225c1ace974b013c5ecc6",
+      "notes": "Current phase evidence, claim levels, completed work, gaps, and next route."
+    },
+    {
+      "path": "ROADMAP.md",
+      "sha256": "a38804318f4e06c8e0e3c78814052a317dad4f268960cb83536bb5e75ae20c38",
+      "notes": "High-visibility roadmap index, completed baseline, current claims, and immediate next action."
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "a76834a5e1b84d2d916b4bbe1509249594c1d386d28e80376826bcdb82eb74f1",
+      "notes": "Visible change history and accumulated repo hardening record."
+    },
+    {
+      "path": "DECISIONS.md",
+      "sha256": "ba11b1e6fdd0087909de101aa7015a1f52e071d2ba605f6f0cd8058ab1cb66ca",
+      "notes": "Durable architecture and governance decision index."
+    },
+    {
+      "path": "package.json",
+      "sha256": "da541c04850f0933b3c9816df228a57ae1cd6318f13ae811f9f17d70213f7478",
+      "notes": "Repo-local command source for install, validation, tests, typecheck, and full quality gate."
+    },
+    {
+      "path": ".github/workflows/quality-gate.yml",
+      "sha256": "d4af6f0085a008bf75b1639c2ccf280d0b745af20c48ac8c0b7366e96fc5fda7",
+      "notes": "CI quality gate evidence."
+    },
+    {
+      "path": "docs/FILE_TREE.md",
+      "sha256": "fbbb2fb5cc01bf399592fb7d80f125cf75873f26943b64f1b6756eba9e0ca234",
+      "notes": "Scaffold file index updated so the THC artifacts are discoverable and validate locally."
+    }
+  ],
+  "commands_run": [
+    {
+      "command": "git status --short",
+      "result": "passed; no output before THC artifact generation"
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "result": "f5b97a17bd972259fef143a18e0010a1c7bdade5"
+    },
+    {
+      "command": "git clone --depth 1 https://github.com/Vel-Labs/thc-methodology.git /tmp/thc-methodology-public && git -C /tmp/thc-methodology-public rev-parse HEAD",
+      "result": "617d28cbf2806c54c3948a825551e4ba90fa481d"
+    },
+    {
+      "command": "npm run check",
+      "result": "passed before scoring and passed again after artifact generation plus docs/FILE_TREE.md routing"
+    }
+  ],
+  "caps_applied": [],
+  "score": 86,
+  "recommended_level": "THC-4 Reproducible - Local THC Check",
+  "uncertainty": "Local preparation artifact only; not independent public verification. External provider evidence was reviewed through repo artifacts, not fully re-run against every live provider. The artifact commit hash is not embedded in this file because a same-commit self-reference would make the file content unstable; use git history or closeout notes for the containing commit."
+}

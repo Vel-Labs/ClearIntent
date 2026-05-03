@@ -259,6 +259,9 @@ docs/templates/PHASE_AUDIT_TEMPLATE.md
 docs/templates/PHASE_IMPLEMENTATION_TEMPLATE.md
 docs/templates/PHASE_PROMPT_TEMPLATE.md
 docs/templates/REPO_PERSONALIZATION_CHECKLIST.md
+docs/thc/LOCAL_CHECK.md
+docs/thc/LOCAL_CHECK.provenance.json
+docs/thc/README.md
 FEEDBACK.md
 KEEPERHUB_FEEDBACK.md
 LICENSE
