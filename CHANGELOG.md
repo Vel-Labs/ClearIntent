@@ -4,6 +4,7 @@ All notable repo changes should be logged here.
 
 ## 2026-05-03
 
+- Clarified setup wizard Step 6 as KeeperHub workflow-run evidence and stopped surfacing executor/transaction-evidence degradations as setup-stage warnings.
 - Added a time-aware hosted 0G publishing indicator for setup Step 4 so slow policy artifact uploads show elapsed time, activity, and current provider-wait phase instead of looking stuck.
 - Added wallet transaction guardrails so setup ENS and gas-funding submissions block before wallet approval when the parent wallet has a pending nonce or gas estimation fails, preventing inflated MetaMask fee prompts from becoming the demo path.
 - Passed wizard custody context into KeeperHub live-submit payloads and tightened KeeperHub event ingest so placeholder `none` values cannot satisfy user-isolation binding.

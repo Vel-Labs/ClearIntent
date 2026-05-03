@@ -144,12 +144,12 @@ const wizardSteps: WizardStep[] = [
     id: "keeperhub",
     label: "Connect execution gate",
     shortLabel: "Gate",
-    summary: "Attach KeeperHub workflow routing and event-ingest references.",
+    summary: "Record the KeeperHub workflow run that accepted the ClearIntent setup payload.",
     detail:
-      "KeeperHub remains the execution layer after ClearIntent verification. Webhook delivery stays disabled until clearintent.xyz is live.",
+      "KeeperHub remains the execution layer after ClearIntent verification. This setup step records workflow-run evidence; transaction receipt evidence belongs to a later execution test.",
     approval: "Config step",
     actionLabel: "Submit KeeperHub gate",
-    evidenceLabel: "Workflow run status",
+    evidenceLabel: "Workflow run evidence",
     proofTarget: "KeeperHub workflow accepts ClearIntent payload"
   },
   {
@@ -822,9 +822,9 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
       }
       setKeeperHubStep({
         status: "ready",
-        message: typeof status.summary === "string" ? status.summary : "KeeperHub workflow submit returned evidence.",
+        message: keeperHubRunEvidenceMessage(status),
         evidence: status,
-        issues: asStringArray(status.degradedReasons)
+        issues: keeperHubSetupIssues(asStringArray(status.degradedReasons))
       });
     } catch (error) {
       setKeeperHubStep({
@@ -1214,6 +1214,23 @@ function parsePersistedBigInt(value: string): bigint | undefined {
 
 function shortAddress(value: string): string {
   return value.length > 12 ? `${value.slice(0, 6)}...${value.slice(-4)}` : value;
+}
+
+function keeperHubRunEvidenceMessage(status: Record<string, unknown>): string {
+  const runId = runIdFromEvidence(status);
+  const statusText = keeperHubRunStatusFromEvidence(status);
+  const suffix = runId === undefined ? "" : ` Run ${runId}${statusText === undefined ? "" : ` is ${statusText}`}.`;
+  return `KeeperHub workflow run evidence recorded.${suffix}`;
+}
+
+function keeperHubRunStatusFromEvidence(evidence: Record<string, unknown>): string | undefined {
+  const submission = evidence.submission;
+  if (!isRecord(submission)) return undefined;
+  return typeof submission.status === "string" ? submission.status : undefined;
+}
+
+function keeperHubSetupIssues(issues: string[]): string[] {
+  return issues.filter((issue) => issue !== "unsupported_executor" && issue !== "missing_transaction_evidence");
 }
 
 function OperationBlock({ state, step }: { state: StepOperationState; step: WizardStep }) {
