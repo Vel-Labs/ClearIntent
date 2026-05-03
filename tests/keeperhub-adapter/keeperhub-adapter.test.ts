@@ -241,6 +241,13 @@ describe("KeeperHub local execution adapter", () => {
         expect(url).toBe("https://app.keeperhub.com/api/workflow/wf_demo/execute");
         expect(init?.method).toBe("POST");
         expect(init?.headers?.Authorization).toBe("Bearer kh_test");
+        expect(JSON.parse(String(init?.body))).toMatchObject({
+          clearintent: {
+            parentWallet: "0x3333333333333333333333333333333333333333",
+            agentAccount: "0x1111111111111111111111111111111111111111",
+            agentEnsName: "guardian.clearintent.eth"
+          }
+        });
         return {
           ok: true,
           status: 200,

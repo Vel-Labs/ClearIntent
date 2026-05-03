@@ -16,7 +16,17 @@ export async function POST(request: Request): Promise<Response> {
 
   const status =
     action === "submit"
-      ? await submitKeeperHubLiveWorkflow({ env })
+      ? await submitKeeperHubLiveWorkflow({
+          env,
+          context: {
+            parentWallet: stringField(payload.value, "parentWallet"),
+            agentAccount: stringField(payload.value, "agentAccount"),
+            agentEnsName: stringField(payload.value, "agentEnsName"),
+            policyUri: stringField(payload.value, "policyUri"),
+            policyHash: stringField(payload.value, "policyHash"),
+            auditLatest: stringField(payload.value, "auditLatest")
+          }
+        })
       : action === "run-status"
         ? await getKeeperHubLiveRunStatus({ env })
         : await getKeeperHubLiveStatus({ env });

@@ -185,6 +185,21 @@ describe("KeeperHub reported event boundary", () => {
     );
   });
 
+  it("rejects placeholder none values as missing user isolation", () => {
+    const result = ingestKeeperHubReportedEvent({
+      ...validClearIntentEvent,
+      parentWallet: "none",
+      agentAccount: "none",
+      agentEnsName: "none"
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues).toContainEqual(
+      expect.objectContaining({ code: "missing_agent_binding", path: "agentEnsName" })
+    );
+  });
+
   it("returns deterministic JSON from the ingest route", async () => {
     const request = new Request("http://localhost/api/keeperhub/events", {
       method: "POST",

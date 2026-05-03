@@ -267,9 +267,9 @@ export function validateClearIntentKeeperHubEvent(payload: unknown):
   requireTemplateSafeString(payload, "eventType", "missing_event_type", "ClearIntent KeeperHub event requires eventType.", issues);
   requireTemplateSafeString(payload, "status", "invalid_status", "ClearIntent KeeperHub event requires status.", issues);
 
-  const agentEnsName = optionalTemplateSafeString(payload.agentEnsName, "agentEnsName", issues);
-  const agentAccount = optionalTemplateSafeString(payload.agentAccount, "agentAccount", issues);
-  const parentWallet = optionalTemplateSafeString(payload.parentWallet, "parentWallet", issues);
+  const agentEnsName = optionalBindingString(payload.agentEnsName, "agentEnsName", issues);
+  const agentAccount = optionalBindingString(payload.agentAccount, "agentAccount", issues);
+  const parentWallet = optionalBindingString(payload.parentWallet, "parentWallet", issues);
   if (agentEnsName === undefined && agentAccount === undefined && parentWallet === undefined) {
     issues.push({
       code: "missing_agent_binding",
@@ -617,6 +617,12 @@ function optionalTemplateSafeString(value: unknown, path: string, issues: Keeper
     });
     return undefined;
   }
+  return text;
+}
+
+function optionalBindingString(value: unknown, path: string, issues: KeeperHubEventIssue[]): string | undefined {
+  const text = optionalTemplateSafeString(value, path, issues);
+  if (text === undefined || text === "none") return undefined;
   return text;
 }
 

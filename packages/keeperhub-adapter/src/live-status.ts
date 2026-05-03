@@ -116,6 +116,7 @@ export async function submitKeeperHubLiveWorkflow(options: {
   env?: NodeJS.ProcessEnv;
   fetchImpl?: FetchLike;
   input?: VerifiedExecutionIntent;
+  context?: KeeperHubClearIntentContext;
 } = {}): Promise<KeeperHubLiveStatus> {
   const config = readKeeperHubLiveConfig(options.env);
   const fetchImpl = options.fetchImpl ?? globalThis.fetch;
@@ -145,7 +146,7 @@ export async function submitKeeperHubLiveWorkflow(options: {
   try {
     const response = await fetchKeeperHub(fetchImpl, config, `/workflow/${config.workflowId}/execute`, {
       method: "POST",
-      body: JSON.stringify(buildWorkflowSubmitBody(input))
+      body: JSON.stringify(buildWorkflowSubmitBody(input, config, options.context))
     });
     if (!response.ok) {
       return {
@@ -429,13 +430,30 @@ function addDegraded(status: KeeperHubLiveStatus, code: ExecutionIssue["code"], 
   };
 }
 
-function buildWorkflowSubmitBody(input: VerifiedExecutionIntent): Record<string, unknown> {
+export type KeeperHubClearIntentContext = {
+  parentWallet?: string;
+  agentAccount?: string;
+  agentEnsName?: string;
+  policyUri?: string;
+  policyHash?: string;
+  auditLatest?: string;
+};
+
+function buildWorkflowSubmitBody(
+  input: VerifiedExecutionIntent,
+  config: KeeperHubLiveConfig,
+  context: KeeperHubClearIntentContext = {}
+): Record<string, unknown> {
   return {
     clearintent: {
       intentId: input.intent.intentId,
       intentHash: input.intent.hashes.intentHash,
-      policyHash: input.intent.policy.policyHash,
-      agentEnsName: input.intent.agentIdentity.ensName,
+      policyUri: context.policyUri ?? config.clearIntentBinding.policyUri,
+      policyHash: context.policyHash ?? input.intent.policy.policyHash,
+      auditLatest: context.auditLatest ?? config.clearIntentBinding.auditLatest,
+      parentWallet: context.parentWallet ?? input.intent.authority.signer,
+      agentAccount: context.agentAccount ?? input.intent.agentIdentity.controllerAddress,
+      agentEnsName: context.agentEnsName ?? input.intent.agentIdentity.ensName,
       action: input.intent.action,
       authority: input.intent.authority,
       verification: input.verification,

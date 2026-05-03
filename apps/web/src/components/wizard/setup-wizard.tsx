@@ -815,10 +815,19 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
       advanceActiveStep();
       return;
     }
+    const accountEvidence = accountStep.status === "deployed" ? accountStep.evidence : undefined;
     setKeeperHubStep({ status: "running", message: "Submitting the configured KeeperHub workflow gate..." });
 
     try {
-      const status = await postJson<Record<string, unknown>>("/api/setup/keeperhub", { action: "submit" });
+      const status = await postJson<Record<string, unknown>>("/api/setup/keeperhub", {
+        action: "submit",
+        parentWallet: accountEvidence?.parentAddress,
+        agentAccount: accountEvidence?.accountAddress,
+        agentEnsName,
+        policyUri: zeroGRecords?.policyUri,
+        policyHash: zeroGRecords?.policyHash,
+        auditLatest: zeroGRecords?.auditLatest
+      });
       const blockingReasons = asStringArray(status.blockingReasons);
       if (blockingReasons.length > 0) {
         throw new Error(`KeeperHub submit blocked: ${blockingReasons.join(", ")}`);
