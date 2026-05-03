@@ -7,6 +7,7 @@ import {
   type AgentAccountEvidence
 } from "../../lib/alchemy";
 import { isUsableAgentLabel, normalizeAgentLabel, toAgentEnsName } from "../../lib/ens/names";
+import type { Eip1193Provider } from "../../lib/wallet";
 
 export type SetupWizardStatus = "not-started" | "in-progress" | "complete";
 
@@ -82,6 +83,8 @@ type CopyState = "idle" | "copied" | "error";
 
 const suggestedAgentGasTopUpWei = 500_000_000_000_000n;
 const hostedZeroGTimeoutMs = 180_000;
+const walletReceiptTimeoutMs = 150_000;
+const walletReceiptPollMs = 3_000;
 const lowCostPriorityFeeWei = 500_000_000n;
 const lowCostFeeMultiplierNumerator = 12n;
 const lowCostFeeMultiplierDenominator = 10n;
@@ -1369,9 +1372,39 @@ async function sendWalletTransactions(transactions: PreparedWalletTransaction[],
     if (typeof hash !== "string" || !hash.startsWith("0x")) {
       throw new Error(`${transaction.label} did not return a transaction hash.`);
     }
+    await waitForSuccessfulWalletReceipt(provider, hash, transaction.label);
     hashes.push(hash);
   }
   return hashes;
+}
+
+async function waitForSuccessfulWalletReceipt(provider: Eip1193Provider, hash: string, label: string): Promise<void> {
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < walletReceiptTimeoutMs) {
+    const receipt = await provider.request({
+      method: "eth_getTransactionReceipt",
+      params: [hash]
+    });
+
+    if (receipt !== null && typeof receipt === "object") {
+      const status = "status" in receipt ? (receipt as { status?: unknown }).status : undefined;
+      if (status === "0x1" || status === "0x01") {
+        return;
+      }
+      if (status === "0x0" || status === "0x00") {
+        throw new Error(`${label} reverted onchain. Transaction: ${hash}`);
+      }
+    }
+
+    await sleep(walletReceiptPollMs);
+  }
+
+  throw new Error(`${label} is still pending after ${Math.round(walletReceiptTimeoutMs / 1000)} seconds. Transaction: ${hash}. Wait for it to confirm, then retry this step.`);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
 async function sendNativeTransfer(input: { chainId: number; to: string; valueWei: bigint }): Promise<string> {
