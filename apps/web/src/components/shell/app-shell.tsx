@@ -11,9 +11,6 @@ type AppShellProps = {
   connected: boolean;
   navItems: ShellNavItem[];
   selectedNav: string;
-  statusLabel: string;
-  walletLabel: string;
-  onConnectWallet: () => void;
   onSelectNav: (id: string) => void;
 };
 
@@ -22,9 +19,6 @@ export function AppShell({
   connected,
   navItems,
   selectedNav,
-  statusLabel,
-  walletLabel,
-  onConnectWallet,
   onSelectNav
 }: AppShellProps) {
   return (
@@ -50,15 +44,6 @@ export function AppShell({
         </nav>
       </aside>
       <main className="main">
-        <div className="status-strip">
-          <span>{connected ? "Connected wallet experience" : "Learn what ClearIntent does before connecting"}</span>
-          <div className="top-actions">
-            <span className="badge warning">{statusLabel}</span>
-            <button className={`button ${connected ? "" : "primary"}`} onClick={onConnectWallet} type="button">
-              {walletLabel}
-            </button>
-          </div>
-        </div>
         {children}
       </main>
     </div>

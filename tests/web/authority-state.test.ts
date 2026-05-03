@@ -20,7 +20,7 @@ describe("Phase 6 authority dashboard state model", () => {
     const evidence = buildConfiguredAuthorityEvidence({
       parentWalletAddress: "0x9999999999999999999999999999999999999999",
       chainId: 11155111,
-      alchemyProjectIdPresent: true
+      alchemyApiKeyPresent: true
     });
     const summary = deriveAuthorityState(evidence);
 
@@ -60,7 +60,7 @@ describe("Phase 6 authority dashboard state model", () => {
     const evidence = buildConfiguredAuthorityEvidence({
       parentWalletAddress: "0x9999999999999999999999999999999999999999",
       chainId: 11155111,
-      alchemyProjectIdPresent: true
+      alchemyApiKeyPresent: true
     });
     evidence.keeperhub = presentEvidence(
       "keeperhub",

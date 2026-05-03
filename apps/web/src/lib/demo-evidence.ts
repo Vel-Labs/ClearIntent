@@ -89,7 +89,7 @@ export function buildDemoAuthorityEvidence(): AuthorityEvidenceSet {
     alchemy: demoEvidence("alchemy", "Alchemy Account Kit", "Demo Account Kit readiness; no smart-account enforcement proof.", {
       configured: false,
       accountKitReady: false,
-      projectIdPresent: false,
+      apiKeyPresent: false,
       sessionKeyPolicyProven: false
     })
   };
@@ -99,7 +99,7 @@ export function buildConfiguredAuthorityEvidence(input: {
   parentWalletAddress: string;
   chainId?: number;
   intent?: AgentIntent;
-  alchemyProjectIdPresent?: boolean;
+  alchemyApiKeyPresent?: boolean;
 }): AuthorityEvidenceSet {
   const intent = input.intent ?? demoIntent;
   const typedData = buildTypedData(intent);
@@ -134,9 +134,9 @@ export function buildConfiguredAuthorityEvidence(input: {
       coreSnapshot: deriveCoreStateSnapshot({ intent })
     }),
     alchemy: presentEvidence("alchemy", "Alchemy Account Kit", "Account Kit configuration readiness is displayed without claiming session-key enforcement.", "operator-config", {
-      configured: input.alchemyProjectIdPresent === true,
-      accountKitReady: input.alchemyProjectIdPresent === true,
-      projectIdPresent: input.alchemyProjectIdPresent === true,
+      configured: input.alchemyApiKeyPresent === true,
+      accountKitReady: input.alchemyApiKeyPresent === true,
+      apiKeyPresent: input.alchemyApiKeyPresent === true,
       sessionKeyPolicyProven: false
     })
   };

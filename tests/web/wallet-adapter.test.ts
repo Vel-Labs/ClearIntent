@@ -95,7 +95,7 @@ describe("web wallet adapter boundary", () => {
     expect(readiness.status).toBe("not-configured");
     expect(readiness.configured).toBe(false);
     expect(readiness.accountKitReady).toBe(false);
-    expect(readiness.missing).toEqual(["chain", "policyIdOrClientId"]);
+    expect(readiness.missing).toEqual(["chain", "apiKey"]);
   });
 
   it("builds wallet and payload preview view models with explicit proof boundaries", () => {

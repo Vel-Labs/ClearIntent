@@ -276,14 +276,15 @@ Do not commit secrets. Expected public/client-safe env names should be documente
 ```env
 NEXT_PUBLIC_CLEARINTENT_ENS_NAME=
 NEXT_PUBLIC_ALCHEMY_CHAIN=
-NEXT_PUBLIC_ALCHEMY_POLICY_ID_OR_CLIENT_ID=
+NEXT_PUBLIC_ALCHEMY_API_KEY=
+NEXT_PUBLIC_ALCHEMY_WALLET_CONFIG_ID=
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=
 NEXT_PUBLIC_KEEPERHUB_WORKFLOW_ID=
 ```
 
 Server-only values, if needed, stay outside repo or in deployment secrets:
 
 ```env
-ALCHEMY_API_KEY=
 KEEPERHUB_WEBHOOK_TOKEN=
 ```
 

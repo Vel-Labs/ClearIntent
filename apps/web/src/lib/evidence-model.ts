@@ -74,7 +74,7 @@ export type PayloadEvidenceData = {
 export type AlchemyEvidenceData = {
   configured: boolean;
   accountKitReady: boolean;
-  projectIdPresent: boolean;
+  apiKeyPresent: boolean;
   smartAccountAddress?: string;
   sessionKeyPolicyProven: boolean;
 };

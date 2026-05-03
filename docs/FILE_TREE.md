@@ -25,6 +25,7 @@ apps/web/next-env.d.ts
 apps/web/next.config.mjs
 apps/web/package.json
 apps/web/public/favicon.svg
+apps/web/src/app/api/ens/availability/route.ts
 apps/web/src/app/api/keeperhub/events/route.ts
 apps/web/src/app/globals.css
 apps/web/src/app/layout.tsx
@@ -38,10 +39,14 @@ apps/web/src/components/shell/dashboard-app.tsx
 apps/web/src/components/shell/app-shell.tsx
 apps/web/src/components/wallet/index.ts
 apps/web/src/components/wallet/wallet-status.ts
+apps/web/src/components/wizard/index.ts
+apps/web/src/components/wizard/setup-wizard.tsx
 apps/web/src/lib/alchemy/index.ts
 apps/web/src/lib/alchemy/readiness.ts
 apps/web/src/lib/clearintent-state.ts
 apps/web/src/lib/demo-evidence.ts
+apps/web/src/lib/ens/availability.ts
+apps/web/src/lib/ens/names.ts
 apps/web/src/lib/events/keeperhub-event.ts
 apps/web/src/lib/evidence-model.ts
 apps/web/src/lib/wallet/eip1193.ts
@@ -199,6 +204,8 @@ docs/roadmaps/features/feature-03-ens-agent-identity.md
 docs/roadmaps/features/feature-04-keeperhub-execution-adapter.md
 docs/roadmaps/features/feature-05-hardware-signer-readable-approval.md
 docs/roadmaps/features/feature-06-authority-dashboard-wallet-validator.md
+docs/roadmaps/features/feature-06-guardian-agent-example.md
+docs/roadmaps/features/feature-07-stretch-standards.md
 docs/roadmaps/features/feature-07-ux-wizard-flow.md
 docs/roadmaps/features/feature-08-stretch-standards.md
 docs/roadmaps/phase-1.5-center-cli-skeleton/EXECUTION_PROMPT.md
@@ -321,6 +328,7 @@ tests/ens-identity/ens-identity.test.ts
 tests/keeperhub-adapter/keeperhub-adapter.test.ts
 tests/signer-adapter/signer-adapter.test.ts
 tests/web/authority-state.test.ts
+tests/web/ens-availability.test.ts
 tests/web/keeperhub-event.test.ts
 tests/web/wallet-adapter.test.ts
 tests/zerog-memory/live-config.test.ts

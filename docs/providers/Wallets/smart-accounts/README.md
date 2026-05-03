@@ -4,6 +4,13 @@ Smart accounts are planned signer surfaces for ClearIntent when the account can 
 
 Phase 6 only reports Alchemy/Account Kit public-config readiness in the dashboard. It does not create a smart account, grant a session key, enforce permissions, or prove account-abstraction execution.
 
+Current ClearIntent Account Kit posture:
+
+- Required public frontend config: `NEXT_PUBLIC_ALCHEMY_CHAIN` and `NEXT_PUBLIC_ALCHEMY_API_KEY`.
+- Optional public frontend config: `NEXT_PUBLIC_ALCHEMY_WALLET_CONFIG_ID` and `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`.
+- Gas sponsorship is intentionally out of scope for the current demo path; do not require a Gas Manager policy ID for readiness.
+- The intended account model is an external EOA owner, such as MetaMask or Ledger-through-MetaMask, owning a parent-controlled agent smart account.
+
 ## Candidate systems
 
 | System | Expected path | Current level |

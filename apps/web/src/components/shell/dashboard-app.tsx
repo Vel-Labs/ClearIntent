@@ -3,11 +3,12 @@
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { OverviewPage } from "../overview";
+import { SetupWizard, type SetupWizardStatus } from "../wizard";
 import { AppShell, type ShellNavItem } from "./app-shell";
 import { connectEip1193Wallet, type Eip1193Provider, type WalletAccountState } from "../../lib/wallet";
 
 type DashboardPage = "overview" | "setup" | "provider-evidence" | "intent-history" | "human-intervention" | "settings";
-type SetupStatus = "not-started" | "in-progress" | "complete";
+type DashboardAccessStage = "public" | "wallet-connected" | "setup-complete";
 
 declare global {
   interface Window {
@@ -18,12 +19,12 @@ declare global {
 export function DashboardApp() {
   const [selectedPage, setSelectedPage] = useState<DashboardPage>("overview");
   const [wallet, setWallet] = useState<WalletAccountState | undefined>();
-  const [setupStatus] = useState<SetupStatus>("not-started");
+  const [setupStatus, setSetupStatus] = useState<SetupWizardStatus>("not-started");
+  const [activeSetupStep, setActiveSetupStep] = useState(0);
 
   const connected = wallet?.status === "connected";
-  const navItems = useMemo(() => buildNavItems(connected), [connected]);
-  const walletLabel = connected ? shortAddress(wallet?.account) : wallet?.status === "no-provider" ? "Wallet unavailable" : "Connect wallet";
-  const statusLabel = connected ? (setupStatus === "complete" ? "configured" : "connected-unconfigured") : "overview";
+  const accessStage = getDashboardAccessStage(connected, setupStatus);
+  const navItems = useMemo(() => buildNavItems(accessStage), [accessStage]);
 
   async function connectWallet() {
     if (typeof window === "undefined") return;
@@ -38,14 +39,29 @@ export function DashboardApp() {
     <AppShell
       connected={connected}
       navItems={navItems}
-      onConnectWallet={connectWallet}
       onSelectNav={(id) => setSelectedPage(id as DashboardPage)}
       selectedNav={selectedPage}
-      statusLabel={statusLabel}
-      walletLabel={walletLabel}
     >
-      {selectedPage === "overview" ? <OverviewPage connected={connected} /> : null}
-      {selectedPage === "setup" ? <SetupPage setupStatus={setupStatus} /> : null}
+      {selectedPage === "overview" ? <OverviewPage connected={connected} onGetStarted={connectWallet} /> : null}
+      {selectedPage === "setup" ? (
+        <SetupWizard
+          activeStepIndex={activeSetupStep}
+          onAdvance={() => {
+            setSetupStatus("in-progress");
+            setActiveSetupStep((currentStep) => currentStep + 1);
+          }}
+          onComplete={() => {
+            setSetupStatus("complete");
+            setActiveSetupStep(0);
+            setSelectedPage("provider-evidence");
+          }}
+          onStart={() => {
+            setSetupStatus("in-progress");
+            setActiveSetupStep(0);
+          }}
+          status={setupStatus}
+        />
+      ) : null}
       {selectedPage === "provider-evidence" ? <ProviderEvidencePage setupStatus={setupStatus} wallet={wallet} /> : null}
       {selectedPage === "intent-history" ? <IntentHistoryPage setupStatus={setupStatus} /> : null}
       {selectedPage === "human-intervention" ? <HumanInterventionPage setupStatus={setupStatus} /> : null}
@@ -54,47 +70,31 @@ export function DashboardApp() {
   );
 }
 
-function buildNavItems(connected: boolean): ShellNavItem[] {
+export function getDashboardAccessStage(connected: boolean, setupStatus: SetupWizardStatus): DashboardAccessStage {
+  if (!connected) return "public";
+  if (setupStatus !== "complete") return "wallet-connected";
+  return "setup-complete";
+}
+
+export function buildNavItems(accessStage: DashboardAccessStage): ShellNavItem[] {
+  const publicItems: ShellNavItem[] = [{ id: "overview", label: "Overview" }];
+
+  if (accessStage === "public") return publicItems;
+
+  const setupItems: ShellNavItem[] = [...publicItems, { id: "setup", label: "Setup Wizard" }];
+
+  if (accessStage === "wallet-connected") return setupItems;
+
   return [
-    { id: "overview", label: "Overview" },
-    { id: "setup", label: "Setup Wizard", locked: !connected },
-    { id: "provider-evidence", label: "Provider Evidence", locked: !connected },
-    { id: "intent-history", label: "Intent History", locked: !connected },
-    { id: "human-intervention", label: "Human Intervention", locked: !connected },
-    { id: "settings", label: "Settings", locked: !connected }
+    ...setupItems,
+    { id: "provider-evidence", label: "Provider Evidence" },
+    { id: "intent-history", label: "Intent History" },
+    { id: "human-intervention", label: "Human Intervention" },
+    { id: "settings", label: "Settings" }
   ];
 }
 
-function SetupPage({ setupStatus }: { setupStatus: SetupStatus }) {
-  const steps = [
-    "Connect the parent wallet.",
-    "Create or select the parent-owned agent account.",
-    "Bind ENS identity records.",
-    "Store policy and audit pointers through 0G.",
-    "Select KeeperHub execution routing.",
-    "Configure human intervention alerts.",
-    "Export SDK/CLI handoff context."
-  ];
-
-  return (
-    <SectionPage
-      eyebrow={setupStatus === "complete" ? "Configured" : "New user journey"}
-      title="Setup Wizard"
-      summary="This is the guided path for configuring ClearIntent. Phase 6 exposes the journey shape; Phase 7 owns the full write-capable wizard."
-    >
-      <div className="timeline-list">
-        {steps.map((step, index) => (
-          <div className="timeline-row" key={step}>
-            <span>{index + 1}</span>
-            <p>{step}</p>
-          </div>
-        ))}
-      </div>
-    </SectionPage>
-  );
-}
-
-function ProviderEvidencePage({ setupStatus, wallet }: { setupStatus: SetupStatus; wallet?: WalletAccountState }) {
+function ProviderEvidencePage({ setupStatus, wallet }: { setupStatus: SetupWizardStatus; wallet?: WalletAccountState }) {
   return (
     <SectionPage
       eyebrow={setupStatus === "complete" ? "Wallet evidence" : "Requires setup"}
@@ -113,7 +113,7 @@ function ProviderEvidencePage({ setupStatus, wallet }: { setupStatus: SetupStatu
   );
 }
 
-function IntentHistoryPage({ setupStatus }: { setupStatus: SetupStatus }) {
+function IntentHistoryPage({ setupStatus }: { setupStatus: SetupWizardStatus }) {
   const intents = setupStatus === "complete" ? sampleIntents : [];
 
   return (
@@ -144,7 +144,7 @@ function IntentHistoryPage({ setupStatus }: { setupStatus: SetupStatus }) {
   );
 }
 
-function HumanInterventionPage({ setupStatus }: { setupStatus: SetupStatus }) {
+function HumanInterventionPage({ setupStatus }: { setupStatus: SetupWizardStatus }) {
   return (
     <SectionPage
       eyebrow="Escalations"
@@ -160,7 +160,7 @@ function HumanInterventionPage({ setupStatus }: { setupStatus: SetupStatus }) {
   );
 }
 
-function SettingsPage({ setupStatus }: { setupStatus: SetupStatus }) {
+function SettingsPage({ setupStatus }: { setupStatus: SetupWizardStatus }) {
   return (
     <SectionPage
       eyebrow={setupStatus === "complete" ? "Operator controls" : "Available after setup"}
@@ -196,11 +196,6 @@ function InfoPanel({ label, value }: { label: string; value: string }) {
       <p>{value}</p>
     </div>
   );
-}
-
-function shortAddress(address?: string): string {
-  if (!address) return "Connected";
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
 const sampleIntents = [
