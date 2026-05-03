@@ -4,6 +4,7 @@ All notable repo changes should be logged here.
 
 ## 2026-05-03
 
+- Added operator-provided Discord webhook forwarding for Settings demo events, with browser-local URL entry, server-side Discord URL validation, redacted status display, and no export of the webhook secret.
 - Added `/api/events` as the clean public event ingest route for user-facing webhook configuration while keeping the older `/api/keeperhub/events` route as a KeeperHub compatibility wrapper.
 - Upgraded the Settings demo intent into a meaningful simulation-only native-transfer preview with randomized amounts, nonce/deadline metadata, explicit alternating pass/fail testing copy, public `/api/events` posting, and human-readable summary instead of a zero-value placeholder.
 - Reframed Settings webhook context so `/api/events` is the canonical public ClearIntent ingest endpoint and the parent-wallet/agent-specific portion is shown as bounded registry context, including a full public URL plus deterministic username/parent-wallet/agent-wallet webhook display URL instead of a provider-specific or fake per-user API route.

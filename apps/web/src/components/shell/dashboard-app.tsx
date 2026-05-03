@@ -13,6 +13,7 @@ import { connectEip1193Wallet, type Eip1193Provider, type WalletAccountState } f
 
 export type DashboardPage = "overview" | "setup" | "provider-evidence" | "intent-history" | "human-intervention" | "settings";
 type DashboardAccessStage = "public" | "wallet-connected" | "setup-complete";
+const discordWebhookStorageKey = "clearintent.discord-webhook-url.v1";
 
 declare global {
   interface Window {
@@ -313,6 +314,7 @@ function SettingsPage({
   const [demoDestination, setDemoDestination] = useState(wallet?.account ?? "");
   const [demoIntentCount, setDemoIntentCount] = useState(0);
   const [demoDelivery, setDemoDelivery] = useState("No demo event sent yet.");
+  const [discordWebhookUrl, setDiscordWebhookUrl] = useState("");
   const registryContext = buildBoundedEventRegistryContext(wallet, primarySetup);
   const exportContext = buildExportContext(wallet, discoveredSetups, registryContext);
   const localSdkPrompt = buildOperatorHandoffPrompt(wallet, primarySetup, registryContext);
@@ -322,6 +324,27 @@ function SettingsPage({
     destination: demoDestination,
     renderCount: demoIntentCount
   });
+  useEffect(() => {
+    try {
+      setDiscordWebhookUrl(window.localStorage.getItem(discordWebhookStorageKey) ?? "");
+    } catch {
+      setDiscordWebhookUrl("");
+    }
+  }, []);
+
+  function updateDiscordWebhookUrl(value: string) {
+    setDiscordWebhookUrl(value);
+    try {
+      if (value.trim().length === 0) {
+        window.localStorage.removeItem(discordWebhookStorageKey);
+      } else {
+        window.localStorage.setItem(discordWebhookStorageKey, value);
+      }
+    } catch {
+      // Browser storage is a convenience only; the webhook URL is never exported.
+    }
+  }
+
   async function sendDemoEvent() {
     setDemoDelivery("Sending simulation event to /api/events...");
     try {
@@ -334,9 +357,24 @@ function SettingsPage({
       const body = (await response.json()) as { accepted?: boolean; issues?: Array<{ code?: string }> };
       const result = response.ok && body.accepted === true ? "accepted" : "rejected";
       const issueCodes = body.issues?.map((issue) => issue.code).filter(Boolean).join(", ");
-      setDemoDelivery(
-        `${result}: ${demoIntent.evaluation.status} simulation was posted to /api/events${issueCodes ? ` (${issueCodes})` : ""}.`
-      );
+      let discordStatus = "Discord not configured.";
+      if (discordWebhookUrl.trim().length > 0) {
+        const discordResponse = await fetch("/api/integrations/discord/webhook", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            webhookUrl: discordWebhookUrl,
+            registryName: registry,
+            event: demoIntent.eventPayload
+          })
+        });
+        const discordBody = (await discordResponse.json()) as { delivered?: boolean; error?: string; redactedWebhook?: string };
+        discordStatus =
+          discordResponse.ok && discordBody.delivered === true
+            ? `Discord delivered to ${discordBody.redactedWebhook ?? "configured webhook"}.`
+            : `Discord rejected: ${discordBody.error ?? "delivery failed"}.`;
+      }
+      setDemoDelivery(`${result}: ${demoIntent.evaluation.status} simulation posted to /api/events${issueCodes ? ` (${issueCodes})` : ""}. ${discordStatus}`);
     } catch (error) {
       setDemoDelivery(error instanceof Error ? `error: ${error.message}` : "error: failed to send demo event");
     }
@@ -365,7 +403,7 @@ function SettingsPage({
             ["Registry key", registryContext.registry.key ?? "Unavailable until an agent setup is linked"],
             ["User webhook forwarding", "Disabled until scoped destination registration, replay checks, and KeeperHub source binding exist"],
             ["Email", "Not configured"],
-            ["Discord", "Not configured"],
+            ["Discord", discordWebhookUrl.trim().length > 0 ? `Configured: ${redactWebhookUrl(discordWebhookUrl)}` : "Not configured"],
             ["Telegram", "Not configured"]
           ]}
           code={JSON.stringify(registryContext, null, 2)}
@@ -390,6 +428,13 @@ function SettingsPage({
                 onChange={(event) => setDemoDestination(event.target.value)}
                 placeholder="0x destination"
                 value={demoDestination}
+              />
+              <input
+                aria-label="Discord webhook URL"
+                onChange={(event) => updateDiscordWebhookUrl(event.target.value)}
+                placeholder="Discord webhook URL"
+                type="password"
+                value={discordWebhookUrl}
               />
               <button
                 className="button primary"
@@ -600,4 +645,15 @@ function buildOperatorHandoffPrompt(
 
 function shortAddress(value: string): string {
   return value.length > 12 ? `${value.slice(0, 6)}...${value.slice(-4)}` : value;
+}
+
+function redactWebhookUrl(value: string): string {
+  try {
+    const url = new URL(value);
+    const parts = url.pathname.split("/");
+    const id = parts[3] ?? "unknown";
+    return `${url.hostname}/api/webhooks/${id}/...`;
+  } catch {
+    return "configured webhook";
+  }
 }
