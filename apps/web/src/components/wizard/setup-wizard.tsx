@@ -588,6 +588,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
         ok?: boolean;
         error?: string;
         ensName?: string;
+        resolverAddress?: string;
         warning?: string;
         transactions?: PreparedWalletTransaction[];
       }>("/api/setup/ens-claim", {
@@ -601,7 +602,12 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
       setEnsStep({
         status: "prepared",
         message: "ENS subname claim is prepared. Send the wallet transaction as the next action.",
-        evidence: { ensName: payload.ensName, warning: payload.warning ?? "", transactionCount: payload.transactions.length },
+        evidence: {
+          ensName: payload.ensName,
+          resolverAddress: payload.resolverAddress,
+          warning: payload.warning ?? "",
+          transactionCount: payload.transactions.length
+        },
         transactions: payload.transactions,
         issues: []
       });
@@ -690,6 +696,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
         tx?: { to: string; value: string; data: string };
       }>("/api/setup/ens-records", {
         agentEnsName,
+        resolverAddress: ensStep.status === "ready" ? stringFromEvidence(ensStep.evidence, "resolverAddress") : undefined,
         agentAccountAddress: accountEvidence?.accountAddress,
         ...zeroGRecords
       });

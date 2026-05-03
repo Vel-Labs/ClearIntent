@@ -13,8 +13,10 @@ export async function POST(request: Request): Promise<Response> {
   const auditLatest = stringField(payload.value, "auditLatest");
   const clearintentVersion = stringField(payload.value, "clearintentVersion");
   const agentAccountAddress = stringField(payload.value, "agentAccountAddress");
+  const resolverAddress = stringField(payload.value, "resolverAddress");
 
   if (ensName !== undefined) env.CLEARINTENT_ENS_NAME = ensName;
+  if (resolverAddress !== undefined) env.ENS_RESOLVER_ADDRESS = resolverAddress;
   if (agentCard !== undefined) env.CLEARINTENT_AGENT_CARD_URI = agentCard;
   if (policyUri !== undefined) env.CLEARINTENT_POLICY_URI = policyUri;
   if (policyHash !== undefined) env.CLEARINTENT_POLICY_HASH = policyHash;
