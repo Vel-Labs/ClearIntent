@@ -173,7 +173,7 @@ async function estimateGasLimit(provider: Eip1193Provider, transaction: Record<s
     const estimated = BigInt(value);
     return `0x${((estimated * lowCostFeeMultiplierNumerator) / lowCostFeeMultiplierDenominator).toString(16)}`;
   } catch (error) {
-    const detail = error instanceof Error ? error.message : String(error);
+    const detail = walletErrorMessage(error);
     throw new Error(
       `Wallet gas estimation failed before opening the approval prompt. This usually means the ENS parent is not controlled by the connected wallet, the transaction would revert, or a pending nonce is blocking estimation. Details: ${detail}`
     );
@@ -215,4 +215,37 @@ async function readBoundedPriorityFee(provider: Eip1193Provider): Promise<bigint
     // Fall through to the fixed low-cost priority fee.
   }
   return lowCostPriorityFeeWei;
+}
+
+function walletErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message.length > 0) {
+    return error.message;
+  }
+  if (typeof error === "string" && error.length > 0) {
+    return error;
+  }
+  if (typeof error === "object" && error !== null) {
+    const record = error as Record<string, unknown>;
+    for (const key of ["message", "shortMessage", "reason"]) {
+      const value = record[key];
+      if (typeof value === "string" && value.length > 0) {
+        return value;
+      }
+    }
+    for (const key of ["data", "error"]) {
+      const nested = record[key];
+      if (typeof nested === "object" && nested !== null) {
+        const nestedMessage = walletErrorMessage(nested);
+        if (nestedMessage !== "Unknown wallet provider error.") {
+          return nestedMessage;
+        }
+      }
+    }
+    try {
+      return JSON.stringify(record);
+    } catch {
+      return "Unknown wallet provider error.";
+    }
+  }
+  return "Unknown wallet provider error.";
 }

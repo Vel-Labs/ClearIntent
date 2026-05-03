@@ -21,7 +21,7 @@ export type CenterMemoryStatus = {
 export type CenterMemoryBindingsStatus = {
   ok: boolean;
   providerMode: "live";
-  claimLevel: "local-adapter" | "0g-write-read" | "0g-write-read-verified";
+  claimLevel: "local-adapter" | "0g-write-submitted" | "0g-write-read" | "0g-write-read-verified";
   liveProvider: true;
   summary: string;
   ensName?: string;

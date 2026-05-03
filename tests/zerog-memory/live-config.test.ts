@@ -66,4 +66,13 @@ describe("0G live readiness config", () => {
     expect(status.blockingReasons).toEqual(expect.arrayContaining(["live_writes_disabled", "missing_ens_name"]));
     expect(status.records).toBeUndefined();
   });
+
+  it("does not weaken blocked live binding readiness in submit-only mode", async () => {
+    const status = await getZeroGLiveBindingsStatus({ ZERO_G_BINDINGS_VERIFICATION_MODE: "submit-only" });
+
+    expect(status.ok).toBe(false);
+    expect(status.claimLevel).toBe("local-adapter");
+    expect(status.blockingReasons).toEqual(expect.arrayContaining(["live_writes_disabled", "missing_ens_name"]));
+    expect(status.records).toBeUndefined();
+  });
 });

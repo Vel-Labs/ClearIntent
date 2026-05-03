@@ -13,6 +13,7 @@ export async function POST(request: Request): Promise<Response> {
   if (ensName !== undefined) env.CLEARINTENT_ENS_NAME = ensName;
   if (controllerAddress !== undefined) env.ZERO_G_WALLET_ADDRESS = controllerAddress;
   if (executorAddress !== undefined) env.KEEPERHUB_EXECUTOR_ADDRESS = executorAddress;
+  env.ZERO_G_BINDINGS_VERIFICATION_MODE = "submit-only";
 
   const status = await getZeroGLiveBindingsStatus(env);
   return json(status, status.blockingReasons.length > 0 ? 409 : 200);

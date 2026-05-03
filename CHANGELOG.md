@@ -4,7 +4,10 @@ All notable repo changes should be logged here.
 
 ## 2026-05-03
 
+- Added a no-contract hosted ENS subname issuer path for setup Step 3, gated by `ENS_ENABLE_HOSTED_SUBNAME_ISSUER`, so external users can request ClearIntent subnames without controlling the parent ENS wallet.
+- Added ENS parent-owner preflight and readable wallet provider error handling for setup Step 3 so non-owner tester wallets are blocked with actionable copy instead of `[object Object]` gas-estimation failures.
 - Clarified setup wizard Step 6 as KeeperHub workflow-run evidence and stopped surfacing executor/transaction-evidence degradations as setup-stage warnings.
+- Split hosted setup Step 4 from the proof-heavy 0G live-bindings path so the browser flow uploads artifacts and returns refs without waiting on immediate readback/proof verification; CLI live-bindings remains the stronger proof route.
 - Added a time-aware hosted 0G publishing indicator for setup Step 4 so slow policy artifact uploads show elapsed time, activity, and current provider-wait phase instead of looking stuck.
 - Added wallet transaction guardrails so setup ENS and gas-funding submissions block before wallet approval when the parent wallet has a pending nonce or gas estimation fails, preventing inflated MetaMask fee prompts from becoming the demo path.
 - Passed wizard custody context into KeeperHub live-submit payloads and tightened KeeperHub event ingest so placeholder `none` values cannot satisfy user-isolation binding.

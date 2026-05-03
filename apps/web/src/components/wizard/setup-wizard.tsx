@@ -666,13 +666,34 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
         ensName?: string;
         resolverAddress?: string;
         warning?: string;
+        hostedIssuer?: boolean;
+        transactionHashes?: string[];
         transactions?: PreparedWalletTransaction[];
       }>("/api/setup/ens-claim", {
         label: normalizedAgentName,
         ownerAddress: accountEvidence.parentAddress,
         agentAccountAddress: accountEvidence.accountAddress
       });
-      if (!payload.ok || payload.transactions === undefined || payload.ensName === undefined) {
+      if (!payload.ok || payload.ensName === undefined) {
+        throw new Error(payload.error ?? "ENS claim preparation did not return transactions.");
+      }
+      if (payload.hostedIssuer === true && Array.isArray(payload.transactionHashes)) {
+        setEnsStep({
+          status: "ready",
+          message: "ENS subname was issued by the ClearIntent hosted parent authority.",
+          evidence: {
+            ensName: payload.ensName,
+            resolverAddress: payload.resolverAddress,
+            warning: payload.warning ?? "",
+            transactionHashes: payload.transactionHashes,
+            hostedIssuer: true
+          },
+          issues: []
+        });
+        advanceActiveStep();
+        return;
+      }
+      if (payload.transactions === undefined) {
         throw new Error(payload.error ?? "ENS claim preparation did not return transactions.");
       }
       setEnsStep({

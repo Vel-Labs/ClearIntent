@@ -67,6 +67,37 @@ describe("wallet transaction guardrails", () => {
     expect(provider.requests.map((request) => request.method)).not.toContain("eth_sendTransaction");
   });
 
+  it("surfaces object-shaped provider errors without rendering object Object", async () => {
+    const provider = providerFor({
+      wallet_switchEthereumChain: null,
+      eth_requestAccounts: ["0x0000000000000000000000000000000000000abc"],
+      eth_getTransactionCount: "0x5",
+      eth_feeHistory: { baseFeePerGas: ["0x3b9aca00", "0x3b9aca00"] },
+      eth_maxPriorityFeePerGas: "0x77359400"
+    });
+    provider.request = async (args) => {
+      provider.requests.push({ method: args.method, params: args.params });
+      if (args.method === "eth_estimateGas") {
+        throw { code: -32000, data: { message: "execution reverted: not owner" } };
+      }
+      return {
+        wallet_switchEthereumChain: null,
+        eth_requestAccounts: ["0x0000000000000000000000000000000000000abc"],
+        eth_getTransactionCount: "0x5",
+        eth_feeHistory: { baseFeePerGas: ["0x3b9aca00", "0x3b9aca00"] },
+        eth_maxPriorityFeePerGas: "0x77359400"
+      }[args.method];
+    };
+    installWallet(provider);
+
+    await expect(
+      sendWalletTransactions([{ label: "Create subname", to: "0xregistry", value: "0x0", data: "0x1234" }], 1)
+    ).rejects.toThrow(/not owner/);
+    await expect(
+      sendWalletTransactions([{ label: "Create subname", to: "0xregistry", value: "0x0", data: "0x1234" }], 1)
+    ).rejects.not.toThrow(/\[object Object\]/);
+  });
+
   it("submits with explicit low-cost gas fields after nonce and gas preflight pass", async () => {
     const provider = providerFor({
       wallet_switchEthereumChain: null,
