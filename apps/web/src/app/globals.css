@@ -1148,8 +1148,8 @@ pre {
 
 .wizard-page {
   grid-template-rows: auto minmax(0, 1fr);
-  gap: clamp(20px, 3vh, 36px);
-  overflow: hidden;
+  gap: clamp(22px, 3.2vh, 40px);
+  overflow: auto;
   padding-bottom: 12px;
 }
 
@@ -1162,8 +1162,8 @@ pre {
 }
 
 .wizard-stage {
-  align-content: center;
-  gap: clamp(16px, 2.4vh, 28px);
+  align-content: start;
+  gap: clamp(14px, 2vh, 22px);
   overflow: visible;
   padding: 0;
 }
@@ -1292,7 +1292,7 @@ pre {
   display: grid;
   grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
   gap: 18px;
-  min-height: clamp(420px, 52vh, 560px);
+  min-height: clamp(360px, 46vh, 500px);
   overflow: visible;
   border: 1px solid color-mix(in srgb, var(--accent) 48%, var(--border));
   border-radius: 8px;
@@ -1302,7 +1302,7 @@ pre {
   box-shadow:
     0 22px 70px rgba(0, 0, 0, 0.34),
     0 0 42px color-mix(in srgb, var(--accent) 10%, transparent);
-  padding: clamp(20px, 2.2vw, 30px);
+  padding: clamp(18px, 2vw, 26px);
 }
 
 .wizard-operation-main {
@@ -1326,7 +1326,7 @@ pre {
 
 .wizard-operation-card h2 {
   margin: 0;
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1.08;
   letter-spacing: 0;
 }
@@ -1340,12 +1340,12 @@ pre {
 
 .wizard-operation-block {
   display: grid;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
   max-width: 100%;
   overflow: visible;
   border-top: 1px solid var(--border);
-  padding-top: 12px;
+  padding-top: 10px;
 }
 
 .wizard-operation-block span {
@@ -1406,20 +1406,20 @@ pre {
 .wizard-operator-modes {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
 .wizard-operator-mode {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.72fr);
-  align-items: start;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
   min-width: 0;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: color-mix(in srgb, var(--panel-strong) 82%, black);
-  padding: 12px;
+  padding: 10px 12px;
 }
 
 .wizard-operator-mode > div {
@@ -1443,32 +1443,49 @@ pre {
 }
 
 .wizard-operator-mode p,
-.wizard-hosted-warning {
+.wizard-hosted-warning,
+.wizard-hosted-progress p {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.45;
 }
 
-.wizard-operator-mode pre {
-  grid-row: span 2;
-  max-height: 116px;
+.wizard-operator-mode code {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #070a11;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.2;
   min-width: 0;
-  white-space: pre-wrap;
+  padding: 10px;
   overflow-wrap: anywhere;
-  overflow: auto;
+  white-space: normal;
 }
 
 .wizard-operator-mode .button {
+  grid-column: 2;
   justify-self: end;
-  align-self: end;
-  width: min(100%, 220px);
+  width: min(180px, 100%);
 }
 
-.wizard-hosted-warning {
+.wizard-hosted-warning,
+.wizard-hosted-progress {
   border: 1px solid color-mix(in srgb, var(--warning) 42%, var(--border));
   border-radius: 8px;
   color: var(--warning);
   padding: 10px;
+}
+
+.wizard-hosted-progress {
+  display: grid;
+  gap: 6px;
+  border-color: color-mix(in srgb, var(--accent) 46%, var(--border));
+  color: var(--accent);
+}
+
+.wizard-hosted-progress strong {
+  color: var(--text);
 }
 
 @media (max-width: 900px) {
@@ -1476,11 +1493,12 @@ pre {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .wizard-operator-mode pre {
+  .wizard-operator-mode code {
     grid-row: auto;
   }
 
   .wizard-operator-mode .button {
+    grid-column: auto;
     justify-self: stretch;
     width: 100%;
   }

@@ -907,33 +907,33 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
                 <OperationBlock step={activeStep} state={operationStateForStep(activeStep.id, ensStep, zeroGStep, recordsStep, keeperHubStep)} />
               )}
 
-              <div className="wizard-step-actions">
-                <button
-                  className="button primary"
-                  disabled={isStepActionDisabled(activeStep)}
-                  onClick={runActiveStep}
-                  type="button"
-                >
-                  {activeActionLabel(activeStep)}
-                </button>
-                <span className="muted">
-                  {activeStep.id === "username" && !nameIsAvailable
-                    ? "Check and confirm an available ENS name first."
-                    : activeStep.id === "account" && !accountKitReadiness.accountKitReady
-                      ? "Set Account Kit public env first."
-                    : activeStep.id === "account" && accountStep.status === "ready" && accountFunding.status !== "submitted"
-                      ? "Parent wallet funds the new agent account."
-                    : activeStep.id === "account" && accountStep.status === "ready" && accountFunding.status === "submitted"
-                      ? "Deployment will request wallet approval."
-                    : activeStep.id === "account" && accountStep.status === "error" && accountStep.evidence !== undefined
-                      ? accountFunding.status === "submitted"
-                        ? "Funding submitted; retry deployment."
-                        : "Parent wallet funds the predicted account."
-                    : activeStep.id === "zerog" && zeroGStep.status !== "ready"
-                      ? "Use local SDK mode or hosted publishing."
-                    : activeStep.approval}
-                </span>
-              </div>
+              {activeStep.id !== "zerog" ? (
+                <div className="wizard-step-actions">
+                  <button
+                    className="button primary"
+                    disabled={isStepActionDisabled(activeStep)}
+                    onClick={runActiveStep}
+                    type="button"
+                  >
+                    {activeActionLabel(activeStep)}
+                  </button>
+                  <span className="muted">
+                    {activeStep.id === "username" && !nameIsAvailable
+                      ? "Check and confirm an available ENS name first."
+                      : activeStep.id === "account" && !accountKitReadiness.accountKitReady
+                        ? "Set Account Kit public env first."
+                      : activeStep.id === "account" && accountStep.status === "ready" && accountFunding.status !== "submitted"
+                        ? "Parent wallet funds the new agent account."
+                      : activeStep.id === "account" && accountStep.status === "ready" && accountFunding.status === "submitted"
+                        ? "Deployment will request wallet approval."
+                      : activeStep.id === "account" && accountStep.status === "error" && accountStep.evidence !== undefined
+                        ? accountFunding.status === "submitted"
+                          ? "Funding submitted; retry deployment."
+                          : "Parent wallet funds the predicted account."
+                      : activeStep.approval}
+                  </span>
+                </div>
+              ) : null}
             </div>
 
             <aside className="wizard-receipt-panel" aria-label="Step evidence">
@@ -1046,7 +1046,18 @@ function ZeroGOperationBlock({
 
       {state.status === "ready" ? <ProofList evidence={state.evidence} /> : null}
 
-      {state.status !== "ready" ? (
+      {state.status === "running" ? (
+        <div className="wizard-hosted-progress" role="status">
+          <span>Hosted publish in progress</span>
+          <strong>Uploading policy, audit, and agent card to 0G.</strong>
+          <p>
+            Hosted publishing can take around one minute because three 0G artifacts must finalize and read back. Keep
+            this tab open; the wizard will advance to ENS records when refs return.
+          </p>
+        </div>
+      ) : null}
+
+      {state.status !== "ready" && state.status !== "running" ? (
         <div className="wizard-operator-modes">
           <section className="wizard-operator-mode recommended">
             <div>
@@ -1057,16 +1068,7 @@ function ZeroGOperationBlock({
                 into the dashboard.
               </p>
             </div>
-            <pre aria-label="Local SDK setup command">
-{`npx clearintent setup local-operator
-
-# Current repo path until the package is published:
-git clone https://github.com/Vel-Labs/ClearIntent
-cd ClearIntent
-npm install
-npm run clearintent -- credentials status
-npm run clearintent -- memory live-bindings`}
-            </pre>
+            <code aria-label="Local SDK setup command">npx clearintent setup local-operator</code>
             <button className="button primary" onClick={onCopyLocalSdk} type="button">
               {copyState === "copied" ? "Copied" : copyState === "error" ? "Copy failed" : "Copy local SDK prompt"}
             </button>
@@ -1088,7 +1090,7 @@ npm run clearintent -- memory live-bindings`}
               </div>
             ) : null}
             <button className="button ghost" disabled={disabled} onClick={onHostedPublish} type="button">
-              {state.status === "running" ? "Publishing" : "Try hosted publish"}
+              Try hosted publish
             </button>
           </section>
         </div>
