@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { mkdtempSync, realpathSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { runCli } from "../../packages/center-cli/src/cli";
 import { runCenterCommand } from "../../packages/center-cli/src/commands";
 import { buildModuleDoctorResult } from "../../packages/center-cli/src/modules";
@@ -743,6 +746,100 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(result.stdout).toContain("does not ask for parent wallet seed phrases or private keys");
   });
 
+  it("creates local operator directories and an external secrets template without printing secrets", async () => {
+    const temp = mkdtempSync(path.join(tmpdir(), "clearintent-local-operator-"));
+    const secretsFile = path.join(temp, "external", "clearintent.secrets.env");
+
+    try {
+      const result = await runCliInCwd(["setup", "local-operator", "--agent", "demo.agent.clearintent.eth", "--json"], temp, {
+        CLEARINTENT_SECRETS_FILE: secretsFile
+      });
+      const parsed = JSON.parse(result.stdout) as {
+        command: string;
+        commandOk: boolean;
+        authorityOk: boolean;
+        ok: boolean;
+        data: { setup: { secretsFile: string; secretsFileCreated: boolean; agentContextFile: string } };
+      };
+
+      expect(result.exitCode).toBe(0);
+      expect(parsed.command).toBe("setup local-operator");
+      expect(parsed.commandOk).toBe(true);
+      expect(parsed.authorityOk).toBe(false);
+      expect(parsed.ok).toBe(true);
+      expect(parsed.data.setup.secretsFile).toBe(secretsFile);
+      expect(parsed.data.setup.secretsFileCreated).toBe(true);
+      expect(parsed.data.setup.agentContextFile).toBe(path.join(realpathSync(temp), ".clearintent", "agent-context.json"));
+      expect(result.stdout).not.toContain("ZERO_G_PRIVATE_KEY=");
+    } finally {
+      rmSync(temp, { recursive: true, force: true });
+    }
+  });
+
+  it("renders agent context as blocked until custody and policy refs are configured", async () => {
+    const result = await runCliWithEnv(["agent", "context", "--json"], {
+      CLEARINTENT_SECRETS_FILE: "/tmp/clearintent-test-missing-secrets.env",
+      CLEARINTENT_ENS_NAME: "guardian.agent.clearintent.eth",
+      CLEARINTENT_POLICY_HASH: "0x1111111111111111111111111111111111111111111111111111111111111111",
+      CLEARINTENT_POLICY_URI: "0g://policy",
+      CLEARINTENT_AUDIT_LATEST: "0g://audit",
+      KEEPERHUB_WORKFLOW_ID: "wf_demo",
+      CLEARINTENT_AGENT_ACCOUNT: "",
+      CLEARINTENT_PARENT_WALLET: ""
+    });
+    const parsed = JSON.parse(result.stdout) as {
+      command: string;
+      authorityOk: boolean;
+      ok: boolean;
+      data: { agent: { agentEnsName?: string; missing: string[] } };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(parsed.command).toBe("agent context");
+    expect(parsed.authorityOk).toBe(false);
+    expect(parsed.ok).toBe(false);
+    expect(parsed.data.agent.agentEnsName).toBe("guardian.agent.clearintent.eth");
+    expect(parsed.data.agent.missing).toEqual(expect.arrayContaining(["parent_wallet", "agent_account"]));
+  });
+
+  it("drafts, evaluates, and fail-closes intent execution through local ClearIntent gates", async () => {
+    const temp = mkdtempSync(path.join(tmpdir(), "clearintent-intent-flow-"));
+    const policyHash = "0x1111111111111111111111111111111111111111111111111111111111111111";
+
+    try {
+      const env = {
+        CLEARINTENT_SECRETS_FILE: path.join(temp, "external", "clearintent.secrets.env"),
+        CLEARINTENT_ENS_NAME: "demo.agent.clearintent.eth",
+        CLEARINTENT_PARENT_WALLET: "0x2222222222222222222222222222222222222222",
+        CLEARINTENT_AGENT_ACCOUNT: "0x3333333333333333333333333333333333333333",
+        CLEARINTENT_POLICY_URI: "0g://policy",
+        CLEARINTENT_POLICY_HASH: policyHash,
+        CLEARINTENT_AUDIT_LATEST: "0g://audit",
+        KEEPERHUB_WORKFLOW_ID: "wf_demo"
+      };
+      const created = await runCliInCwd(["intent", "create", "--template", "safe-test-transfer", "--json"], temp, env);
+      const evaluated = await runCliInCwd(["intent", "evaluate", "--json"], temp, env);
+      const submitted = await runCliInCwd(["intent", "submit", "--json"], temp, env);
+      const executed = await runCliInCwd(["intent", "execute", "--json"], temp, env);
+      const createJson = JSON.parse(created.stdout) as { data: { intent: { approved: boolean; policyHash: string } } };
+      const evaluateJson = JSON.parse(evaluated.stdout) as { ok: boolean; authorityOk: boolean; data: { intent: { approved: boolean; errors: string[] } } };
+      const submitJson = JSON.parse(submitted.stdout) as { ok: boolean; data: { intent: { errors: string[] } } };
+      const executeJson = JSON.parse(executed.stdout) as { ok: boolean; data: { intent: { errors: string[] } } };
+
+      expect(createJson.data.intent.approved).toBe(false);
+      expect(createJson.data.intent.policyHash).toBe(policyHash);
+      expect(evaluateJson.ok).toBe(true);
+      expect(evaluateJson.authorityOk).toBe(true);
+      expect(evaluateJson.data.intent.errors).toEqual([]);
+      expect(submitJson.ok).toBe(true);
+      expect(submitJson.data.intent.errors).toEqual([]);
+      expect(executeJson.ok).toBe(false);
+      expect(executeJson.data.intent.errors).toEqual(["executor_adapter_not_enabled_for_direct_cli_execution"]);
+    } finally {
+      rmSync(temp, { recursive: true, force: true });
+    }
+  });
+
   it("renders successful local memory adapter status when the integration API provides it", () => {
     const doctor = buildModuleDoctorResult({
       ok: true,
@@ -840,5 +937,19 @@ function restoreEnv(key: string, value: string | undefined): void {
     delete process.env[key];
   } else {
     process.env[key] = value;
+  }
+}
+
+async function runCliInCwd(
+  args: string[],
+  cwd: string,
+  env: Record<string, string>
+): Promise<{ exitCode: number; stdout: string }> {
+  const savedCwd = process.cwd();
+  process.chdir(cwd);
+  try {
+    return await runCliWithEnv(args, env);
+  } finally {
+    process.chdir(savedCwd);
   }
 }

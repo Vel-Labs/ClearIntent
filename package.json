@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "clearintent": "./bin/clearintent.mjs"
+  },
   "workspaces": [
     "apps/web"
   ],
@@ -33,6 +36,7 @@
   },
   "dependencies": {
     "@0gfoundation/0g-ts-sdk": "^1.2.6",
-    "ethers": "^6.13.1"
+    "ethers": "^6.13.1",
+    "tsx": "^4.20.6"
   }
 }

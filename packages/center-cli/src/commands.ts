@@ -5,6 +5,7 @@ import {
   type ContractKind,
   type ResultIssue
 } from "../../core/src";
+import { getAgentContextStatus } from "./agent-context";
 import { getAccountKitCliStatus } from "./accountkit-status";
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
 import { getCredentialSafetyStatus } from "./credential-safety";
@@ -27,14 +28,19 @@ import {
   getZeroGLiveReadinessStatus,
   getZeroGLiveSmokeStatus
 } from "./memory-status";
+import { createIntentDraft, evaluateIntentDraft, executeIntentDraft, submitIntentDraft } from "./intent-runtime";
 import { listCenterModules, runModuleDoctor } from "./modules";
 import type { CliCommandResult } from "./output";
+import { ensureLocalOperatorSetup } from "./setup-local-operator";
 import { getCenterSignerStatus, type SignerRoute } from "./signer-status";
 import { renderLanding } from "./wizard";
 
 export type CliOptions = {
   json: boolean;
   fixture: FixtureName;
+  agent?: string;
+  template?: string;
+  intentPath?: string;
 };
 
 export async function runCenterCommand(args: string[]): Promise<CliCommandResult> {
@@ -65,8 +71,92 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
   if (group === "intent" && command === "state") {
     return buildStateResult("intent state", parsed.options.fixture);
   }
+  if (group === "intent" && (command === "create" || command === "propose")) {
+    const intent = createIntentDraft({ agent: parsed.options.agent, template: parsed.options.template });
+    return {
+      command: `intent ${command}`,
+      ok: intent.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "intent-local-gate",
+      liveProvider: false,
+      summary: intent.summary,
+      data: { intent },
+      issues: intent.errors.map((reason) => ({ code: reason, message: reason, path: "intent" }))
+    };
+  }
+  if (group === "intent" && command === "evaluate") {
+    const intent = evaluateIntentDraft({ agent: parsed.options.agent, intentPath: parsed.options.intentPath });
+    return {
+      command: "intent evaluate",
+      ok: intent.ok,
+      commandOk: true,
+      authorityOk: intent.approved,
+      mode: "intent-local-gate",
+      liveProvider: false,
+      summary: intent.summary,
+      data: { intent },
+      issues: intent.errors.map((reason) => ({ code: reason, message: reason, path: "intent" }))
+    };
+  }
+  if (group === "intent" && command === "submit") {
+    const intent = submitIntentDraft({ intentPath: parsed.options.intentPath });
+    return {
+      command: "intent submit",
+      ok: intent.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "intent-local-gate",
+      liveProvider: false,
+      summary: intent.summary,
+      data: { intent },
+      issues: intent.errors.map((reason) => ({ code: reason, message: reason, path: "intent" }))
+    };
+  }
+  if (group === "intent" && command === "execute") {
+    const intent = executeIntentDraft({ intentPath: parsed.options.intentPath });
+    return {
+      command: "intent execute",
+      ok: intent.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "intent-local-gate",
+      liveProvider: false,
+      summary: intent.summary,
+      data: { intent },
+      issues: intent.errors.map((reason) => ({ code: reason, message: reason, path: "intent" }))
+    };
+  }
   if (group === "authority" && command === "evaluate") {
     return buildEvaluationResult(parsed.options.fixture);
+  }
+  if (group === "setup" && command === "local-operator") {
+    const setup = ensureLocalOperatorSetup({ agent: parsed.options.agent });
+    return {
+      command: "setup local-operator",
+      ok: setup.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "local-operator-setup",
+      liveProvider: false,
+      summary: setup.summary,
+      data: { setup },
+      issues: setup.blockingReasons.map((reason) => ({ code: reason, message: reason, path: "setup" }))
+    };
+  }
+  if (group === "agent" && command === "context") {
+    const agent = getAgentContextStatus({ agent: parsed.options.agent });
+    return {
+      command: "agent context",
+      ok: agent.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "agent-local-context",
+      liveProvider: false,
+      summary: agent.summary,
+      data: { agent },
+      issues: agent.blockingReasons.map((reason) => ({ code: reason, message: reason, path: "agent" }))
+    };
   }
   if (group === "test" && command === "local") {
     const testSummary = await runCenterLocalTestSummary();
@@ -416,11 +506,17 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
     ok: false,
     commandOk: false,
     authorityOk: false,
-    summary: "Unknown command. Expected center, intent, authority, test, credentials, accountkit, alchemy, identity, execution, keeperhub, signer, module, or memory command family.",
+    summary: "Unknown command. Expected setup, agent, center, intent, authority, test, credentials, accountkit, alchemy, identity, execution, keeperhub, signer, module, or memory command family.",
     data: {
       usage: [
+        "setup local-operator",
+        "agent context",
         "center status",
         "center inspect",
+        "intent create",
+        "intent evaluate",
+        "intent submit",
+        "intent execute",
         "intent validate",
         "intent state",
         "authority evaluate",
@@ -462,6 +558,9 @@ export function parseArgs(args: string[]): { options: CliOptions; positionals: s
   const positionals: string[] = [];
   let json = false;
   let fixture: FixtureName = "valid";
+  let agent: string | undefined;
+  let template: string | undefined;
+  let intentPath: string | undefined;
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -478,10 +577,37 @@ export function parseArgs(args: string[]): { options: CliOptions; positionals: s
       fixture = parseFixtureName(arg.slice("--fixture=".length));
       continue;
     }
+    if (arg === "--agent") {
+      agent = args[index + 1];
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--agent=")) {
+      agent = arg.slice("--agent=".length);
+      continue;
+    }
+    if (arg === "--template") {
+      template = args[index + 1];
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--template=")) {
+      template = arg.slice("--template=".length);
+      continue;
+    }
+    if (arg === "--intent") {
+      intentPath = args[index + 1];
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--intent=")) {
+      intentPath = arg.slice("--intent=".length);
+      continue;
+    }
     positionals.push(arg);
   }
 
-  return { options: { json, fixture }, positionals };
+  return { options: { json, fixture, agent, template, intentPath }, positionals };
 }
 
 function buildStateResult(command: string, fixtureName: FixtureName, inspect = false): CliCommandResult {

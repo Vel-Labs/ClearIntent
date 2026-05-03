@@ -27,6 +27,12 @@ apps/web/package.json
 apps/web/public/favicon.svg
 apps/web/src/app/api/ens/availability/route.ts
 apps/web/src/app/api/keeperhub/events/route.ts
+apps/web/src/app/api/setup/_shared.ts
+apps/web/src/app/api/setup/accountkit-config/route.ts
+apps/web/src/app/api/setup/ens-claim/route.ts
+apps/web/src/app/api/setup/ens-records/route.ts
+apps/web/src/app/api/setup/keeperhub/route.ts
+apps/web/src/app/api/setup/zerog-bindings/route.ts
 apps/web/src/app/globals.css
 apps/web/src/app/layout.tsx
 apps/web/src/app/page.tsx
@@ -42,6 +48,7 @@ apps/web/src/components/wallet/wallet-status.ts
 apps/web/src/components/wizard/index.ts
 apps/web/src/components/wizard/setup-wizard.tsx
 apps/web/src/lib/alchemy/index.ts
+apps/web/src/lib/alchemy/account-kit.ts
 apps/web/src/lib/alchemy/readiness.ts
 apps/web/src/lib/clearintent-state.ts
 apps/web/src/lib/demo-evidence.ts
@@ -52,6 +59,7 @@ apps/web/src/lib/evidence-model.ts
 apps/web/src/lib/wallet/eip1193.ts
 apps/web/src/lib/wallet/index.ts
 apps/web/tsconfig.json
+bin/clearintent.mjs
 clearintent.config.json
 clearintent_banner.png
 clearintent_logo.png
@@ -233,6 +241,8 @@ package.json
 operator-secrets/README.md
 operator-secrets/clearintent.secrets.env.example
 packages/center-cli/README.md
+packages/center-cli/src/accountkit-status.ts
+packages/center-cli/src/agent-context.ts
 packages/center-cli/src/cli.ts
 packages/center-cli/src/commands.ts
 packages/center-cli/src/credential-safety.ts
@@ -240,10 +250,12 @@ packages/center-cli/src/env.ts
 packages/center-cli/src/execution-status.ts
 packages/center-cli/src/fixtures.ts
 packages/center-cli/src/identity-status.ts
+packages/center-cli/src/intent-runtime.ts
 packages/center-cli/src/local-test.ts
 packages/center-cli/src/memory-status.ts
 packages/center-cli/src/modules.ts
 packages/center-cli/src/output.ts
+packages/center-cli/src/setup-local-operator.ts
 packages/center-cli/src/signer-status.ts
 packages/center-cli/src/wizard.ts
 packages/core/API.md
@@ -305,6 +317,10 @@ skills/agent-assignment-writer/SKILL.md
 skills/agent-assignment-writer/templates/agent-assignment.md
 skills/agent-assignment-writer/templates/fresh-agent-handoff.md
 skills/center-cli-operator/SKILL.md
+skills/clearintent-agent-operator/SKILL.md
+skills/clearintent-escalation-review/SKILL.md
+skills/clearintent-executor-gate/SKILL.md
+skills/clearintent-intent-author/SKILL.md
 skills/credential-safety/SKILL.md
 skills/contract-fixture-author/SKILL.md
 skills/contract-steward/SKILL.md
@@ -328,6 +344,7 @@ tests/contracts/validate-contracts.test.ts
 tests/core/core.test.ts
 tests/core/module-api.test.ts
 tests/core/state.test.ts
+tests/web/dashboard-navigation.test.ts
 tests/ens-identity/ens-identity.test.ts
 tests/keeperhub-adapter/keeperhub-adapter.test.ts
 tests/signer-adapter/signer-adapter.test.ts

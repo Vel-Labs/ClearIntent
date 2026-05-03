@@ -96,7 +96,12 @@ async function main(): Promise<void> {
   const identityLive = await run(["run", "--silent", "clearintent", "--", "identity", "live-status", "--json"], {
     CLEARINTENT_SECRETS_FILE: "/tmp/clearintent-test-missing-secrets.env",
     ENS_PROVIDER_RPC: "",
-    ENS_NAME: ""
+    ENS_EVM_RPC: "",
+    PRIVATE_EVM_RPC_URL: "",
+    ENS_NAME: "",
+    CLEARINTENT_ENS_NAME: "",
+    CLEARINTENT_POLICY_HASH: "",
+    CLEARINTENT_EXPECTED_POLICY_HASH: ""
   });
   assertExit("identity live-status exits 0 for degraded live readout", identityLive, 0, failures);
   const identityLiveJson = parseJson("identity live-status", identityLive.stdout, failures);

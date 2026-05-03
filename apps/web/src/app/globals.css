@@ -1403,6 +1403,60 @@ pre {
   color: var(--text);
 }
 
+.wizard-operator-modes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+
+.wizard-operator-mode {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel-strong) 82%, black);
+  padding: 12px;
+}
+
+.wizard-operator-mode.recommended {
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
+  box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+.wizard-operator-mode span {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wizard-operator-mode strong {
+  color: var(--text);
+}
+
+.wizard-operator-mode p,
+.wizard-hosted-warning {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.wizard-operator-mode pre {
+  max-height: 160px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.wizard-hosted-warning {
+  border: 1px solid color-mix(in srgb, var(--warning) 42%, var(--border));
+  border-radius: 8px;
+  color: var(--warning);
+  padding: 10px;
+}
+
 .wizard-account-block {
   display: grid;
   gap: 12px;
@@ -1715,6 +1769,10 @@ pre {
   .wizard-operation-card {
     grid-template-columns: 1fr;
     min-height: auto;
+  }
+
+  .wizard-operator-modes {
+    grid-template-columns: 1fr;
   }
 
   .wizard-receipt-panel {

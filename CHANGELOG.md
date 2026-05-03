@@ -4,6 +4,8 @@ All notable repo changes should be logged here.
 
 ## 2026-05-02
 
+- Added the `clearintent` executable shim plus local-operator, agent-context, and fail-closed intent gate CLI routes so `clearintent setup local-operator`, `clearintent agent context`, and `clearintent intent create/evaluate/submit/execute` can become the contracted local SDK path for agents.
+- Added repo-local skills for agent operation, intent authoring, executor gating, and escalation review so AI agents have explicit instructions to inspect ClearIntent context and avoid raw wallet bypasses.
 - Added web workspace runtime dependencies required by deployed Next.js API routes that import ClearIntent package source, fixing Vercel build resolution for `ethers`, 0G SDK, `ajv`, and `ajv-formats`.
 - Added repo-local skills for local operator setup, 0G credential safety, agent SDK handoff, and frontend wizard operator modes so hosted setup can recommend local custody while preserving a hosted publishing path.
 - Recorded Phase 7 wizard validation evidence for `vel2.agent.clearintent.eth`, including parent wallet, parent-owned agent smart account, 0G policy URI/hash, KeeperHub run ID, and ENS portal verification, while keeping the remaining demo-transaction proof gap explicit.

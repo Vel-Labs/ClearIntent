@@ -1,12 +1,15 @@
 import { stableStringify, type ResultIssue } from "../../core/src";
 import type { AccountKitCliStatus } from "./accountkit-status";
+import type { AgentContextStatus } from "./agent-context";
 import type { CredentialSafetyStatus, CredentialCheckStatus } from "./credential-safety";
 import type { CenterExecutionStatus } from "./execution-status";
 import type { CenterIdentityBindingStatus, CenterIdentityStatus } from "./identity-status";
+import type { IntentRuntimeStatus } from "./intent-runtime";
 import type { CenterLocalTestSummary } from "./local-test";
 import type { CenterModule, ModuleDoctorResult } from "./modules";
 import type { CenterMemoryBindingsStatus, CenterMemoryStatus, MemoryCheckStatus } from "./memory-status";
 import type { CenterSignerStatus } from "./signer-status";
+import type { LocalOperatorSetupStatus } from "./setup-local-operator";
 
 export type CliCommandResult = {
   command: string;
@@ -21,6 +24,9 @@ export type CliCommandResult = {
     | "ens-local-fixture"
     | "ens-live-read"
     | "accountkit-readiness"
+    | "agent-local-context"
+    | "intent-local-gate"
+    | "local-operator-setup"
     | "keeperhub-local-fixture"
     | "keeperhub-live"
     | "signer-local-fixture";
@@ -106,6 +112,18 @@ export function renderHuman(result: CliCommandResult): string {
     lines.push(...renderAccountKitStatus(explicit.data.accountKit));
   }
 
+  if (isSetupData(explicit.data)) {
+    lines.push(...renderLocalOperatorSetup(explicit.data.setup));
+  }
+
+  if (isAgentContextData(explicit.data)) {
+    lines.push(...renderAgentContext(explicit.data.agent));
+  }
+
+  if (isIntentRuntimeData(explicit.data)) {
+    lines.push(...renderIntentRuntime(explicit.data.intent));
+  }
+
   if (explicit.issues.length > 0) {
     lines.push("Issues:");
     for (const issue of explicit.issues) {
@@ -188,6 +206,71 @@ function isCredentialSafetyData(data: Record<string, unknown>): data is { creden
 
 function isAccountKitData(data: Record<string, unknown>): data is { accountKit: AccountKitCliStatus } {
   return typeof data.accountKit === "object" && data.accountKit !== null;
+}
+
+function isSetupData(data: Record<string, unknown>): data is { setup: LocalOperatorSetupStatus } {
+  return typeof data.setup === "object" && data.setup !== null;
+}
+
+function isAgentContextData(data: Record<string, unknown>): data is { agent: AgentContextStatus } {
+  return typeof data.agent === "object" && data.agent !== null;
+}
+
+function isIntentRuntimeData(data: Record<string, unknown>): data is { intent: IntentRuntimeStatus } {
+  return typeof data.intent === "object" && data.intent !== null;
+}
+
+function renderLocalOperatorSetup(setup: LocalOperatorSetupStatus): string[] {
+  return [
+    `Local setup status: ${setup.ok ? "[PASS] ready" : "[BLOCKED] blocked"}`,
+    `Workspace: ${setup.workspaceDirectory}`,
+    `Intent directory: ${setup.intentDirectory}`,
+    `Audit directory: ${setup.auditDirectory}`,
+    `Agent context: ${setup.agentContextFile}`,
+    `Secrets file: ${setup.secretsFile ?? "unavailable"}`,
+    `Secrets file created: ${setup.secretsFileCreated ? "yes" : "no"}`,
+    `Agent ENS: ${setup.agentEnsName ?? "not configured"}`,
+    `Warnings: ${formatList(setup.warnings)}`,
+    "Recommended commands:",
+    ...setup.commands.map((command) => `- ${command}`),
+    "Next actions:",
+    ...setup.nextActions.map((action) => `- ${action}`),
+    `Setup blocking reasons: ${formatList(setup.blockingReasons)}`
+  ];
+}
+
+function renderAgentContext(agent: AgentContextStatus): string[] {
+  return [
+    `Agent context status: ${agent.ok ? "[PASS] ready" : "[BLOCKED] incomplete"}`,
+    `Agent claim level: ${agent.claimLevel}`,
+    `Agent ENS: ${agent.agentEnsName ?? "missing"}`,
+    `Parent wallet: ${agent.parentWallet ?? "missing"}`,
+    `Agent account: ${agent.agentAccount ?? "missing"}`,
+    `Policy URI: ${agent.policyUri ?? "missing"}`,
+    `Policy hash: ${agent.policyHash ?? "missing"}`,
+    `Audit latest: ${agent.auditLatest ?? "missing"}`,
+    `KeeperHub workflow: ${agent.keeperHubWorkflowId ?? "missing"}`,
+    `Context file: ${agent.contextFilePresent ? agent.contextFile : "not found"}`,
+    `Missing context: ${formatList(agent.missing)}`,
+    "Agent commands:",
+    ...agent.commands.map((command) => `- ${command}`)
+  ];
+}
+
+function renderIntentRuntime(intent: IntentRuntimeStatus): string[] {
+  return [
+    `Intent stage: ${intent.stage}`,
+    `Intent approved: ${intent.approved ? "yes" : "no"}`,
+    `Intent should execute: ${intent.shouldExecute ? "yes" : "no"}`,
+    `Intent file: ${intent.intentPath}`,
+    `Evaluation file: ${intent.evaluationPath}`,
+    `Submission file: ${intent.submissionPath}`,
+    `Intent hash: ${intent.intentHash ?? "missing"}`,
+    `Policy hash: ${intent.policyHash ?? "missing"}`,
+    `Intent errors: ${formatList(intent.errors)}`,
+    "Next actions:",
+    ...intent.nextActions.map((action) => `- ${action}`)
+  ];
 }
 
 function renderAccountKitStatus(accountKit: AccountKitCliStatus): string[] {

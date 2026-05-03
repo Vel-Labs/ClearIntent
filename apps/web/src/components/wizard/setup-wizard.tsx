@@ -77,6 +77,8 @@ type AccountKitConfigPayload = AlchemyReadiness & {
   env?: Record<string, string | undefined>;
 };
 
+type CopyState = "idle" | "copied" | "error";
+
 const suggestedAgentGasTopUpWei = 500_000_000_000_000n;
 const lowCostPriorityFeeWei = 500_000_000n;
 const lowCostFeeMultiplierNumerator = 12n;
@@ -197,6 +199,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
     status: "idle",
     message: "Bind the ClearIntent execution gate after ENS records are submitted."
   });
+  const [localSdkCopyState, setLocalSdkCopyState] = useState<CopyState>("idle");
   const [accountKitConfig, setAccountKitConfig] = useState<AccountKitConfigPayload>(() => ({
     ...getAlchemyReadiness(),
     env: undefined
@@ -291,6 +294,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
     setZeroGStep({ status: "idle", message: "Publish policy, audit, and agent-card artifacts once the ENS name is selected." });
     setRecordsStep({ status: "idle", message: "Publish 0G artifacts before preparing the ENS resolver record multicall." });
     setKeeperHubStep({ status: "idle", message: "Bind the ClearIntent execution gate after ENS records are submitted." });
+    setLocalSdkCopyState("idle");
   }
 
   async function runActiveStep() {
@@ -620,6 +624,23 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
     }
   }
 
+  async function copyLocalSdkPrompt() {
+    const accountEvidence = accountStep.status === "deployed" ? accountStep.evidence : undefined;
+    const prompt = buildLocalSdkPrompt({
+      agentEnsName,
+      agentAccount: accountEvidence?.accountAddress,
+      parentWallet: accountEvidence?.parentAddress
+    });
+
+    try {
+      await navigator.clipboard.writeText(prompt);
+      setLocalSdkCopyState("copied");
+      window.setTimeout(() => setLocalSdkCopyState("idle"), 2400);
+    } catch {
+      setLocalSdkCopyState("error");
+    }
+  }
+
   async function runEnsRecordsStep() {
     if (recordsStep.status === "ready") {
       advanceActiveStep();
@@ -832,6 +853,15 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
                     ) : null}
                   </div>
                 </div>
+              ) : activeStep.id === "zerog" ? (
+                <ZeroGOperationBlock
+                  copyState={localSdkCopyState}
+                  disabled={isStepActionDisabled(activeStep)}
+                  onCopyLocalSdk={copyLocalSdkPrompt}
+                  onHostedPublish={runZeroGStep}
+                  state={zeroGStep}
+                  step={activeStep}
+                />
               ) : activeStep.id === "ready" ? (
                 <ReadyBlock
                   accountStep={accountStep}
@@ -866,6 +896,8 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
                       ? accountFunding.status === "submitted"
                         ? "Funding submitted; retry deployment."
                         : "Parent wallet funds the predicted account."
+                    : activeStep.id === "zerog" && zeroGStep.status !== "ready"
+                      ? "Use local SDK mode or hosted publishing."
                     : activeStep.approval}
                 </span>
               </div>
@@ -935,6 +967,90 @@ function OperationBlock({ state, step }: { state: StepOperationState; step: Wiza
       <strong>{state.message}</strong>
       <p>{step.summary}</p>
       {state.status === "ready" ? <ProofList evidence={state.evidence} /> : null}
+      {state.status === "error" || (state.status === "ready" && state.issues.length > 0) ? (
+        <ul>
+          {state.issues.map((issue) => (
+            <li key={issue}>{issue}</li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+function ZeroGOperationBlock({
+  copyState,
+  disabled,
+  onCopyLocalSdk,
+  onHostedPublish,
+  state,
+  step
+}: {
+  copyState: CopyState;
+  disabled: boolean;
+  onCopyLocalSdk: () => void;
+  onHostedPublish: () => void;
+  state: StepOperationState;
+  step: WizardStep;
+}) {
+  const hostedUnavailable = state.status === "error" && hasAnyIssue(state.issues, ["missing_credentials", "live_writes_disabled"]);
+
+  return (
+    <div className={`wizard-operation-block ${state.status}`}>
+      <span>{state.status === "ready" ? "Evidence recorded" : state.status === "running" ? "Working" : "Choose publishing mode"}</span>
+      <strong>{state.status === "ready" ? state.message : "Publish 0G policy artifacts without hiding custody."}</strong>
+      <p>{step.summary}</p>
+
+      {state.status === "ready" ? <ProofList evidence={state.evidence} /> : null}
+
+      {state.status !== "ready" ? (
+        <div className="wizard-operator-modes">
+          <section className="wizard-operator-mode recommended">
+            <div>
+              <span>Recommended</span>
+              <strong>Local SDK mode</strong>
+              <p>
+                Keep the 0G private key on your machine. Run the local helper, then import the public artifact refs back
+                into the dashboard.
+              </p>
+            </div>
+            <pre aria-label="Local SDK setup command">
+{`npx clearintent setup local-operator
+
+# Current repo path until the package is published:
+git clone https://github.com/Vel-Labs/ClearIntent
+cd ClearIntent
+npm install
+npm run clearintent -- credentials status
+npm run clearintent -- memory live-bindings`}
+            </pre>
+            <button className="button primary" onClick={onCopyLocalSdk} type="button">
+              {copyState === "copied" ? "Copied" : copyState === "error" ? "Copy failed" : "Copy local SDK prompt"}
+            </button>
+          </section>
+
+          <section className="wizard-operator-mode">
+            <div>
+              <span>Fastest</span>
+              <strong>Hosted publishing</strong>
+              <p>
+                Continue in browser when this deployment has a configured 0G operator signer. Use this for controlled
+                demos or user-operated hosted backends.
+              </p>
+            </div>
+            {hostedUnavailable ? (
+              <div className="wizard-hosted-warning">
+                Hosted publishing is disabled on this deployment. Expected for public v0.1 unless demo credentials are
+                intentionally configured.
+              </div>
+            ) : null}
+            <button className="button ghost" disabled={disabled} onClick={onHostedPublish} type="button">
+              {state.status === "running" ? "Publishing" : "Try hosted publish"}
+            </button>
+          </section>
+        </div>
+      ) : null}
+
       {state.status === "error" || (state.status === "ready" && state.issues.length > 0) ? (
         <ul>
           {state.issues.map((issue) => (
@@ -1081,6 +1197,48 @@ function operationStateForStep(
 
 function isRunning(step: StepOperationState): boolean {
   return step.status === "running";
+}
+
+function hasAnyIssue(issues: string[], needles: string[]): boolean {
+  return issues.some((issue) => needles.some((needle) => issue.includes(needle)));
+}
+
+function buildLocalSdkPrompt(input: { agentEnsName: string; agentAccount?: string; parentWallet?: string }): string {
+  return `Use ClearIntent local SDK mode for 0G artifact publishing.
+
+Agent ENS: ${input.agentEnsName}
+Parent wallet: ${input.parentWallet ?? "not recorded yet"}
+Agent account: ${input.agentAccount ?? "not recorded yet"}
+
+Goal:
+Publish the ClearIntent agent card, policy, and audit pointer to 0G from my local machine without putting private keys into the hosted website.
+
+Rules:
+- Do not ask me to paste private keys into chat.
+- Create or use ~/.clearintent/clearintent.secrets.env for operator secrets.
+- Keep private keys out of the repo and out of .env.local.
+- Print only public artifact refs and transaction hashes.
+
+Commands:
+npx clearintent setup local-operator
+
+Current repo path until the package is published:
+git clone https://github.com/Vel-Labs/ClearIntent
+cd ClearIntent
+npm install
+mkdir -p ~/.clearintent
+cp operator-secrets/clearintent.secrets.env.example ~/.clearintent/clearintent.secrets.env
+npm run clearintent -- credentials status
+npm run clearintent -- memory live-status
+npm run clearintent -- memory live-bindings
+
+Return these public values for dashboard import:
+- agent.card
+- policy.uri
+- policy.hash
+- audit.latest
+- clearintent.version
+- 0G tx hashes`;
 }
 
 async function postJson<T>(url: string, body: Record<string, unknown>): Promise<T> {

@@ -9,6 +9,16 @@ type WizardItem = {
 
 const wizardItems: WizardItem[] = [
   {
+    label: "Local operator setup",
+    description: "Create external-secrets and .clearintent workspace scaffolding without writing private keys.",
+    args: ["setup", "local-operator"]
+  },
+  {
+    label: "Agent context",
+    description: "Show the custody, policy, audit, and KeeperHub context an agent must inspect before acting.",
+    args: ["agent", "context"]
+  },
+  {
     label: "Center status",
     description: "Show the default fixture-backed lifecycle summary.",
     args: ["center", "status"]
@@ -27,6 +37,26 @@ const wizardItems: WizardItem[] = [
     label: "Intent state",
     description: "Inspect missing evidence and next action.",
     args: ["intent", "state"]
+  },
+  {
+    label: "Intent create",
+    description: "Draft a local ClearIntent payload without authority approval.",
+    args: ["intent", "create"]
+  },
+  {
+    label: "Intent evaluate",
+    description: "Evaluate the latest local intent draft and block mismatched policy/context.",
+    args: ["intent", "evaluate"]
+  },
+  {
+    label: "Intent submit",
+    description: "Require an approved evaluation before the executor handoff.",
+    args: ["intent", "submit"]
+  },
+  {
+    label: "Intent execute",
+    description: "Fail closed unless a configured executor adapter has recorded required evidence.",
+    args: ["intent", "execute"]
   },
   {
     label: "Authority evaluate",
@@ -99,7 +129,11 @@ export function renderLanding(): string {
     "  Opens an interactive terminal menu when run in a TTY.",
     "",
     "AI lane:",
+    "  npm run --silent clearintent -- setup local-operator --json",
+    "  npm run --silent clearintent -- agent context --json",
     "  npm run --silent clearintent -- center inspect --json",
+    "  npm run --silent clearintent -- intent create --json",
+    "  npm run --silent clearintent -- intent evaluate --json",
     "  npm run --silent clearintent -- identity status --json",
     "  npm run --silent clearintent -- identity live-status --json",
     "  npm run --silent clearintent -- execution status --json",

@@ -7,7 +7,7 @@ It is intentionally thin:
 - it consumes public primitives from `packages/core`
 - it renders fixture-backed authority state for humans
 - it emits deterministic JSON for agents and automation with `--json`
-- it exposes local module metadata, live 0G/ENS readiness, local KeeperHub execution status, gated KeeperHub live readiness/submit checks, and doctor checks for future adapters
+- it exposes local module metadata, local operator setup, agent context, fail-closed intent gates, live 0G/ENS readiness, local KeeperHub execution status, gated KeeperHub live readiness/submit checks, and doctor checks for future adapters
 
 It does not implement MCP, hosted API authority, webhook delivery, OS notification, browser UI, or smart-account setup behavior.
 
@@ -27,6 +27,12 @@ AI lane:
 
 ```bash
 npm run clearintent -- center status
+npm run clearintent -- setup local-operator
+npm run clearintent -- agent context
+npm run clearintent -- intent create --template safe-test-transfer
+npm run clearintent -- intent evaluate
+npm run clearintent -- intent submit
+npm run clearintent -- intent execute
 npm run --silent clearintent -- center inspect --json
 npm run clearintent -- intent validate
 npm run clearintent -- intent state --fixture missing-evidence
@@ -53,6 +59,23 @@ npm run --silent clearintent -- credentials status --json
 npm run clearintent -- module list
 npm run --silent clearintent -- module doctor --json
 ```
+
+Once the package is installed through an npm/package runner, the same local operator path is available through the executable:
+
+```bash
+clearintent setup local-operator
+clearintent agent context
+clearintent intent create --template safe-test-transfer
+clearintent intent evaluate
+```
+
+The intended future package shape is:
+
+```bash
+npx clearintent setup local-operator
+```
+
+The repository is still marked `private` until an npm publish decision is made, so the `npx clearintent` name is the target installation path rather than a published npm package claim today.
 
 ## Output Layers
 
@@ -103,3 +126,9 @@ Blocked fixture output means the fixture is missing required evidence or intenti
 `test local` runs the local operator checklist as one aggregate CLI command. It reports simple indicators for contracts, core lifecycle, 0G, ENS, KeeperHub, signer payload, metadata, and cross-layer posture. The local column can show `✅ tested`; live/onchain columns remain `not tested` or `not needed` until a dedicated live phase produces evidence.
 
 `credentials status` checks repo-local runtime env safety, the configured external operator secrets file, and Phase 2B 0G setup readiness without printing secrets. It reports whether env files are ignored, whether sensitive env files are tracked, whether secret values were accidentally placed in repo-local env files, whether required 0G values are present, and whether live writes are enabled.
+
+`setup local-operator` creates `.clearintent/intents/`, `.clearintent/audit/`, `.clearintent/agent-context.json`, and the configured external operator secrets file if it is missing. It never writes private keys. Operators edit the external secrets file manually, then run `credentials status`.
+
+`agent context` renders the custody map an AI agent must inspect before proposing an onchain action. It reports the agent ENS name, parent wallet, agent account, policy URI/hash, audit pointer, and KeeperHub workflow. Missing context blocks agent operation.
+
+`intent create`, `intent evaluate`, `intent submit`, and `intent execute` are the local agent execution contract. Draft creation is not approval. Evaluation checks the draft against the current ClearIntent context. Submit requires an approved evaluation. Execute is fail-closed unless a real executor adapter has recorded approval and receipt evidence.

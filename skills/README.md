@@ -33,6 +33,10 @@ These skills are scaffold assets. They are not globally installed automatically.
 | `zerog-credential-safety` | Preserve 0G live-write custody boundaries across local SDK, hosted publishing, and Vercel deployment modes. | None |
 | `agent-sdk-handoff` | Prepare copy-paste SDK commands and AI-agent prompts without exposing parent wallet or operator secrets. | None |
 | `frontend-wizard-operator-mode` | Design hosted wizard lanes for browser wallet signing, local SDK artifact publishing, and hosted backend publishing. | None |
+| `clearintent-agent-operator` | Instruct an AI agent to inspect custody, policy, audit, and KeeperHub context before proposing or submitting onchain actions. | None |
+| `clearintent-intent-author` | Draft canonical ClearIntent intent payloads for wallet review, webhook alerts, and audit artifacts. | None |
+| `clearintent-executor-gate` | Route approved intents through KeeperHub or another adapter without allowing policy bypass. | None |
+| `clearintent-escalation-review` | Handle blocked, mismatched, or degraded intents without treating notifications as approvals. | None |
 
 ## Suggested Workflow
 
