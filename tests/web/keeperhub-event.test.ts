@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { POST } from "../../apps/web/src/app/api/keeperhub/events/route";
 import { buildKeeperHubEventDisplayModel } from "../../apps/web/src/components/events/keeperhub-event-boundary";
 import {
+  CLEARINTENT_KEEPERHUB_EVENT_SCHEMA_VERSION,
   KEEPERHUB_EVENT_AUTHORITY,
   KEEPERHUB_EVENT_SCHEMA_VERSION,
   ingestKeeperHubReportedEvent
@@ -21,6 +22,32 @@ const validEvent = {
     provider: "keeperhub",
     projectId: "project_demo"
   }
+};
+
+const validClearIntentEvent = {
+  source: "keeperhub",
+  project: "clearintent",
+  schemaVersion: CLEARINTENT_KEEPERHUB_EVENT_SCHEMA_VERSION,
+  eventType: "clearintent.execution.completed",
+  status: "completed",
+  error: "null",
+  severity: "info",
+  shouldExecute: "true",
+  parentWallet: "0xF7aDD17E99F097f9D0A6150D093EC049B2698c60",
+  agentAccount: "0x8b1F1bE3D0ab7C9B1180d66970fed3033B7CE720",
+  agentEnsName: "vel2.agent.clearintent.eth",
+  intentHash: `0x${"c".repeat(64)}`,
+  verificationIntentHash: `0x${"c".repeat(64)}`,
+  policyHash: `0x${"d".repeat(64)}`,
+  verificationPolicyHash: `0x${"d".repeat(64)}`,
+  auditLatest: "0g://example",
+  actionType: "demo.transfer",
+  target: "0x0000000000000000000000000000000000000000",
+  chainId: "11155111",
+  valueLimit: "0.001 ETH",
+  executor: "keeperhub",
+  signer: "0xF7aDD17E99F097f9D0A6150D093EC049B2698c60",
+  transactionHash: "none"
 };
 
 describe("KeeperHub reported event boundary", () => {
@@ -76,6 +103,33 @@ describe("KeeperHub reported event boundary", () => {
         path: "occurredAt"
       }
     ]);
+  });
+
+  it("accepts the ClearIntent KeeperHub webhook payload without forwarding user events", () => {
+    const result = ingestKeeperHubReportedEvent(validClearIntentEvent, {
+      headers: { "x-keeperhub-workflow-id": "r8hbrox9eorgvvlunk72b" }
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.event.workflowId).toBe("r8hbrox9eorgvvlunk72b");
+    expect(result.event.status).toBe("executed");
+    expect(result.clearintent?.agentEnsName).toBe("vel2.agent.clearintent.eth");
+    expect(result.isolationKey).toBe("0x8b1F1bE3D0ab7C9B1180d66970fed3033B7CE720");
+    expect(result.delivery.userWebhookForwarding).toBe(false);
+  });
+
+  it("rejects unresolved KeeperHub template values before event routing", () => {
+    const result = ingestKeeperHubReportedEvent({
+      ...validClearIntentEvent,
+      agentEnsName: "{{Evaluate ClearIntent Gate.result.agentEnsName}}"
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues).toContainEqual(
+      expect.objectContaining({ code: "unresolved_template_value", path: "agentEnsName" })
+    );
   });
 
   it("returns deterministic JSON from the ingest route", async () => {

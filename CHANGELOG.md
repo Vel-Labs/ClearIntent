@@ -4,6 +4,8 @@ All notable repo changes should be logged here.
 
 ## 2026-05-02
 
+- Recorded Phase 7 wizard validation evidence for `vel2.agent.clearintent.eth`, including parent wallet, parent-owned agent smart account, 0G policy URI/hash, KeeperHub run ID, and ENS portal verification, while keeping the remaining demo-transaction proof gap explicit.
+- Extended `POST /api/keeperhub/events` to accept the `clearintent.keeperhub-event.v1` workflow payload from KeeperHub's `Send ClearIntent Event` block, reject unresolved template values, return an agent isolation key, and keep user webhook fanout disabled until agent-scoped registration/auth/replay controls exist.
 - Opened `apps/web/` intentionally for Phase 6 with npm workspace scripts (`web:dev`, `web:typecheck`, `web:lint`, `web:test`) and scaffold/profile routing so the frontend is no longer forbidden early scope.
 - Added the initial Next.js authority dashboard foundation with an Overview page, dark operational shell, explicit `unconnected` default state, demo-only canonical ClearIntent payload preview, wallet validation copy, and provider evidence cards that do not treat frontend-local state as authority truth.
 - Reworked the Phase 6 dashboard navigation so Overview is the public explanatory entry page, wallet connection sits in the top-right, and connected wallets reveal Setup Wizard, Provider Evidence, Intent History, Human Intervention, and Settings as separate sidebar destinations.

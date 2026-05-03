@@ -320,7 +320,7 @@ Dashboard scope:
 - KeeperHub events are reported/non-authoritative until authenticated and replay-checked.
 - The dashboard must not claim smart-account/session-key enforcement, WalletConnect/mobile validation, or hardware-wallet validation until those are separately proven.
 
-Status: Phase 6 foundation is implemented locally under `apps/web/`. It proves app structure, governance opening, Overview rendering, state vocabulary, canonical payload preview, EIP-1193/MetaMask request-shape construction, Alchemy readiness reporting, and non-authoritative KeeperHub event ingest/display. It does not prove real MetaMask signing, wallet-rendered preview, WalletConnect/mobile, hardware-wallet validation, Ledger Clear Signing, smart-account/session-key enforcement, trusted KeeperHub webhooks, or Phase 7 wizard behavior.
+Status: Phase 6 foundation is implemented locally under `apps/web/`. It proves app structure, governance opening, Overview rendering, state vocabulary, canonical payload preview, EIP-1193/MetaMask request-shape construction, Alchemy readiness reporting, and non-authoritative KeeperHub event ingest/display. It does not prove real MetaMask signing, wallet-rendered preview, WalletConnect/mobile, hardware-wallet validation, Ledger Clear Signing, trusted KeeperHub webhooks, or transaction-backed agent execution.
 
 Agent wallet scope:
 
@@ -360,6 +360,8 @@ Wizard scope:
 - The wizard must not request seed phrases, parent private keys, or unrestricted hot-wallet keys.
 - The wizard must not mark setup ready unless evidence exists.
 - The wizard prepares the operator path for a later Guardian Agent end-to-end demo; it does not itself prove planner/critic/executor autonomy.
+
+Status: Phase 7 has working setup validation evidence for `vel2.agent.clearintent.eth`: parent wallet `0xF7aDD17E99F097f9D0A6150D093EC049B2698c60`, parent-owned agent smart account `0x8b1F1bE3D0ab7C9B1180d66970fed3033B7CE720`, 0G policy URI `0g://0xe8f86ceff68b5faee99d123624713ab1d92a69acfcf4dbce5b2dff2ea8fe1046`, policy hash `0x6a5256e1d13d5f84dfb6a549803b15c11a549547c4f12d02cc1f88a9ec8557e9`, KeeperHub run `6uzildcmowq9jgiz12j5b`, and separate ENS portal verification that the ENS payload is deployed. The remaining gap is a demo transaction or test intent that records execution evidence through the agent account path.
 
 ## Phase 8: Stretch Standards and Monetization
 

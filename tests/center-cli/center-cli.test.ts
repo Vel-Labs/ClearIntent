@@ -730,6 +730,19 @@ describe("ClearIntent Center CLI skeleton", () => {
     expect(result.stdout).toContain("Binding blocking reasons:");
   });
 
+  it("renders Account Kit local setup prompts without requesting parent-wallet secrets", async () => {
+    const result = await runCliWithEnv(["accountkit", "setup-prompt"], {
+      NEXT_PUBLIC_ALCHEMY_CHAIN: "sepolia",
+      NEXT_PUBLIC_ALCHEMY_API_KEY: "test-public-key"
+    });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("ClearIntent accountkit setup-prompt");
+    expect(result.stdout).toContain("Account Kit status: [PASS] configured");
+    expect(result.stdout).toContain("Derive the Account Kit MultiOwnerModularAccount on sepolia");
+    expect(result.stdout).toContain("does not ask for parent wallet seed phrases or private keys");
+  });
+
   it("renders successful local memory adapter status when the integration API provides it", () => {
     const doctor = buildModuleDoctorResult({
       ok: true,

@@ -38,6 +38,38 @@ Phase 4B now has an exported KeeperHub workflow artifact at `docs/providers/Keep
 
 Phase 6 added the local Next.js route shape at `apps/web/src/app/api/keeperhub/events/route.ts`. The route validates reported KeeperHub event shape and returns deterministic JSON, but it does not yet authenticate tokens/signatures, enforce timestamp/nonce replay checks, or bind source headers to a configured KeeperHub workflow. Events from that route must be displayed as reported/non-authoritative until those checks are implemented and audited.
 
+The route also accepts the ClearIntent workflow payload version used by the disabled `Send ClearIntent Event` block:
+
+```json
+{
+  "source": "keeperhub",
+  "project": "clearintent",
+  "schemaVersion": "clearintent.keeperhub-event.v1",
+  "eventType": "{{Evaluate ClearIntent Gate.result.eventType}}",
+  "status": "{{Evaluate ClearIntent Gate.result.status}}",
+  "error": "{{Evaluate ClearIntent Gate.result.error}}",
+  "severity": "{{Evaluate ClearIntent Gate.result.severity}}",
+  "shouldExecute": "{{Evaluate ClearIntent Gate.result.shouldExecute}}",
+  "parentWallet": "{{Evaluate ClearIntent Gate.result.parentWallet}}",
+  "agentAccount": "{{Evaluate ClearIntent Gate.result.agentAccount}}",
+  "agentEnsName": "{{Evaluate ClearIntent Gate.result.agentEnsName}}",
+  "intentHash": "{{Evaluate ClearIntent Gate.result.intentHash}}",
+  "verificationIntentHash": "{{Evaluate ClearIntent Gate.result.verificationIntentHash}}",
+  "policyHash": "{{Evaluate ClearIntent Gate.result.policyHash}}",
+  "verificationPolicyHash": "{{Evaluate ClearIntent Gate.result.verificationPolicyHash}}",
+  "auditLatest": "{{Evaluate ClearIntent Gate.result.auditLatest}}",
+  "actionType": "{{Evaluate ClearIntent Gate.result.actionType}}",
+  "target": "{{Evaluate ClearIntent Gate.result.target}}",
+  "chainId": "{{Evaluate ClearIntent Gate.result.chainId}}",
+  "valueLimit": "{{Evaluate ClearIntent Gate.result.valueLimit}}",
+  "executor": "{{Evaluate ClearIntent Gate.result.executor}}",
+  "signer": "{{Evaluate ClearIntent Gate.result.signer}}",
+  "transactionHash": "{{Evaluate ClearIntent Gate.result.transactionHash}}"
+}
+```
+
+The ingest route rejects unresolved `{{...}}` template values and returns an isolation key derived first from `agentAccount`, then `agentEnsName`, then `parentWallet` as fallback. The agent smart account is the preferred webhook namespace so one parent wallet can operate several agentic wallets with separate intent streams. It does not forward events to user webhooks. User webhook fanout remains disabled until ClearIntent has agent-scoped destination registration, parent-wallet proof for that destination, replay protection, source binding, and per-policy event-type controls.
+
 First live submit evidence:
 
 - workflow ID: `r8hbrox9eorgvvlunk72b`
@@ -129,3 +161,5 @@ Sources: [AI tools overview](https://docs.keeperhub.com/ai-tools), [MCP server](
 
 - Bind the executor identity or workflow reference into the 0G/ENS evidence path when the live KeeperHub target is selected.
 - Capture one live run or transaction and convert it into a canonical `ExecutionReceipt`.
+- Run one demo transaction or test intent through the parent-owned agent account path before claiming transaction-backed autonomous execution.
+- Implement agent-scoped webhook destination registration before enabling Discord, Telegram, or custom webhook fanout.

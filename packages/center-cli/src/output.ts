@@ -1,4 +1,5 @@
 import { stableStringify, type ResultIssue } from "../../core/src";
+import type { AccountKitCliStatus } from "./accountkit-status";
 import type { CredentialSafetyStatus, CredentialCheckStatus } from "./credential-safety";
 import type { CenterExecutionStatus } from "./execution-status";
 import type { CenterIdentityBindingStatus, CenterIdentityStatus } from "./identity-status";
@@ -19,6 +20,7 @@ export type CliCommandResult = {
     | "live-readiness"
     | "ens-local-fixture"
     | "ens-live-read"
+    | "accountkit-readiness"
     | "keeperhub-local-fixture"
     | "keeperhub-live"
     | "signer-local-fixture";
@@ -100,6 +102,10 @@ export function renderHuman(result: CliCommandResult): string {
     lines.push(...renderCredentialSafety(explicit.data.credentials));
   }
 
+  if (isAccountKitData(explicit.data)) {
+    lines.push(...renderAccountKitStatus(explicit.data.accountKit));
+  }
+
   if (explicit.issues.length > 0) {
     lines.push("Issues:");
     for (const issue of explicit.issues) {
@@ -178,6 +184,23 @@ function isTestSummaryData(data: Record<string, unknown>): data is { testSummary
 
 function isCredentialSafetyData(data: Record<string, unknown>): data is { credentials: CredentialSafetyStatus } {
   return typeof data.credentials === "object" && data.credentials !== null;
+}
+
+function isAccountKitData(data: Record<string, unknown>): data is { accountKit: AccountKitCliStatus } {
+  return typeof data.accountKit === "object" && data.accountKit !== null;
+}
+
+function renderAccountKitStatus(accountKit: AccountKitCliStatus): string[] {
+  return [
+    `Account Kit status: ${accountKit.ok ? "[PASS] configured" : "[BLOCKED] missing config"}`,
+    `Account Kit chain: ${accountKit.chain ?? "missing"}`,
+    `Alchemy API key: ${accountKit.apiKeyPresent ? "present" : "missing"}`,
+    `Missing config: ${formatList(accountKit.missing)}`,
+    "Account Kit setup prompt:",
+    ...accountKit.prompts.map((prompt) => `- ${prompt}`),
+    "Account Kit proof boundaries:",
+    ...accountKit.notes.map((note) => `- ${note}`)
+  ];
 }
 
 function renderMemoryStatus(memory: CenterMemoryStatus): string[] {

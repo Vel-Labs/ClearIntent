@@ -1,4 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  deployParentOwnedAgentAccount,
+  deriveParentOwnedAgentAccount,
+  getAlchemyReadiness,
+  type AlchemyReadiness,
+  type AgentAccountEvidence
+} from "../../lib/alchemy";
 import { isUsableAgentLabel, normalizeAgentLabel, toAgentEnsName } from "../../lib/ens/names";
 
 export type SetupWizardStatus = "not-started" | "in-progress" | "complete";
@@ -31,6 +38,50 @@ type NameCheckState =
   | { status: "taken"; message: string }
   | { status: "error"; message: string };
 
+type AccountStepState =
+  | { status: "idle"; message: string }
+  | { status: "creating"; message: string }
+  | { status: "ready"; message: string; evidence: AgentAccountEvidence; issues: string[] }
+  | { status: "deploying"; message: string; evidence?: AgentAccountEvidence }
+  | { status: "deployed"; message: string; evidence: AgentAccountEvidence; issues: string[] }
+  | { status: "error"; message: string; issues: string[]; evidence?: AgentAccountEvidence };
+
+type AccountFundingState =
+  | { status: "idle" }
+  | { status: "funding"; amountWei: bigint; accountAddress: string }
+  | { status: "submitted"; amountWei: bigint; accountAddress: string; transactionHash: string }
+  | { status: "error"; amountWei: bigint; accountAddress: string; message: string };
+
+type StepOperationState =
+  | { status: "idle"; message: string }
+  | { status: "running"; message: string }
+  | { status: "ready"; message: string; evidence: Record<string, unknown>; issues: string[] }
+  | { status: "error"; message: string; issues: string[]; evidence?: Record<string, unknown> };
+
+type ZeroGRecords = {
+  agentCard: string;
+  policyUri: string;
+  policyHash: string;
+  auditLatest: string;
+  clearintentVersion: string;
+};
+
+type PreparedWalletTransaction = {
+  label: string;
+  to: string;
+  value: string;
+  data: string;
+};
+
+type AccountKitConfigPayload = AlchemyReadiness & {
+  env?: Record<string, string | undefined>;
+};
+
+const suggestedAgentGasTopUpWei = 500_000_000_000_000n;
+const lowCostPriorityFeeWei = 500_000_000n;
+const lowCostFeeMultiplierNumerator = 12n;
+const lowCostFeeMultiplierDenominator = 10n;
+
 const wizardSteps: WizardStep[] = [
   {
     id: "username",
@@ -51,11 +102,10 @@ const wizardSteps: WizardStep[] = [
     summary: "Create or predict the parent-owned Alchemy smart account.",
     detail:
       "The parent wallet stays in control. The agent account is the purpose-built operating account for trading and policy-bound execution.",
-    approval: "Wallet approval 1",
-    actionLabel: "Create smart account",
+    approval: "Wallet approval",
+    actionLabel: "Derive smart account",
     evidenceLabel: "Smart account address",
-    proofTarget: "Account Kit owner binding receipt",
-    blocker: "Account Kit transaction builder is not wired into this UI yet."
+    proofTarget: "Account Kit deployment UserOperation submitted by parent wallet"
   },
   {
     id: "ens",
@@ -63,12 +113,11 @@ const wizardSteps: WizardStep[] = [
     shortLabel: "Subname",
     summary: "Bind the selected subname to the agent smart account address.",
     detail:
-      "A future ClearIntent subname controller can batch the subname claim, resolver, and address record into the same approval as account setup where practical.",
+      "Create the ENS identity and point it at the agent smart account. Today this uses parent-wallet ENS transactions; a controller can collapse this into one approval.",
     approval: "Wallet approval 1",
-    actionLabel: "Sign ENS claim",
+    actionLabel: "Prepare ENS claim",
     evidenceLabel: "ENS claim transaction",
-    proofTarget: "Subname owner/resolver points at agent account",
-    blocker: "Subname controller write path is not wired into this UI yet."
+    proofTarget: "Subname owner/resolver points at agent account"
   },
   {
     id: "zerog",
@@ -80,8 +129,7 @@ const wizardSteps: WizardStep[] = [
     approval: "Provider step",
     actionLabel: "Publish to 0G",
     evidenceLabel: "0G artifact roots",
-    proofTarget: "agent.card, policy.uri, audit.latest",
-    blocker: "0G publish is still CLI-backed for this build."
+    proofTarget: "agent.card, policy.uri, audit.latest"
   },
   {
     id: "records",
@@ -91,10 +139,9 @@ const wizardSteps: WizardStep[] = [
     detail:
       "The ENS Public Resolver can set the ClearIntent text records with one resolver multicall once the 0G refs exist.",
     approval: "Wallet approval 2",
-    actionLabel: "Sign ENS records",
+    actionLabel: "Prepare record transaction",
     evidenceLabel: "Resolver multicall receipt",
-    proofTarget: "Required ClearIntent text records resolve on ENS",
-    blocker: "Resolver multicall submission is not wired into this UI yet."
+    proofTarget: "Required ClearIntent text records resolve on ENS"
   },
   {
     id: "keeperhub",
@@ -104,10 +151,9 @@ const wizardSteps: WizardStep[] = [
     detail:
       "KeeperHub remains the execution layer after ClearIntent verification. Webhook delivery stays disabled until clearintent.xyz is live.",
     approval: "Config step",
-    actionLabel: "Verify KeeperHub",
+    actionLabel: "Submit KeeperHub gate",
     evidenceLabel: "Workflow run status",
-    proofTarget: "KeeperHub workflow accepts ClearIntent payload",
-    blocker: "KeeperHub wiring is CLI-backed until the web ingest is deployed."
+    proofTarget: "KeeperHub workflow accepts ClearIntent payload"
   },
   {
     id: "ready",
@@ -130,14 +176,67 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
     status: "idle",
     message: "Enter a name to check ENS availability."
   });
+  const [accountStep, setAccountStep] = useState<AccountStepState>({
+    status: "idle",
+    message: "Derive the parent-owned smart account after the agent name is confirmed."
+  });
+  const [accountFunding, setAccountFunding] = useState<AccountFundingState>({ status: "idle" });
+  const [ensStep, setEnsStep] = useState<StepOperationState>({
+    status: "idle",
+    message: "Deploy the smart account before preparing the ENS subname transaction."
+  });
+  const [zeroGStep, setZeroGStep] = useState<StepOperationState>({
+    status: "idle",
+    message: "Publish policy, audit, and agent-card artifacts once the ENS name is selected."
+  });
+  const [recordsStep, setRecordsStep] = useState<StepOperationState>({
+    status: "idle",
+    message: "Publish 0G artifacts before preparing the ENS resolver record multicall."
+  });
+  const [keeperHubStep, setKeeperHubStep] = useState<StepOperationState>({
+    status: "idle",
+    message: "Bind the ClearIntent execution gate after ENS records are submitted."
+  });
+  const [accountKitConfig, setAccountKitConfig] = useState<AccountKitConfigPayload>(() => ({
+    ...getAlchemyReadiness(),
+    env: undefined
+  }));
   const safeActiveIndex = clamp(activeStepIndex, 0, wizardSteps.length - 1);
+  const accountKitReadiness = accountKitConfig;
   const normalizedAgentName = useMemo(() => normalizeAgentLabel(agentName), [agentName]);
   const agentEnsName = toAgentEnsName(normalizedAgentName);
   const canCheckName = isUsableAgentLabel(normalizedAgentName) && nameCheck.status !== "checking";
   const nameIsAvailable = nameCheck.status === "available";
+  const accountIsReady = accountStep.status === "deployed";
+  const zeroGRecords = zeroGStep.status === "ready" ? (zeroGStep.evidence.records as ZeroGRecords | undefined) : undefined;
   const effectiveActiveIndex = safeActiveIndex > 0 && !nameIsAvailable ? 0 : safeActiveIndex;
   const activeStep = wizardSteps[effectiveActiveIndex];
   const finalStepActive = effectiveActiveIndex === wizardSteps.length - 1;
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadAccountKitConfig() {
+      try {
+        const response = await fetch("/api/setup/accountkit-config", { method: "GET" });
+        const payload = (await response.json()) as AccountKitConfigPayload;
+        if (!cancelled) {
+          setAccountKitConfig(payload);
+        }
+      } catch {
+        if (!cancelled) {
+          setAccountKitConfig((current) => ({
+            ...current,
+            notes: [...current.notes, "Local Account Kit config route was unavailable."]
+          }));
+        }
+      }
+    }
+
+    void loadAccountKitConfig();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function checkNameAvailability() {
     if (!canCheckName) return;
@@ -183,6 +282,47 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
   function updateAgentName(value: string) {
     setAgentName(value);
     setNameCheck({ status: "idle", message: "Enter a name to check ENS availability." });
+    setAccountStep({
+      status: "idle",
+      message: "Derive the parent-owned smart account after the agent name is confirmed."
+    });
+    setAccountFunding({ status: "idle" });
+    setEnsStep({ status: "idle", message: "Deploy the smart account before preparing the ENS subname transaction." });
+    setZeroGStep({ status: "idle", message: "Publish policy, audit, and agent-card artifacts once the ENS name is selected." });
+    setRecordsStep({ status: "idle", message: "Publish 0G artifacts before preparing the ENS resolver record multicall." });
+    setKeeperHubStep({ status: "idle", message: "Bind the ClearIntent execution gate after ENS records are submitted." });
+  }
+
+  async function runActiveStep() {
+    if (activeStep.id === "account") {
+      if (accountStep.status === "ready" && accountFunding.status !== "submitted") {
+        await fundAgentGas(accountStep.evidence);
+        return;
+      }
+      if (accountStep.status === "error" && accountStep.evidence !== undefined && accountFunding.status !== "submitted") {
+        await fundAgentGas(accountStep.evidence);
+        return;
+      }
+      await runAccountStep();
+      return;
+    }
+    if (activeStep.id === "ens") {
+      await runEnsClaimStep();
+      return;
+    }
+    if (activeStep.id === "zerog") {
+      await runZeroGStep();
+      return;
+    }
+    if (activeStep.id === "records") {
+      await runEnsRecordsStep();
+      return;
+    }
+    if (activeStep.id === "keeperhub") {
+      await runKeeperHubStep();
+      return;
+    }
+    advanceActiveStep();
   }
 
   function advanceActiveStep() {
@@ -200,11 +340,53 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
   function isStepActionDisabled(step: WizardStep): boolean {
     if (status === "complete") return true;
     if (step.id === "username") return !nameIsAvailable;
-    return true;
+    if (step.id === "account") {
+      if (accountStep.status === "creating" || accountStep.status === "deploying") return true;
+      if (accountFunding.status === "funding") return true;
+      if (accountStep.status === "error" && accountStep.evidence !== undefined) return !accountKitReadiness.accountKitReady;
+      if (accountIsReady) return false;
+      return !nameIsAvailable || !accountKitReadiness.accountKitReady;
+    }
+    if (step.id === "ens") return !accountIsReady || isRunning(ensStep);
+    if (step.id === "zerog") return ensStep.status !== "ready" || isRunning(zeroGStep);
+    if (step.id === "records") return zeroGStep.status !== "ready" || isRunning(recordsStep);
+    if (step.id === "keeperhub") return recordsStep.status !== "ready" || isRunning(keeperHubStep);
+    if (step.id === "ready") return keeperHubStep.status !== "ready";
+    return false;
+  }
+
+  function activeActionLabel(step: WizardStep): string {
+    if (finalStepActive) return "Complete setup";
+    if (step.id === "username" && nameIsAvailable) return "Next step";
+    if (step.id === "account") {
+      if (accountStep.status === "creating") return "Creating";
+      if (accountStep.status === "deploying") return "Deploying";
+      if (accountFunding.status === "funding") return "Funding agent gas";
+      if (accountStep.status === "ready" && accountFunding.status !== "submitted") return "Fund agent gas";
+      if (accountStep.status === "ready" && accountFunding.status === "submitted") return "Deploy smart account";
+      if (accountStep.status === "error" && accountStep.evidence !== undefined && accountFunding.status !== "submitted") {
+        return "Fund agent gas";
+      }
+      if (accountStep.status === "error" && accountStep.evidence !== undefined && accountFunding.status === "submitted") {
+        return "Retry deployment";
+      }
+      if (accountIsReady) return "Next step";
+      return step.actionLabel;
+    }
+    if (step.id === "ens" && ensStep.status === "ready") return "Next step";
+    if (step.id === "zerog" && zeroGStep.status === "ready") return "Next step";
+    if (step.id === "records" && recordsStep.status === "ready") return "Next step";
+    if (step.id === "keeperhub" && keeperHubStep.status === "ready") return "Next step";
+    return step.actionLabel;
   }
 
   function stepStateLabel(step: WizardStep, index: number): string {
     if (step.id === "username" && nameIsAvailable && index < effectiveActiveIndex) return "Confirmed";
+    if (step.id === "account" && accountIsReady && index < effectiveActiveIndex) return "Deployed";
+    if (step.id === "ens" && ensStep.status === "ready" && index < effectiveActiveIndex) return "Submitted";
+    if (step.id === "zerog" && zeroGStep.status === "ready" && index < effectiveActiveIndex) return "Published";
+    if (step.id === "records" && recordsStep.status === "ready" && index < effectiveActiveIndex) return "Submitted";
+    if (step.id === "keeperhub" && keeperHubStep.status === "ready" && index < effectiveActiveIndex) return "Submitted";
     if (index === effectiveActiveIndex) return step.id === "username" && nameIsAvailable ? "Ready" : "Active";
     if (index < effectiveActiveIndex) return "Needs evidence";
     return "Queued";
@@ -212,9 +394,299 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
 
   function stepCardState(step: WizardStep, index: number): string {
     if (step.id === "username" && nameIsAvailable && index < effectiveActiveIndex) return "confirmed";
+    if (step.id === "account" && accountIsReady && index < effectiveActiveIndex) return "confirmed";
+    if (step.id === "ens" && ensStep.status === "ready" && index < effectiveActiveIndex) return "confirmed";
+    if (step.id === "zerog" && zeroGStep.status === "ready" && index < effectiveActiveIndex) return "confirmed";
+    if (step.id === "records" && recordsStep.status === "ready" && index < effectiveActiveIndex) return "confirmed";
+    if (step.id === "keeperhub" && keeperHubStep.status === "ready" && index < effectiveActiveIndex) return "confirmed";
     if (index === effectiveActiveIndex) return "active";
     if (index < effectiveActiveIndex) return "unverified";
     return "queued";
+  }
+
+  async function runAccountStep() {
+    if (accountStep.status === "deployed") {
+      advanceActiveStep();
+      return;
+    }
+    if (accountStep.status === "ready") {
+      await deployAgentAccount(accountStep.evidence);
+      return;
+    }
+    if (accountStep.status === "error" && accountStep.evidence !== undefined) {
+      await deployAgentAccount(accountStep.evidence);
+      return;
+    }
+    await deriveAgentAccount();
+  }
+
+  async function deriveAgentAccount() {
+    if (!nameIsAvailable) return;
+    setAccountStep({ status: "creating", message: "Deriving Account Kit smart-account address from the connected parent wallet..." });
+
+    try {
+      const result = await deriveParentOwnedAgentAccount({
+        provider: typeof window === "undefined" ? undefined : window.ethereum,
+        agentEnsName,
+        env: accountKitConfig.env
+      });
+
+      if (!result.ok) {
+        setAccountStep({
+          status: "error",
+          message: "Account Kit could not derive the agent account.",
+          issues: result.issues
+        });
+        return;
+      }
+
+      setAccountStep({
+        status: "ready",
+        message:
+          result.issues.length > 0
+            ? "Smart-account address derived with a configuration warning."
+            : "Smart-account address derived. Fund the new account with deployment gas, then deploy it.",
+        evidence: result.evidence,
+        issues: result.issues
+      });
+    } catch (error) {
+      setAccountStep({
+        status: "error",
+        message: error instanceof Error ? error.message : "Account Kit failed before producing account evidence.",
+        issues: ["account_kit_derivation_failed"]
+      });
+    }
+  }
+
+  async function deployAgentAccount(predictedEvidence: AgentAccountEvidence) {
+    setAccountStep({
+      status: "deploying",
+      message: "Submitting Account Kit deployment UserOperation through the connected parent wallet...",
+      evidence: predictedEvidence
+    });
+
+    try {
+      const result = await deployParentOwnedAgentAccount({
+        provider: typeof window === "undefined" ? undefined : window.ethereum,
+        agentEnsName,
+        env: accountKitConfig.env
+      });
+
+      if (!result.ok) {
+        setAccountStep({
+          status: "error",
+          message: "Account Kit deployment is blocked.",
+          issues: result.issues,
+          evidence: predictedEvidence
+        });
+        return;
+      }
+
+      setAccountStep({
+        status: "deployed",
+        message:
+          result.issues.length > 0
+            ? "Smart-account deployment was submitted; transaction receipt is still pending."
+            : "Smart account deployment is recorded.",
+        evidence: result.evidence,
+        issues: result.issues
+      });
+      setAccountFunding({ status: "idle" });
+    } catch (error) {
+      setAccountStep({
+        status: "error",
+        message: error instanceof Error ? error.message : "Account Kit deployment failed before producing account evidence.",
+        issues: ["account_kit_deployment_failed"],
+        evidence: predictedEvidence
+      });
+    }
+  }
+
+  async function fundAgentGas(predictedEvidence: AgentAccountEvidence) {
+    setAccountFunding({
+      status: "funding",
+      amountWei: suggestedAgentGasTopUpWei,
+      accountAddress: predictedEvidence.accountAddress
+    });
+
+    try {
+      const transactionHash = await sendNativeTransfer({
+        chainId: predictedEvidence.chainId,
+        to: predictedEvidence.accountAddress,
+        valueWei: suggestedAgentGasTopUpWei
+      });
+      setAccountFunding({
+        status: "submitted",
+        amountWei: suggestedAgentGasTopUpWei,
+        accountAddress: predictedEvidence.accountAddress,
+        transactionHash
+      });
+      setAccountStep({
+        status: "error",
+        message: "Agent gas funding transaction was submitted.",
+        issues: [
+          `Funding transaction: ${transactionHash}`,
+          "Retry deployment after the funding transaction is visible on the Account Kit target chain."
+        ],
+        evidence: predictedEvidence
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setAccountFunding({
+        status: "error",
+        amountWei: suggestedAgentGasTopUpWei,
+        accountAddress: predictedEvidence.accountAddress,
+        message
+      });
+      setAccountStep({
+        status: "error",
+        message: "Agent gas funding is blocked.",
+        issues: [message],
+        evidence: predictedEvidence
+      });
+    }
+  }
+
+  async function runEnsClaimStep() {
+    if (ensStep.status === "ready") {
+      advanceActiveStep();
+      return;
+    }
+    const accountEvidence = accountStep.status === "deployed" ? accountStep.evidence : undefined;
+    if (accountEvidence === undefined) return;
+    setEnsStep({ status: "running", message: "Preparing ENS subname transactions for parent-wallet approval..." });
+
+    try {
+      const payload = await postJson<{
+        ok?: boolean;
+        error?: string;
+        ensName?: string;
+        warning?: string;
+        transactions?: PreparedWalletTransaction[];
+      }>("/api/setup/ens-claim", {
+        label: normalizedAgentName,
+        ownerAddress: accountEvidence.parentAddress,
+        agentAccountAddress: accountEvidence.accountAddress
+      });
+      if (!payload.ok || payload.transactions === undefined || payload.ensName === undefined) {
+        throw new Error(payload.error ?? "ENS claim preparation did not return transactions.");
+      }
+      const hashes = await sendWalletTransactions(payload.transactions, 1);
+      setEnsStep({
+        status: "ready",
+        message: "ENS subname transactions were submitted from the parent wallet.",
+        evidence: { ensName: payload.ensName, transactionHashes: hashes, warning: payload.warning ?? "" },
+        issues: []
+      });
+    } catch (error) {
+      setEnsStep({
+        status: "error",
+        message: "ENS subname claim is blocked.",
+        issues: [error instanceof Error ? error.message : String(error)]
+      });
+    }
+  }
+
+  async function runZeroGStep() {
+    if (zeroGStep.status === "ready") {
+      advanceActiveStep();
+      return;
+    }
+    const accountEvidence = accountStep.status === "deployed" ? accountStep.evidence : undefined;
+    if (accountEvidence === undefined) return;
+    setZeroGStep({ status: "running", message: "Publishing agent card, policy, and audit pointer artifacts to 0G..." });
+
+    try {
+      const status = await postJson<Record<string, unknown>>("/api/setup/zerog-bindings", {
+        agentEnsName,
+        controllerAddress: accountEvidence.accountAddress
+      });
+      const blockingReasons = asStringArray(status.blockingReasons);
+      if (blockingReasons.length > 0 || status.records === undefined) {
+        throw new Error(`0G binding blocked: ${blockingReasons.join(", ") || "missing records"}`);
+      }
+      setZeroGStep({
+        status: "ready",
+        message: typeof status.summary === "string" ? status.summary : "0G artifacts were published and records were generated.",
+        evidence: status,
+        issues: asStringArray(status.degradedReasons)
+      });
+    } catch (error) {
+      setZeroGStep({
+        status: "error",
+        message: "0G binding publish is blocked.",
+        issues: [error instanceof Error ? error.message : String(error)]
+      });
+    }
+  }
+
+  async function runEnsRecordsStep() {
+    if (recordsStep.status === "ready") {
+      advanceActiveStep();
+      return;
+    }
+    if (zeroGRecords === undefined) return;
+    setRecordsStep({ status: "running", message: "Preparing resolver multicall and requesting parent-wallet submission..." });
+
+    try {
+      const status = await postJson<{
+        ok?: boolean;
+        summary?: string;
+        blockingReasons?: string[];
+        degradedReasons?: string[];
+        tx?: { to: string; value: string; data: string };
+      }>("/api/setup/ens-records", {
+        agentEnsName,
+        ...zeroGRecords
+      });
+      if (!status.ok || status.tx === undefined) {
+        throw new Error(`ENS record binding blocked: ${(status.blockingReasons ?? []).join(", ") || "missing transaction"}`);
+      }
+      const hashes = await sendWalletTransactions(
+        [{ label: "Set ClearIntent ENS text records", to: status.tx.to, value: "0x0", data: status.tx.data }],
+        1
+      );
+      setRecordsStep({
+        status: "ready",
+        message: status.summary ?? "ENS resolver multicall was submitted.",
+        evidence: { transactionHashes: hashes, records: zeroGRecords },
+        issues: status.degradedReasons ?? []
+      });
+    } catch (error) {
+      setRecordsStep({
+        status: "error",
+        message: "ENS record binding is blocked.",
+        issues: [error instanceof Error ? error.message : String(error)]
+      });
+    }
+  }
+
+  async function runKeeperHubStep() {
+    if (keeperHubStep.status === "ready") {
+      advanceActiveStep();
+      return;
+    }
+    setKeeperHubStep({ status: "running", message: "Submitting the configured KeeperHub workflow gate..." });
+
+    try {
+      const status = await postJson<Record<string, unknown>>("/api/setup/keeperhub", { action: "submit" });
+      const blockingReasons = asStringArray(status.blockingReasons);
+      if (blockingReasons.length > 0) {
+        throw new Error(`KeeperHub submit blocked: ${blockingReasons.join(", ")}`);
+      }
+      setKeeperHubStep({
+        status: "ready",
+        message: typeof status.summary === "string" ? status.summary : "KeeperHub workflow submit returned evidence.",
+        evidence: status,
+        issues: asStringArray(status.degradedReasons)
+      });
+    } catch (error) {
+      setKeeperHubStep({
+        status: "error",
+        message: "KeeperHub gate submission is blocked.",
+        issues: [error instanceof Error ? error.message : String(error)]
+      });
+    }
   }
 
   return (
@@ -290,29 +762,110 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
                     {nameCheck.message}
                   </div>
                 </div>
-              ) : (
-                <div className="wizard-operation-block">
-                  <span>Next integration required</span>
-                  <strong>{activeStep.blocker}</strong>
-                  <p>
-                    This step should open a wallet/provider prompt and then record a receipt before it can be marked
-                    complete.
-                  </p>
+              ) : activeStep.id === "account" ? (
+                <div className="wizard-account-block">
+                  <div className="wizard-account-summary">
+                    <span className={accountKitReadiness.accountKitReady ? "ok" : "warning"}>
+                      {accountKitReadiness.accountKitReady ? "Account Kit configured" : "Configuration required"}
+                    </span>
+                    <strong>
+                      {accountKitReadiness.accountKitReady
+                        ? `Target chain: ${accountKitReadiness.config.chain}`
+                        : `Missing: ${accountKitReadiness.missing.join(", ")}`}
+                    </strong>
+                    <p>
+                      Step 2 derives the parent-owned Alchemy smart account and then submits a deployment UserOperation.
+                      Gas sponsorship is off, so deployment requires funds on the Account Kit target chain.
+                    </p>
+                  </div>
+                  <div className={`wizard-account-status ${accountStep.status}`} role="status">
+                    <strong>{accountStep.message}</strong>
+                    {accountStep.status === "ready" ||
+                    accountStep.status === "deploying" ||
+                    accountStep.status === "deployed" ||
+                    (accountStep.status === "error" && accountStep.evidence !== undefined) ? (
+                      <dl>
+                        <div>
+                          <dt>Parent wallet</dt>
+                          <dd>{shortAddress(accountStep.evidence?.parentAddress ?? "")}</dd>
+                        </div>
+                        <div>
+                          <dt>Agent account</dt>
+                          <dd>{accountStep.evidence?.accountAddress}</dd>
+                        </div>
+                        <div>
+                          <dt>Proof boundary</dt>
+                          <dd>
+                            {accountStep.status === "deployed"
+                              ? accountStep.evidence.deployment?.transactionHash ?? accountStep.evidence.deployment?.userOperationHash
+                              : "Predicted address, not deployed authority yet."}
+                          </dd>
+                        </div>
+                      </dl>
+                    ) : null}
+                    {(accountStep.status === "ready" || accountStep.status === "deployed") && accountStep.issues.length > 0 ? (
+                      <ul>
+                        {accountStep.issues.map((issue) => (
+                          <li key={issue}>{issue}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {accountStep.status === "error" ? (
+                      <ul>
+                        {accountStep.issues.map((issue) => (
+                          <li key={issue}>{issue}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {accountStep.status === "error" && accountStep.evidence !== undefined ? (
+                      <div className="wizard-funding-note">
+                        <strong>Default funding path</strong>
+                        <p>
+                          ClearIntent can ask the parent wallet to send {formatEth(suggestedAgentGasTopUpWei)} ETH on{" "}
+                          {accountStep.evidence.chainName} to the predicted smart account, then retry deployment. This
+                          keeps gas funding inside the wizard.
+                        </p>
+                        {accountFunding.status === "submitted" ? (
+                          <span>Funding submitted: {accountFunding.transactionHash}</span>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
+              ) : activeStep.id === "ready" ? (
+                <ReadyBlock
+                  accountStep={accountStep}
+                  agentEnsName={agentEnsName}
+                  keeperHubStep={keeperHubStep}
+                  recordsStep={recordsStep}
+                  zeroGStep={zeroGStep}
+                />
+              ) : (
+                <OperationBlock step={activeStep} state={operationStateForStep(activeStep.id, ensStep, zeroGStep, recordsStep, keeperHubStep)} />
               )}
 
               <div className="wizard-step-actions">
                 <button
                   className="button primary"
                   disabled={isStepActionDisabled(activeStep)}
-                  onClick={advanceActiveStep}
+                  onClick={runActiveStep}
                   type="button"
                 >
-                  {finalStepActive ? "Complete setup" : activeStep.actionLabel}
+                  {activeActionLabel(activeStep)}
                 </button>
                 <span className="muted">
                   {activeStep.id === "username" && !nameIsAvailable
                     ? "Check and confirm an available ENS name first."
+                    : activeStep.id === "account" && !accountKitReadiness.accountKitReady
+                      ? "Set Account Kit public env first."
+                    : activeStep.id === "account" && accountStep.status === "ready" && accountFunding.status !== "submitted"
+                      ? "Parent wallet funds the new agent account."
+                    : activeStep.id === "account" && accountStep.status === "ready" && accountFunding.status === "submitted"
+                      ? "Deployment will request wallet approval."
+                    : activeStep.id === "account" && accountStep.status === "error" && accountStep.evidence !== undefined
+                      ? accountFunding.status === "submitted"
+                        ? "Funding submitted; retry deployment."
+                        : "Parent wallet funds the predicted account."
                     : activeStep.approval}
                 </span>
               </div>
@@ -329,7 +882,18 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
               </div>
               <div>
                 <span>Current receipt</span>
-                <strong>{activeStep.id === "username" && nameIsAvailable ? agentEnsName : "Not recorded yet"}</strong>
+                <strong>
+                  {currentReceipt(
+                    activeStep.id,
+                    nameIsAvailable,
+                    agentEnsName,
+                    accountStep,
+                    ensStep,
+                    zeroGStep,
+                    recordsStep,
+                    keeperHubStep
+                  )}
+                </strong>
               </div>
               <div>
                 <span>Authority boundary</span>
@@ -362,4 +926,360 @@ function clamp(value: number, min: number, max: number): number {
 
 function shortAddress(value: string): string {
   return value.length > 12 ? `${value.slice(0, 6)}...${value.slice(-4)}` : value;
+}
+
+function OperationBlock({ state, step }: { state: StepOperationState; step: WizardStep }) {
+  return (
+    <div className={`wizard-operation-block ${state.status}`}>
+      <span>{state.status === "ready" ? "Evidence recorded" : state.status === "running" ? "Working" : state.status === "error" ? "Blocked" : "Active step"}</span>
+      <strong>{state.message}</strong>
+      <p>{step.summary}</p>
+      {state.status === "ready" ? <ProofList evidence={state.evidence} /> : null}
+      {state.status === "error" || (state.status === "ready" && state.issues.length > 0) ? (
+        <ul>
+          {state.issues.map((issue) => (
+            <li key={issue}>{issue}</li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+function ReadyBlock({
+  accountStep,
+  agentEnsName,
+  keeperHubStep,
+  recordsStep,
+  zeroGStep
+}: {
+  accountStep: AccountStepState;
+  agentEnsName: string;
+  keeperHubStep: StepOperationState;
+  recordsStep: StepOperationState;
+  zeroGStep: StepOperationState;
+}) {
+  const accountEvidence = accountStep.status === "deployed" ? accountStep.evidence : undefined;
+  const records = zeroGStep.status === "ready" ? (zeroGStep.evidence.records as ZeroGRecords | undefined) : undefined;
+  const keeperHubRun = keeperHubStep.status === "ready" ? runIdFromEvidence(keeperHubStep.evidence) : undefined;
+  const setupReady = accountEvidence !== undefined && recordsStep.status === "ready" && keeperHubStep.status === "ready";
+
+  return (
+    <div className={`wizard-operation-block ${setupReady ? "ready" : "idle"}`}>
+      <span>{setupReady ? "Custody map ready" : "Waiting on evidence"}</span>
+      <strong>
+        {setupReady
+          ? "The agent can receive the SDK handoff without parent-wallet secrets."
+          : "Complete the account, ENS records, and KeeperHub gate before exporting the handoff."}
+      </strong>
+      <dl>
+        <div>
+          <dt>Agent ENS</dt>
+          <dd>{agentEnsName}</dd>
+        </div>
+        <div>
+          <dt>Parent wallet</dt>
+          <dd>{accountEvidence?.parentAddress ?? "Not recorded yet"}</dd>
+        </div>
+        <div>
+          <dt>Agent account</dt>
+          <dd>{accountEvidence?.accountAddress ?? "Not recorded yet"}</dd>
+        </div>
+        <div>
+          <dt>Policy URI</dt>
+          <dd>{records?.policyUri ?? "Not recorded yet"}</dd>
+        </div>
+        <div>
+          <dt>Policy hash</dt>
+          <dd>{records?.policyHash ?? "Not recorded yet"}</dd>
+        </div>
+        <div>
+          <dt>KeeperHub run</dt>
+          <dd>{keeperHubRun ?? "Not recorded yet"}</dd>
+        </div>
+      </dl>
+    </div>
+  );
+}
+
+function ProofList({ evidence }: { evidence: Record<string, unknown> }) {
+  const rows = [
+    ["ENS name", stringFromEvidence(evidence, "ensName")],
+    ["Transaction", firstHashFromEvidence(evidence)],
+    ["Policy", policyUriFromEvidence(evidence)],
+    ["Run", runIdFromEvidence(evidence)]
+  ].filter((row): row is [string, string] => row[1] !== undefined);
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return (
+    <dl>
+      {rows.map(([label, value]) => (
+        <div key={label}>
+          <dt>{label}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function currentReceipt(
+  stepId: string,
+  nameIsAvailable: boolean,
+  agentEnsName: string,
+  accountStep: AccountStepState,
+  ensStep: StepOperationState,
+  zeroGStep: StepOperationState,
+  recordsStep: StepOperationState,
+  keeperHubStep: StepOperationState
+): string {
+  if (stepId === "username" && nameIsAvailable) {
+    return agentEnsName;
+  }
+  if (stepId === "account" && (accountStep.status === "ready" || accountStep.status === "deploying" || accountStep.status === "deployed")) {
+    return accountStep.status === "deployed"
+      ? accountStep.evidence.deployment?.transactionHash ?? accountStep.evidence.deployment?.userOperationHash ?? accountStep.evidence.accountAddress
+      : accountStep.evidence?.accountAddress ?? "Not recorded yet";
+  }
+  if (stepId === "account" && accountStep.status === "error" && accountStep.evidence !== undefined) {
+    return accountStep.evidence.accountAddress;
+  }
+  if (stepId === "ens" && ensStep.status === "ready") {
+    return firstHashFromEvidence(ensStep.evidence) ?? "Submitted";
+  }
+  if (stepId === "zerog" && zeroGStep.status === "ready") {
+    return policyUriFromEvidence(zeroGStep.evidence) ?? "0G artifacts recorded";
+  }
+  if (stepId === "records" && recordsStep.status === "ready") {
+    return firstHashFromEvidence(recordsStep.evidence) ?? "ENS records submitted";
+  }
+  if (stepId === "keeperhub" && keeperHubStep.status === "ready") {
+    return runIdFromEvidence(keeperHubStep.evidence) ?? "KeeperHub submitted";
+  }
+  if (stepId === "ready") {
+    return keeperHubStep.status === "ready" ? "Custody map ready" : "Not recorded yet";
+  }
+  return "Not recorded yet";
+}
+
+function operationStateForStep(
+  stepId: string,
+  ensStep: StepOperationState,
+  zeroGStep: StepOperationState,
+  recordsStep: StepOperationState,
+  keeperHubStep: StepOperationState
+): StepOperationState {
+  if (stepId === "ens") return ensStep;
+  if (stepId === "zerog") return zeroGStep;
+  if (stepId === "records") return recordsStep;
+  if (stepId === "keeperhub") return keeperHubStep;
+  return { status: "idle", message: "Complete the previous step first." };
+}
+
+function isRunning(step: StepOperationState): boolean {
+  return step.status === "running";
+}
+
+async function postJson<T>(url: string, body: Record<string, unknown>): Promise<T> {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  const payload = (await response.json()) as T & { error?: string };
+  if (!response.ok && payload.error !== undefined) {
+    throw new Error(payload.error);
+  }
+  return payload;
+}
+
+async function sendWalletTransactions(transactions: PreparedWalletTransaction[], chainId: number): Promise<string[]> {
+  const provider = typeof window === "undefined" ? undefined : window.ethereum;
+  if (provider === undefined) {
+    throw new Error("No EIP-1193 wallet provider is available.");
+  }
+
+  await provider.request({
+    method: "wallet_switchEthereumChain",
+    params: [{ chainId: `0x${chainId.toString(16)}` }]
+  });
+  const accounts = await provider.request({ method: "eth_requestAccounts" });
+  const from = Array.isArray(accounts) && typeof accounts[0] === "string" ? accounts[0] : undefined;
+  if (from === undefined) {
+    throw new Error("Wallet did not return a parent account.");
+  }
+
+  const hashes: string[] = [];
+  for (const transaction of transactions) {
+    const txParams = await buildLowCostWalletTransaction(provider, {
+      from,
+      to: transaction.to,
+      value: transaction.value,
+      data: transaction.data
+    });
+    const hash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [txParams]
+    });
+    if (typeof hash !== "string" || !hash.startsWith("0x")) {
+      throw new Error(`${transaction.label} did not return a transaction hash.`);
+    }
+    hashes.push(hash);
+  }
+  return hashes;
+}
+
+async function sendNativeTransfer(input: { chainId: number; to: string; valueWei: bigint }): Promise<string> {
+  const provider = typeof window === "undefined" ? undefined : window.ethereum;
+  if (provider === undefined) {
+    throw new Error("No EIP-1193 wallet provider is available.");
+  }
+
+  await provider.request({
+    method: "wallet_switchEthereumChain",
+    params: [{ chainId: `0x${input.chainId.toString(16)}` }]
+  });
+  const accounts = await provider.request({ method: "eth_requestAccounts" });
+  const from = Array.isArray(accounts) && typeof accounts[0] === "string" ? accounts[0] : undefined;
+  if (from === undefined) {
+    throw new Error("Wallet did not return a parent account.");
+  }
+
+  const hash = await provider.request({
+    method: "eth_sendTransaction",
+    params: [
+      await buildLowCostWalletTransaction(provider, {
+        from,
+        to: input.to,
+        value: `0x${input.valueWei.toString(16)}`,
+        data: "0x"
+      })
+    ]
+  });
+  if (typeof hash !== "string" || !hash.startsWith("0x")) {
+    throw new Error("Funding transaction did not return a transaction hash.");
+  }
+  return hash;
+}
+
+async function buildLowCostWalletTransaction(
+  provider: NonNullable<typeof window.ethereum>,
+  request: { from: string; to: string; value: string; data: string }
+): Promise<Record<string, string>> {
+  const transaction: Record<string, string> = {
+    from: request.from,
+    to: request.to,
+    value: request.value,
+    data: request.data
+  };
+
+  const [gas, fees] = await Promise.all([estimateGasLimit(provider, transaction), estimateLowCostFees(provider)]);
+  if (gas !== undefined) {
+    transaction.gas = gas;
+  }
+  if (fees !== undefined) {
+    transaction.type = "0x2";
+    transaction.maxPriorityFeePerGas = fees.maxPriorityFeePerGas;
+    transaction.maxFeePerGas = fees.maxFeePerGas;
+  }
+
+  return transaction;
+}
+
+async function estimateGasLimit(provider: NonNullable<typeof window.ethereum>, transaction: Record<string, string>): Promise<string | undefined> {
+  try {
+    const value = await provider.request({
+      method: "eth_estimateGas",
+      params: [transaction]
+    });
+    if (typeof value !== "string" || !value.startsWith("0x")) {
+      return undefined;
+    }
+    const estimated = BigInt(value);
+    return `0x${((estimated * lowCostFeeMultiplierNumerator) / lowCostFeeMultiplierDenominator).toString(16)}`;
+  } catch {
+    return undefined;
+  }
+}
+
+async function estimateLowCostFees(
+  provider: NonNullable<typeof window.ethereum>
+): Promise<{ maxFeePerGas: string; maxPriorityFeePerGas: string } | undefined> {
+  try {
+    const feeHistory = await provider.request({
+      method: "eth_feeHistory",
+      params: ["0x1", "latest", []]
+    });
+    const baseFees = typeof feeHistory === "object" && feeHistory !== null ? (feeHistory as { baseFeePerGas?: unknown }).baseFeePerGas : undefined;
+    const latestBaseFeeHex = Array.isArray(baseFees) && typeof baseFees.at(-1) === "string" ? baseFees.at(-1) : undefined;
+    if (latestBaseFeeHex === undefined || !latestBaseFeeHex.startsWith("0x")) {
+      return undefined;
+    }
+
+    const baseFee = BigInt(latestBaseFeeHex);
+    const priorityFee = await readBoundedPriorityFee(provider);
+    const maxFee = (baseFee * lowCostFeeMultiplierNumerator) / lowCostFeeMultiplierDenominator + priorityFee;
+    return {
+      maxFeePerGas: `0x${maxFee.toString(16)}`,
+      maxPriorityFeePerGas: `0x${priorityFee.toString(16)}`
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+async function readBoundedPriorityFee(provider: NonNullable<typeof window.ethereum>): Promise<bigint> {
+  try {
+    const value = await provider.request({ method: "eth_maxPriorityFeePerGas" });
+    if (typeof value === "string" && value.startsWith("0x")) {
+      const suggested = BigInt(value);
+      return suggested > lowCostPriorityFeeWei ? lowCostPriorityFeeWei : suggested;
+    }
+  } catch {
+    // Fall through to the fixed low-cost priority fee.
+  }
+  return lowCostPriorityFeeWei;
+}
+
+function asStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function stringFromEvidence(evidence: Record<string, unknown>, key: string): string | undefined {
+  const value = evidence[key];
+  return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
+function firstHashFromEvidence(evidence: Record<string, unknown>): string | undefined {
+  const direct = stringFromEvidence(evidence, "transactionHash");
+  if (direct !== undefined) return direct;
+  const hashes = evidence.transactionHashes;
+  return Array.isArray(hashes) && typeof hashes[0] === "string" ? hashes[0] : undefined;
+}
+
+function policyUriFromEvidence(evidence: Record<string, unknown>): string | undefined {
+  const records = evidence.records;
+  if (typeof records === "object" && records !== null && "policyUri" in records) {
+    const value = (records as { policyUri?: unknown }).policyUri;
+    return typeof value === "string" ? value : undefined;
+  }
+  return undefined;
+}
+
+function runIdFromEvidence(evidence: Record<string, unknown>): string | undefined {
+  const submission = evidence.submission;
+  if (typeof submission === "object" && submission !== null) {
+    const runId = (submission as { runId?: unknown; executionId?: unknown }).runId ?? (submission as { executionId?: unknown }).executionId;
+    return typeof runId === "string" ? runId : undefined;
+  }
+  return undefined;
+}
+
+function formatEth(wei: bigint): string {
+  const whole = wei / 1_000_000_000_000_000_000n;
+  const fraction = (wei % 1_000_000_000_000_000_000n).toString().padStart(18, "0").slice(0, 6).replace(/0+$/, "");
+  return fraction.length > 0 ? `${whole}.${fraction}` : whole.toString();
 }

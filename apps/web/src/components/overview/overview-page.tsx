@@ -10,7 +10,10 @@ type OverviewPageProps = {
 type JourneyNode = {
   title: string;
   detail: string;
+  checks: string;
+  output: string;
   note?: string;
+  visual: "wallet" | "dashboard" | "wizard" | "ens" | "alchemy" | "bind" | "zerog" | "audit" | "chain" | "payload" | "keeperhub" | "webhook";
 };
 
 type JourneySlide = {
@@ -31,15 +34,27 @@ const journeySlides: JourneySlide[] = [
     nodes: [
       {
         title: "Select authority wallet",
-        detail: "Choose which wallet will be the authority for the agentic wallet."
+        detail:
+          "Choose which wallet will own the setup process, escalation decisions, and approval authority for the agentic wallet.",
+        checks: "Confirms account access through the wallet provider without requesting seed phrases or private keys.",
+        output: "Parent wallet becomes the human authority for the rest of setup.",
+        visual: "wallet"
       },
       {
         title: "Connect dashboard",
-        detail: "Use any wallet of your choice to connect to the ClearIntent dashboard."
+        detail:
+          "Use any wallet of your choice to enter the dashboard. The app stays non-custodial and does not become the source of policy truth.",
+        checks: "Reads account and chain state from the connected wallet session.",
+        output: "Unlocks the setup wizard while keeping the parent wallet in control.",
+        visual: "dashboard"
       },
       {
         title: "Start setup wizard",
-        detail: "The wizard guides identity, policy, and transaction validation setup."
+        detail:
+          "The wizard walks through identity, policy, approval, and validation instead of exposing unfinished dashboard pages up front.",
+        checks: "Keeps each step visible before a provider write or wallet approval is requested.",
+        output: "A guided path for agent identity, policy evidence, and signing readiness.",
+        visual: "wizard"
       }
     ]
   },
@@ -52,17 +67,29 @@ const journeySlides: JourneySlide[] = [
     nodes: [
       {
         title: "Verify ENS name",
-        detail: "Check availability of a ClearIntent ENS name before continuing."
+        detail:
+          "Check availability for a readable ClearIntent ENS name before preparing any binding transaction.",
+        checks: "Looks up the candidate subname before letting the flow advance.",
+        output: "A human-readable agent identity candidate such as vel.agent.clearintent.eth.",
+        visual: "ens"
       },
       {
         title: "Create sub-wallet",
-        detail: "Alchemy creates the agentic wallet controlled by the parent wallet.",
-        note: "Transaction approval required"
+        detail:
+          "Alchemy creates or predicts the agentic wallet that will operate under the parent wallet's authority.",
+        checks: "Separates parent authority from the account an agent can reference.",
+        output: "Agentic wallet address ready for ENS binding and policy linkage.",
+        note: "Transaction approval required",
+        visual: "alchemy"
       },
       {
         title: "Bind ENS identity",
-        detail: "Attach the selected ENS name to your agentic wallet.",
-        note: "Transaction approval required"
+        detail:
+          "Bind the selected ENS name to the agentic wallet so later actions can resolve identity and policy pointers.",
+        checks: "Prepares wallet-visible approval for the ENS binding step.",
+        output: "ENS identity attached to the agentic wallet.",
+        note: "Transaction approval required",
+        visual: "bind"
       }
     ]
   },
@@ -75,15 +102,27 @@ const journeySlides: JourneySlide[] = [
     nodes: [
       {
         title: "Store policy on 0G",
-        detail: "0G stores the policy agreement as decentralized data ClearIntent can reference later."
+        detail:
+          "0G stores the policy agreement and related artifacts as decentralized data ClearIntent can reference later.",
+        checks: "Policy content is addressed by artifact references instead of frontend-local state.",
+        output: "Policy URI and hash ready to bind into the authority record.",
+        visual: "zerog"
       },
       {
         title: "Record audit pointer",
-        detail: "The audit pointer is recorded onto your agentic wallet's ENS records."
+        detail:
+          "The latest audit pointer is recorded onto the agentic wallet's ENS records so evidence can be replayed.",
+        checks: "Tracks where policy, approval, receipt, and intervention evidence should be found.",
+        output: "audit.latest record tied to the agent identity.",
+        visual: "audit"
       },
       {
         title: "Confirm onchain policy",
-        detail: "The policy is confirmed onchain and a policy transaction hash is provided."
+        detail:
+          "The policy binding is confirmed onchain, giving operators a transaction hash rather than a UI-only claim.",
+        checks: "Policy hash must match the configured identity and expected artifact.",
+        output: "Policy transaction hash and replayable authority evidence.",
+        visual: "chain"
       }
     ]
   },
@@ -96,15 +135,27 @@ const journeySlides: JourneySlide[] = [
     nodes: [
       {
         title: "Preview intent payload",
-        detail: "Show the proposed action, limits, policy hash, signer, executor, and evidence before approval."
+        detail:
+          "Show the proposed action, limits, policy hash, signer, executor, nonce, deadline, and evidence before approval.",
+        checks: "The ClearIntent payload is the shared object across dashboard, wallet request, audit, and receipts.",
+        output: "Human-readable intent preview before any sensitive approval.",
+        visual: "payload"
       },
       {
         title: "Validate through KeeperHub",
-        detail: "KeeperHub acts as the mediator for validation before agent actions continue."
+        detail:
+          "KeeperHub mediates execution routing after ClearIntent validation, rather than becoming the authority source.",
+        checks: "Unverified, expired, executor-mismatched, or missing-policy intents should fail closed.",
+        output: "Execution route or refusal evidence tied back to the ClearIntent payload.",
+        visual: "keeperhub"
       },
       {
         title: "Share action alerts",
-        detail: "Configure a webhook for agent actions to be shared via Discord, Telegram, or wherever you like."
+        detail:
+          "Configure a webhook so agent actions and intervention events can be shared through Discord, Telegram, or another destination.",
+        checks: "Alerts are notification surfaces, not authority approval.",
+        output: "Operator visibility when agents act, degrade, or need human intervention.",
+        visual: "webhook"
       }
     ]
   }
@@ -168,9 +219,20 @@ export function OverviewPage({ connected, onGetStarted }: OverviewPageProps) {
               <div className="journey-node-wrap" key={node.title}>
                 <div className="journey-node">
                   <span>{index + 1}</span>
+                  <MiniDiagram kind={node.visual} />
                   <div>
                     <strong>{node.title}</strong>
                     <p>{node.detail}</p>
+                    <div className="journey-node-meta">
+                      <span>
+                        <b>Checks</b>
+                        {node.checks}
+                      </span>
+                      <span>
+                        <b>Output</b>
+                        {node.output}
+                      </span>
+                    </div>
                     {node.note ? <small>{node.note}</small> : null}
                   </div>
                 </div>
@@ -247,6 +309,39 @@ export function OverviewPage({ connected, onGetStarted }: OverviewPageProps) {
           </section>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function MiniDiagram({ kind }: { kind: JourneyNode["visual"] }) {
+  const labels: Record<JourneyNode["visual"], string> = {
+    wallet: "Wallet",
+    dashboard: "Dash",
+    wizard: "Flow",
+    ens: "ENS",
+    alchemy: "Acct",
+    bind: "Bind",
+    zerog: "0G",
+    audit: "Audit",
+    chain: "Hash",
+    payload: "Intent",
+    keeperhub: "Gate",
+    webhook: "Alert"
+  };
+
+  return (
+    <div className={`mini-diagram ${kind}`} aria-hidden="true">
+      <div className="mini-screen">
+        <strong>{labels[kind]}</strong>
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className="mini-rail">
+        <i />
+        <i />
+        <i />
+      </div>
     </div>
   );
 }

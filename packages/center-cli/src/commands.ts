@@ -5,6 +5,7 @@ import {
   type ContractKind,
   type ResultIssue
 } from "../../core/src";
+import { getAccountKitCliStatus } from "./accountkit-status";
 import { defaultClock, loadFixture, parseFixtureName, type FixtureName } from "./fixtures";
 import { getCredentialSafetyStatus } from "./credential-safety";
 import {
@@ -105,6 +106,27 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         code: "credential_safety_blocked",
         message: reason,
         path: "credentials"
+      }))
+    };
+  }
+  if ((group === "accountkit" || group === "alchemy") && (command === "status" || command === "setup-prompt" || command === "prompt")) {
+    const accountKit = getAccountKitCliStatus();
+    return {
+      command: `${group} ${command}`,
+      ok: accountKit.ok,
+      commandOk: true,
+      authorityOk: false,
+      mode: "accountkit-readiness",
+      liveProvider: false,
+      summary:
+        command === "status"
+          ? accountKit.summary
+          : "Rendered Account Kit local setup prompt. This is not parent-wallet authority approval.",
+      data: { accountKit },
+      issues: accountKit.missing.map((missing) => ({
+        code: "accountkit_config_missing",
+        message: missing,
+        path: "alchemy"
       }))
     };
   }
@@ -394,7 +416,7 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
     ok: false,
     commandOk: false,
     authorityOk: false,
-    summary: "Unknown command. Expected center, intent, authority, test, credentials, identity, execution, keeperhub, signer, module, or memory command family.",
+    summary: "Unknown command. Expected center, intent, authority, test, credentials, accountkit, alchemy, identity, execution, keeperhub, signer, module, or memory command family.",
     data: {
       usage: [
         "center status",
@@ -404,6 +426,8 @@ export async function runCenterCommand(args: string[]): Promise<CliCommandResult
         "authority evaluate",
         "test local",
         "credentials status",
+        "accountkit status",
+        "accountkit setup-prompt",
         "identity status",
         "identity bind-records",
         "identity send-bind-records",

@@ -25,6 +25,31 @@ The sprint should keep ClearIntent honest: the validated surface today is CLI-fi
 - Phase 5A/5B signer payload and ERC-7730 metadata are complete locally.
 - Phase 5C/5D/5E wallet validation remains open.
 
+## May 3 Wizard Validation Evidence
+
+The hosted-style wizard path has now produced an end-to-end custody-map validation for a fresh operator setup. This is setup and routing evidence, not yet a demo transaction proving agent-initiated onchain execution.
+
+- Agent ENS: `vel2.agent.clearintent.eth`
+- Parent wallet: `0xF7aDD17E99F097f9D0A6150D093EC049B2698c60`
+- Parent-owned agent smart account: `0x8b1F1bE3D0ab7C9B1180d66970fed3033B7CE720`
+- Policy URI: `0g://0xe8f86ceff68b5faee99d123624713ab1d92a69acfcf4dbce5b2dff2ea8fe1046`
+- Policy hash: `0x6a5256e1d13d5f84dfb6a549803b15c11a549547c4f12d02cc1f88a9ec8557e9`
+- KeeperHub run: `6uzildcmowq9jgiz12j5b`
+- Operator note: the ENS portal was also used to verify that the ENS payload was fully deployed.
+
+Validated custody chain:
+
+```text
+parent wallet
+-> parent-owned agent smart account
+-> vel2.agent.clearintent.eth
+-> 0G policy binding
+-> KeeperHub gate
+-> SDK handoff state
+```
+
+Remaining proof gap: run a demo transaction or test intent that exercises the agent account path and records execution evidence. Until that exists, the wizard can claim setup validation and custody mapping, not transaction-backed autonomous execution.
+
 ## Phase Routing Update
 
 The May 2 route is now split:
@@ -180,6 +205,54 @@ Done when:
 - Phase 5C has a browser-based software-wallet validation path
 - no frontend database is treated as authority truth
 - all important state resolves from wallet session, ENS, 0G, onchain state, and KeeperHub evidence
+
+## Step 3C: KeeperHub Event Ingest and User Webhook Isolation
+
+The KeeperHub workflow's `Send ClearIntent Event` node should post to:
+
+```text
+https://clearintent.xyz/api/keeperhub/events
+```
+
+Current payload schema:
+
+```json
+{
+  "source": "keeperhub",
+  "project": "clearintent",
+  "schemaVersion": "clearintent.keeperhub-event.v1",
+  "eventType": "{{Evaluate ClearIntent Gate.result.eventType}}",
+  "status": "{{Evaluate ClearIntent Gate.result.status}}",
+  "error": "{{Evaluate ClearIntent Gate.result.error}}",
+  "severity": "{{Evaluate ClearIntent Gate.result.severity}}",
+  "shouldExecute": "{{Evaluate ClearIntent Gate.result.shouldExecute}}",
+  "parentWallet": "{{Evaluate ClearIntent Gate.result.parentWallet}}",
+  "agentAccount": "{{Evaluate ClearIntent Gate.result.agentAccount}}",
+  "agentEnsName": "{{Evaluate ClearIntent Gate.result.agentEnsName}}",
+  "intentHash": "{{Evaluate ClearIntent Gate.result.intentHash}}",
+  "verificationIntentHash": "{{Evaluate ClearIntent Gate.result.verificationIntentHash}}",
+  "policyHash": "{{Evaluate ClearIntent Gate.result.policyHash}}",
+  "verificationPolicyHash": "{{Evaluate ClearIntent Gate.result.verificationPolicyHash}}",
+  "auditLatest": "{{Evaluate ClearIntent Gate.result.auditLatest}}",
+  "actionType": "{{Evaluate ClearIntent Gate.result.actionType}}",
+  "target": "{{Evaluate ClearIntent Gate.result.target}}",
+  "chainId": "{{Evaluate ClearIntent Gate.result.chainId}}",
+  "valueLimit": "{{Evaluate ClearIntent Gate.result.valueLimit}}",
+  "executor": "{{Evaluate ClearIntent Gate.result.executor}}",
+  "signer": "{{Evaluate ClearIntent Gate.result.signer}}",
+  "transactionHash": "{{Evaluate ClearIntent Gate.result.transactionHash}}"
+}
+```
+
+User webhook forwarding must be agent-scoped, not global. The preferred routing key is the parent-owned agent smart account address, with `agentEnsName` as the readable alias and parent wallet only as a fallback. This lets one parent wallet operate several agentic wallets while itemizing each wallet's intent stream separately. The ingest endpoint may accept and display the event, but it must not fan out to Discord/Telegram/custom destinations until ClearIntent has:
+
+- an agent-scoped destination registration keyed primarily by `agentAccount`
+- a secret/token or signed registration proving the current parent wallet controls that destination
+- replay protection for incoming KeeperHub events
+- source binding to the selected KeeperHub workflow/project
+- a policy rule saying which event types may be forwarded
+
+This keeps one user's intent payload from ever being sent to another user's webhook destination.
 
 ## Step 3B: Build ClearIntent UX Setup Wizard
 

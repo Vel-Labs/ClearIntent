@@ -33,6 +33,8 @@ The intended product abstraction is now hosted-dashboard first, SDK/CLI second. 
 
 Phase 6 foundation is now implemented locally under `apps/web/`. The repo intentionally opened `apps/web/` in scaffold/profile governance, added root web scripts, and created a Next.js dashboard shell with Overview as the first page. The current default Overview renders `unconnected`/missing evidence, a clearly labeled demo fixture lane, canonical ClearIntent payload preview before wallet approval, wallet validation status, provider evidence cards, and a KeeperHub reported-event boundary. Supporting modules model `unconnected`, `connected-unconfigured`, `partially-configured`, `configured`, `degraded`, and `demo`; provide generic EIP-1193/MetaMask request construction for `eth_signTypedData_v4`; report Alchemy readiness without enforcement claims; and validate KeeperHub reported event shape without treating events as trusted evidence.
 
+Phase 7 wizard validation has now recorded a full setup/custody path for `vel2.agent.clearintent.eth`: parent wallet `0xF7aDD17E99F097f9D0A6150D093EC049B2698c60`, parent-owned agent smart account `0x8b1F1bE3D0ab7C9B1180d66970fed3033B7CE720`, policy URI `0g://0xe8f86ceff68b5faee99d123624713ab1d92a69acfcf4dbce5b2dff2ea8fe1046`, policy hash `0x6a5256e1d13d5f84dfb6a549803b15c11a549547c4f12d02cc1f88a9ec8557e9`, and KeeperHub run `6uzildcmowq9jgiz12j5b`. The operator also verified through the ENS portal that the ENS payload is fully deployed. This proves the wizard setup/custody flow and ready-state handoff, not transaction-backed autonomous execution.
+
 The agent-facing runtime may receive ENS references, 0G policy/audit pointers, KeeperHub executor configuration, allowed action parameters, and a scoped session-key or agent-wallet address where available. It must not require parent wallet seed phrases, parent wallet private keys, unrestricted hot-wallet keys, or hidden authority that bypasses ClearIntent verification. Live smart-account/session-key enforcement remains unproven until a dedicated implementation phase records evidence.
 
 ## Immediate next action
@@ -153,7 +155,7 @@ npm run check
 1. Run Phase 5C MetaMask/software-wallet signer-only validation through the Phase 6 dashboard when an operator wallet session is available; keep status `ready-for-operator-test` until real evidence exists.
 2. Harden Phase 6 provider reads only through thin wrappers over existing adapter packages, preserving the current non-authoritative dashboard boundary.
 3. Repeat Phase 5C as testnet-integrated against the closed 0G/ENS/KeeperHub workflow evidence, then run Phase 5D/5E WalletConnect and hardware utilization validation when the operator devices/sessions are available.
-4. Add a transaction-backed KeeperHub execution follow-up only if the demo needs onchain execution evidence beyond workflow orchestration.
+4. Run one demo transaction or test intent through the parent-owned agent account path if the demo needs onchain execution evidence beyond workflow orchestration.
 5. Start Phase 7 UX/setup wizard from `docs/roadmaps/phase-7-ux-wizard-flow/IMPLEMENTATION_PLAN.md` only after the Phase 6 authority/wallet surface is materially working.
 6. Reconsider optional Phase 2C only if 0G Compute materially improves the hackathon demo or judging story.
 

@@ -183,9 +183,9 @@ a {
 
 .journey-card {
   display: grid;
-  grid-template-rows: auto auto minmax(120px, 1fr) auto;
+  grid-template-rows: auto minmax(610px, 1fr) minmax(120px, auto) auto;
   gap: 16px;
-  min-height: 620px;
+  min-height: 840px;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
   border-radius: 8px;
   background: var(--panel-strong);
@@ -274,7 +274,7 @@ a {
 .journey-visual {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px;
+  gap: 12px;
   align-content: start;
   align-items: start;
 }
@@ -286,11 +286,11 @@ a {
 
 .journey-node {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-columns: 34px 112px minmax(0, 1fr);
   align-items: start;
   gap: 14px;
   height: 100%;
-  min-height: 92px;
+  min-height: 194px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: #080b13;
@@ -298,7 +298,7 @@ a {
   text-align: left;
 }
 
-.journey-node span {
+.journey-node > span {
   display: inline-grid;
   place-items: center;
   width: 30px;
@@ -324,12 +324,179 @@ a {
   line-height: 1.35;
 }
 
+.journey-node-meta {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.journey-node-meta span {
+  display: block;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.journey-node-meta b {
+  display: inline;
+  margin-right: 6px;
+  color: var(--accent);
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
 .journey-node small {
   display: inline-block;
   margin-top: 7px;
   color: var(--warning);
   font-size: 12px;
   line-height: 1.3;
+}
+
+.mini-diagram {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100px;
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%),
+    #070a12;
+  overflow: hidden;
+}
+
+.mini-screen {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 6px;
+  width: 78px;
+  min-height: 66px;
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--border));
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--panel-strong) 82%, black);
+  padding: 9px;
+}
+
+.mini-screen strong {
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1;
+  text-align: center;
+}
+
+.mini-screen i,
+.mini-rail i {
+  display: block;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 58%, var(--border));
+}
+
+.mini-screen i {
+  height: 5px;
+}
+
+.mini-screen i:nth-child(2) {
+  width: 74%;
+}
+
+.mini-screen i:nth-child(3) {
+  width: 46%;
+  background: color-mix(in srgb, var(--warning) 58%, var(--border));
+}
+
+.mini-rail {
+  position: absolute;
+  inset: auto 10px 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.mini-rail i {
+  height: 3px;
+  opacity: 0.72;
+}
+
+.mini-diagram.wallet .mini-screen {
+  border-radius: 7px;
+}
+
+.mini-diagram.dashboard .mini-screen {
+  width: 78px;
+}
+
+.mini-diagram.dashboard .mini-screen::before,
+.mini-diagram.payload .mini-screen::before {
+  content: "";
+  display: block;
+  height: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  border-radius: 5px;
+}
+
+.mini-diagram.wizard .mini-screen,
+.mini-diagram.chain .mini-screen {
+  width: 78px;
+}
+
+.mini-diagram.wizard .mini-screen i,
+.mini-diagram.chain .mini-screen i {
+  height: 5px;
+  border-radius: 999px;
+}
+
+.mini-diagram.ens .mini-screen,
+.mini-diagram.bind .mini-screen {
+  width: 78px;
+}
+
+.mini-diagram.ens .mini-screen::after {
+  content: ".eth";
+  color: var(--accent);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.mini-diagram.alchemy .mini-screen,
+.mini-diagram.keeperhub .mini-screen {
+  width: 78px;
+  transform: none;
+}
+
+.mini-diagram.zerog .mini-screen {
+  width: 78px;
+}
+
+.mini-diagram.zerog .mini-screen i {
+  height: 5px;
+  border-radius: 999px;
+}
+
+.mini-diagram.audit .mini-screen {
+  width: 78px;
+}
+
+.mini-diagram.audit .mini-screen::after {
+  content: "";
+  height: 14px;
+  border-left: 2px solid var(--warning);
+}
+
+.mini-diagram.webhook .mini-screen {
+  width: 78px;
+}
+
+.mini-diagram.webhook .mini-screen i {
+  height: 5px;
+  border-radius: 999px;
 }
 
 .unlock-strip {
@@ -981,7 +1148,7 @@ pre {
 
 .wizard-page {
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 14px;
+  gap: clamp(20px, 3vh, 36px);
   overflow: hidden;
   padding-bottom: 12px;
 }
@@ -995,8 +1162,8 @@ pre {
 }
 
 .wizard-stage {
-  align-content: start;
-  gap: 14px;
+  align-content: center;
+  gap: clamp(16px, 2.4vh, 28px);
   overflow: visible;
   padding: 0;
 }
@@ -1123,10 +1290,10 @@ pre {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
+  grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
   gap: 18px;
-  min-height: 330px;
-  overflow: hidden;
+  min-height: clamp(420px, 52vh, 560px);
+  overflow: visible;
   border: 1px solid color-mix(in srgb, var(--accent) 48%, var(--border));
   border-radius: 8px;
   background:
@@ -1135,14 +1302,15 @@ pre {
   box-shadow:
     0 22px 70px rgba(0, 0, 0, 0.34),
     0 0 42px color-mix(in srgb, var(--accent) 10%, transparent);
-  padding: 18px;
+  padding: clamp(20px, 2.2vw, 30px);
 }
 
 .wizard-operation-main {
   display: grid;
   align-content: start;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
+  overflow: visible;
 }
 
 .wizard-kicker {
@@ -1167,11 +1335,15 @@ pre {
   margin: 0;
   color: var(--muted);
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .wizard-operation-block {
   display: grid;
   gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
   border-top: 1px solid var(--border);
   padding-top: 12px;
 }
@@ -1185,12 +1357,171 @@ pre {
 
 .wizard-operation-block strong {
   color: var(--text);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.wizard-operation-block ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--warning);
+  line-height: 1.4;
+}
+
+.wizard-operation-block li {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.wizard-operation-block dl {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  max-width: 100%;
+}
+
+.wizard-operation-block dl div {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.wizard-operation-block dt,
+.wizard-operation-block dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.wizard-operation-block dt {
+  color: var(--text);
+}
+
+.wizard-operation-block dd {
+  color: var(--text);
+}
+
+.wizard-account-block {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.wizard-account-summary,
+.wizard-account-status {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 78%, black);
+  padding: 14px;
+}
+
+.wizard-account-summary span,
+.wizard-account-status > strong {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wizard-account-summary span.ok,
+.wizard-account-status.ready > strong {
+  color: var(--ok);
+}
+
+.wizard-account-summary span.warning,
+.wizard-account-status.error > strong {
+  color: var(--warning);
+}
+
+.wizard-account-status.creating > strong {
+  color: var(--accent);
+}
+
+.wizard-account-status dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.wizard-account-status dl div {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.wizard-account-status dt,
+.wizard-account-status dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.wizard-account-status dt {
+  color: var(--subtle);
+}
+
+.wizard-account-status dd {
+  color: var(--text);
+}
+
+.wizard-account-status ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--warning);
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.wizard-account-status li {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.wizard-funding-note {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  padding-top: 10px;
+}
+
+.wizard-funding-note strong {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wizard-funding-note p,
+.wizard-funding-note span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.wizard-funding-note span {
+  color: var(--warning);
 }
 
 .wizard-receipt-panel {
   display: grid;
   gap: 12px;
-  align-content: start;
+  align-content: center;
+  min-width: 0;
   border-left: 1px solid var(--border);
   padding-left: 18px;
 }
@@ -1314,7 +1645,16 @@ pre {
   }
 
   .journey-node {
+    grid-template-columns: 34px minmax(0, 1fr);
     min-height: 118px;
+  }
+
+  .mini-diagram {
+    display: none;
+  }
+
+  .journey-node-meta {
+    grid-template-columns: 1fr;
   }
 
   .journey-actions {

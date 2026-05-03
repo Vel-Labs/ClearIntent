@@ -63,5 +63,18 @@ function readFirst(env: Record<string, string | undefined>, ...keys: string[]): 
 }
 
 function readProcessEnv(): Record<string, string | undefined> {
-  return typeof process === "undefined" ? {} : process.env;
+  if (typeof process === "undefined") {
+    return {};
+  }
+
+  return {
+    ALCHEMY_CHAIN: process.env.ALCHEMY_CHAIN,
+    NEXT_PUBLIC_ALCHEMY_API_KEY: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
+    NEXT_PUBLIC_ALCHEMY_APP_NAME: process.env.NEXT_PUBLIC_ALCHEMY_APP_NAME,
+    NEXT_PUBLIC_ALCHEMY_CHAIN: process.env.NEXT_PUBLIC_ALCHEMY_CHAIN,
+    NEXT_PUBLIC_ALCHEMY_CLIENT_ID: process.env.NEXT_PUBLIC_ALCHEMY_CLIENT_ID,
+    NEXT_PUBLIC_ALCHEMY_WALLET_CONFIG_ID: process.env.NEXT_PUBLIC_ALCHEMY_WALLET_CONFIG_ID,
+    NEXT_PUBLIC_CLEARINTENT_APP_NAME: process.env.NEXT_PUBLIC_CLEARINTENT_APP_NAME,
+    NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+  };
 }

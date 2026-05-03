@@ -1,4 +1,5 @@
 export const KEEPERHUB_EVENT_SCHEMA_VERSION = "clearintent.keeperhub.reported-event.v1" as const;
+export const CLEARINTENT_KEEPERHUB_EVENT_SCHEMA_VERSION = "clearintent.keeperhub-event.v1" as const;
 export const KEEPERHUB_EVENT_AUTHORITY = "reported_non_authoritative" as const;
 
 export type KeeperHubReportedEventStatus =
@@ -30,9 +31,38 @@ export type KeeperHubReportedEvent = {
   payload?: Record<string, unknown>;
 };
 
+export type ClearIntentKeeperHubEvent = {
+  schemaVersion: typeof CLEARINTENT_KEEPERHUB_EVENT_SCHEMA_VERSION;
+  source: "keeperhub";
+  project: "clearintent";
+  eventType: string;
+  status: string;
+  error?: string;
+  severity?: string;
+  shouldExecute?: boolean;
+  parentWallet?: string;
+  agentAccount?: string;
+  agentEnsName?: string;
+  intentHash?: string;
+  verificationIntentHash?: string;
+  policyHash?: string;
+  verificationPolicyHash?: string;
+  auditLatest?: string;
+  actionType?: string;
+  target?: string;
+  chainId?: string;
+  valueLimit?: string;
+  executor?: string;
+  signer?: string;
+  transactionHash?: string;
+};
+
 export type KeeperHubEventIssueCode =
   | "invalid_payload"
   | "unsupported_schema_version"
+  | "unsupported_source"
+  | "unresolved_template_value"
+  | "missing_agent_binding"
   | "missing_event_id"
   | "missing_event_type"
   | "missing_workflow_id"
@@ -64,6 +94,13 @@ export type KeeperHubEventIngestReceipt = {
   boundary: typeof KEEPERHUB_EVENT_AUTHORITY;
   authoritative: false;
   event: KeeperHubReportedEvent;
+  clearintent?: ClearIntentKeeperHubEvent;
+  isolationKey?: string;
+  delivery: {
+    fanout: "disabled";
+    userWebhookForwarding: false;
+    detail: string;
+  };
   checks: KeeperHubEventBoundaryCheck[];
   warnings: string[];
 };
@@ -98,6 +135,56 @@ export function ingestKeeperHubReportedEvent(
   context: KeeperHubEventRequestContext = {}
 ): KeeperHubEventIngestResult {
   const checks = buildBoundaryChecks(context.headers);
+  const clearIntentEvent = validateClearIntentKeeperHubEvent(payload);
+  if (clearIntentEvent.ok) {
+    const occurredAt = new Date().toISOString();
+    const eventId = buildClearIntentEventId(clearIntentEvent.event, occurredAt);
+    const event: KeeperHubReportedEvent = {
+      schemaVersion: KEEPERHUB_EVENT_SCHEMA_VERSION,
+      eventId,
+      eventType: clearIntentEvent.event.eventType,
+      workflowId: optionalNonEmptyString(readHeader(context.headers, "x-keeperhub-workflow-id")) ?? "keeperhub-workflow-unbound",
+      runId: optionalNonEmptyString(readHeader(context.headers, "x-keeperhub-run-id")),
+      executionId: optionalNonEmptyString(readHeader(context.headers, "x-keeperhub-execution-id")),
+      status: normalizeReportedStatus(clearIntentEvent.event.status),
+      occurredAt,
+      transactionHash: clearIntentEvent.event.transactionHash,
+      intentHash: clearIntentEvent.event.intentHash,
+      policyHash: clearIntentEvent.event.policyHash,
+      source: { provider: "keeperhub" },
+      payload: { ...clearIntentEvent.event }
+    };
+
+    return {
+      ok: true,
+      accepted: true,
+      provider: "keeperhub",
+      boundary: KEEPERHUB_EVENT_AUTHORITY,
+      authoritative: false,
+      event,
+      clearintent: clearIntentEvent.event,
+      isolationKey: buildIsolationKey(clearIntentEvent.event),
+      delivery: disabledDelivery(),
+      checks,
+      warnings: [
+        "ClearIntent KeeperHub event shape was accepted for display and local routing only.",
+        "User webhook fanout is disabled until agent-scoped webhook registration, token validation, and replay checks exist."
+      ]
+    };
+  }
+
+  if (clearIntentEvent.schemaMatched) {
+    return {
+      ok: false,
+      accepted: false,
+      provider: "keeperhub",
+      boundary: KEEPERHUB_EVENT_AUTHORITY,
+      authoritative: false,
+      issues: clearIntentEvent.issues,
+      checks
+    };
+  }
+
   const validation = validateKeeperHubReportedEvent(payload);
 
   if (!validation.ok) {
@@ -119,11 +206,90 @@ export function ingestKeeperHubReportedEvent(
     boundary: KEEPERHUB_EVENT_AUTHORITY,
     authoritative: false,
     event: validation.event,
+    delivery: disabledDelivery(),
     checks,
     warnings: [
       "KeeperHub event shape was accepted for display only.",
       "Token, signature, timestamp/replay, and source-binding checks are planned but not implemented."
     ]
+  };
+}
+
+export function validateClearIntentKeeperHubEvent(payload: unknown):
+  | { ok: true; schemaMatched: true; event: ClearIntentKeeperHubEvent }
+  | { ok: false; schemaMatched: boolean; issues: KeeperHubEventIssue[] } {
+  if (!isRecord(payload)) {
+    return { ok: false, schemaMatched: false, issues: [{ code: "invalid_payload", message: "KeeperHub event payload must be a JSON object." }] };
+  }
+  if (payload.schemaVersion !== CLEARINTENT_KEEPERHUB_EVENT_SCHEMA_VERSION) {
+    return { ok: false, schemaMatched: false, issues: [] };
+  }
+
+  const issues: KeeperHubEventIssue[] = [];
+  if (payload.source !== "keeperhub") {
+    issues.push({ code: "unsupported_source", message: "ClearIntent KeeperHub event source must be keeperhub.", path: "source" });
+  }
+  if (payload.project !== "clearintent") {
+    issues.push({ code: "unsupported_source", message: "ClearIntent KeeperHub event project must be clearintent.", path: "project" });
+  }
+
+  requireTemplateSafeString(payload, "eventType", "missing_event_type", "ClearIntent KeeperHub event requires eventType.", issues);
+  requireTemplateSafeString(payload, "status", "invalid_status", "ClearIntent KeeperHub event requires status.", issues);
+
+  const agentEnsName = optionalTemplateSafeString(payload.agentEnsName, "agentEnsName", issues);
+  const agentAccount = optionalTemplateSafeString(payload.agentAccount, "agentAccount", issues);
+  const parentWallet = optionalTemplateSafeString(payload.parentWallet, "parentWallet", issues);
+  if (agentEnsName === undefined && agentAccount === undefined && parentWallet === undefined) {
+    issues.push({
+      code: "missing_agent_binding",
+      message: "ClearIntent KeeperHub event requires agentEnsName, agentAccount, or parentWallet for user isolation.",
+      path: "agentEnsName"
+    });
+  }
+
+  const intentHash = optionalTemplateSafeString(payload.intentHash, "intentHash", issues);
+  const verificationIntentHash = optionalTemplateSafeString(payload.verificationIntentHash, "verificationIntentHash", issues);
+  const policyHash = optionalTemplateSafeString(payload.policyHash, "policyHash", issues);
+  const verificationPolicyHash = optionalTemplateSafeString(payload.verificationPolicyHash, "verificationPolicyHash", issues);
+  const transactionHash = optionalTemplateSafeString(payload.transactionHash, "transactionHash", issues);
+  requireHashText(intentHash, "intentHash", "invalid_intent_hash", issues);
+  requireHashText(verificationIntentHash, "verificationIntentHash", "invalid_intent_hash", issues);
+  requireHashText(policyHash, "policyHash", "invalid_policy_hash", issues);
+  requireHashText(verificationPolicyHash, "verificationPolicyHash", "invalid_policy_hash", issues);
+  requireHashText(transactionHash, "transactionHash", "invalid_transaction_hash", issues);
+
+  if (issues.length > 0) {
+    return { ok: false, schemaMatched: true, issues };
+  }
+
+  return {
+    ok: true,
+    schemaMatched: true,
+    event: {
+      schemaVersion: CLEARINTENT_KEEPERHUB_EVENT_SCHEMA_VERSION,
+      source: "keeperhub",
+      project: "clearintent",
+      eventType: payload.eventType as string,
+      status: payload.status as string,
+      error: optionalTemplateSafeString(payload.error, "error", issues),
+      severity: optionalTemplateSafeString(payload.severity, "severity", issues),
+      shouldExecute: parseBooleanLike(payload.shouldExecute),
+      parentWallet,
+      agentAccount,
+      agentEnsName,
+      intentHash,
+      verificationIntentHash,
+      policyHash,
+      verificationPolicyHash,
+      auditLatest: optionalTemplateSafeString(payload.auditLatest, "auditLatest", issues),
+      actionType: optionalTemplateSafeString(payload.actionType, "actionType", issues),
+      target: optionalTemplateSafeString(payload.target, "target", issues),
+      chainId: optionalTemplateSafeString(payload.chainId, "chainId", issues),
+      valueLimit: optionalTemplateSafeString(payload.valueLimit, "valueLimit", issues),
+      executor: optionalTemplateSafeString(payload.executor, "executor", issues),
+      signer: optionalTemplateSafeString(payload.signer, "signer", issues),
+      transactionHash
+    }
   };
 }
 
@@ -267,7 +433,16 @@ function requireHashLike(
   issues: KeeperHubEventIssue[]
 ): void {
   const text = optionalNonEmptyString(value);
-  if (text !== undefined && !/^0x[a-fA-F0-9]{64}$/.test(text)) {
+  requireHashText(text, path, code, issues);
+}
+
+function requireHashText(
+  text: string | undefined,
+  path: string,
+  code: KeeperHubEventIssueCode,
+  issues: KeeperHubEventIssue[]
+): void {
+  if (text !== undefined && text !== "none" && text !== "null" && !/^0x[a-fA-F0-9]{64}$/.test(text)) {
     issues.push({ code, message: `${path} must be a 32-byte hex string when provided.`, path });
   }
 }
@@ -287,12 +462,94 @@ function parseSource(value: unknown): KeeperHubReportedEvent["source"] {
 }
 
 function hasHeader(headers: KeeperHubEventRequestContext["headers"], key: string): boolean {
-  if (headers === undefined) return false;
+  return readHeader(headers, key) !== undefined;
+}
+
+function readHeader(headers: KeeperHubEventRequestContext["headers"], key: string): string | undefined {
+  if (headers === undefined) return undefined;
   if (headers instanceof Headers) {
-    return optionalNonEmptyString(headers.get(key)) !== undefined;
+    return optionalNonEmptyString(headers.get(key));
   }
   const match = Object.entries(headers).find(([header]) => header.toLowerCase() === key.toLowerCase());
-  return optionalNonEmptyString(match?.[1]) !== undefined;
+  return optionalNonEmptyString(match?.[1]);
+}
+
+function requireTemplateSafeString(
+  payload: Record<string, unknown>,
+  key: string,
+  code: KeeperHubEventIssueCode,
+  message: string,
+  issues: KeeperHubEventIssue[]
+): void {
+  const value = optionalTemplateSafeString(payload[key], key, issues);
+  if (value === undefined) {
+    issues.push({ code, message, path: key });
+  }
+}
+
+function optionalTemplateSafeString(value: unknown, path: string, issues: KeeperHubEventIssue[]): string | undefined {
+  const text = optionalNonEmptyString(value);
+  if (text === undefined || text === "null" || text === "undefined") return undefined;
+  if (/\{\{.*\}\}/.test(text)) {
+    issues.push({
+      code: "unresolved_template_value",
+      message: `${path} still contains an unresolved KeeperHub template value.`,
+      path
+    });
+    return undefined;
+  }
+  return text;
+}
+
+function parseBooleanLike(value: unknown): boolean | undefined {
+  if (typeof value === "boolean") return value;
+  const text = optionalNonEmptyString(value);
+  if (text === "true") return true;
+  if (text === "false") return false;
+  return undefined;
+}
+
+function normalizeReportedStatus(status: string): KeeperHubReportedEventStatus {
+  if (VALID_STATUSES.has(status as KeeperHubReportedEventStatus)) {
+    return status as KeeperHubReportedEventStatus;
+  }
+  if (status === "completed" || status === "success") return "executed";
+  if (status === "blocked") return "failed";
+  return "degraded";
+}
+
+function buildIsolationKey(event: ClearIntentKeeperHubEvent): string {
+  return event.agentAccount ?? event.agentEnsName ?? event.parentWallet ?? "unbound";
+}
+
+function buildClearIntentEventId(event: ClearIntentKeeperHubEvent, occurredAt: string): string {
+  const material = [
+    event.agentEnsName,
+    event.agentAccount,
+    event.intentHash,
+    event.policyHash,
+    event.transactionHash,
+    event.status,
+    occurredAt
+  ].join(":");
+  return `ci_kh_${simpleHash(material)}`;
+}
+
+function simpleHash(value: string): string {
+  let hash = 0xcbf29ce484222325n;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= BigInt(value.charCodeAt(index));
+    hash = BigInt.asUintN(64, hash * 0x100000001b3n);
+  }
+  return hash.toString(16).padStart(16, "0");
+}
+
+function disabledDelivery(): KeeperHubEventIngestReceipt["delivery"] {
+  return {
+    fanout: "disabled",
+    userWebhookForwarding: false,
+    detail: "Events are isolated by agent identity/account and are not forwarded to user webhooks until scoped registration exists."
+  };
 }
 
 function optionalNonEmptyString(value: unknown): string | undefined {

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import validIntent from "../../contracts/examples/valid-agent-intent.json";
 import { type AgentIntent } from "../../packages/core/src";
 import { buildClearIntentTypedData } from "../../packages/signer-adapter/src";
-import { getAlchemyReadiness } from "../../apps/web/src/lib/alchemy";
+import { buildAgentAccountSalt, getAlchemyReadiness } from "../../apps/web/src/lib/alchemy";
 import {
   connectEip1193Wallet,
   prepareClearIntentTypedDataRequest,
@@ -96,6 +96,15 @@ describe("web wallet adapter boundary", () => {
     expect(readiness.configured).toBe(false);
     expect(readiness.accountKitReady).toBe(false);
     expect(readiness.missing).toEqual(["chain", "apiKey"]);
+  });
+
+  it("derives stable Account Kit salts from parent wallet and agent ENS name", () => {
+    const first = buildAgentAccountSalt("velcrafting.agent.clearintent.eth", intent.authority.signer);
+    const second = buildAgentAccountSalt("velcrafting.agent.clearintent.eth", intent.authority.signer.toUpperCase());
+    const differentName = buildAgentAccountSalt("guardian.agent.clearintent.eth", intent.authority.signer);
+
+    expect(first).toBe(second);
+    expect(first).not.toBe(differentName);
   });
 
   it("builds wallet and payload preview view models with explicit proof boundaries", () => {
