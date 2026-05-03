@@ -77,6 +77,11 @@ Available repo-local skills:
 | `phase-closeout-audit` | Closing a roadmap phase, scaffold pass, or governance task with verification evidence. |
 | `pre-commit-quality-gate` | Checking commit, push, handoff, or merge readiness after changes. |
 | `hackathon-submission-auditor` | Checking hackathon submission readiness, vendor eligibility, demo claims, feedback files, and disclosure requirements. |
+| `credential-safety` | Checking credential, `.env`, wallet, live-provider, and operator setup safety before testnet or wallet work. |
+| `local-operator-setup` | Guiding local SDK setup, external secrets creation, 0G live binding, and dashboard resume from public artifact bundles. |
+| `zerog-credential-safety` | Preserving 0G live-write custody boundaries across local SDK, hosted publishing, and Vercel deployment modes. |
+| `agent-sdk-handoff` | Preparing copy-paste SDK commands and AI-agent prompts without exposing parent wallet or operator secrets. |
+| `frontend-wizard-operator-mode` | Designing hosted wizard lanes for browser wallet signing, local SDK artifact publishing, and hosted backend publishing. |
 
 Before commit, push, or phase handoff, use `pre-commit-quality-gate` or an equivalent checklist and report exact commands/results.
 

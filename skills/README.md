@@ -29,6 +29,10 @@ These skills are scaffold assets. They are not globally installed automatically.
 | `pre-commit-quality-gate` | Check commit, push, handoff, or merge readiness and proactively catch regressions. | `templates/quality-gate-report.md` |
 | `hackathon-submission-auditor` | Check prize/vendor eligibility, demo claims, feedback files, and disclosure readiness. | None |
 | `credential-safety` | Check credential, `.env`, wallet, live-provider, and operator setup safety before testnet or wallet work. | None |
+| `local-operator-setup` | Guide local SDK setup, external secrets creation, 0G live binding, and dashboard resume from public artifact bundles. | None |
+| `zerog-credential-safety` | Preserve 0G live-write custody boundaries across local SDK, hosted publishing, and Vercel deployment modes. | None |
+| `agent-sdk-handoff` | Prepare copy-paste SDK commands and AI-agent prompts without exposing parent wallet or operator secrets. | None |
+| `frontend-wizard-operator-mode` | Design hosted wizard lanes for browser wallet signing, local SDK artifact publishing, and hosted backend publishing. | None |
 
 ## Suggested Workflow
 

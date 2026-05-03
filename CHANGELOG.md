@@ -4,6 +4,8 @@ All notable repo changes should be logged here.
 
 ## 2026-05-02
 
+- Added web workspace runtime dependencies required by deployed Next.js API routes that import ClearIntent package source, fixing Vercel build resolution for `ethers`, 0G SDK, `ajv`, and `ajv-formats`.
+- Added repo-local skills for local operator setup, 0G credential safety, agent SDK handoff, and frontend wizard operator modes so hosted setup can recommend local custody while preserving a hosted publishing path.
 - Recorded Phase 7 wizard validation evidence for `vel2.agent.clearintent.eth`, including parent wallet, parent-owned agent smart account, 0G policy URI/hash, KeeperHub run ID, and ENS portal verification, while keeping the remaining demo-transaction proof gap explicit.
 - Extended `POST /api/keeperhub/events` to accept the `clearintent.keeperhub-event.v1` workflow payload from KeeperHub's `Send ClearIntent Event` block, reject unresolved template values, return an agent isolation key, and keep user webhook fanout disabled until agent-scoped registration/auth/replay controls exist.
 - Opened `apps/web/` intentionally for Phase 6 with npm workspace scripts (`web:dev`, `web:typecheck`, `web:lint`, `web:test`) and scaffold/profile routing so the frontend is no longer forbidden early scope.

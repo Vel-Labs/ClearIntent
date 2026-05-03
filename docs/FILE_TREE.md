@@ -300,6 +300,7 @@ scripts/validate-contracts.ts
 scripts/validate-scaffold.ts
 skills/README.md
 skills/adapter-scaffold/SKILL.md
+skills/agent-sdk-handoff/SKILL.md
 skills/agent-assignment-writer/SKILL.md
 skills/agent-assignment-writer/templates/agent-assignment.md
 skills/agent-assignment-writer/templates/fresh-agent-handoff.md
@@ -309,7 +310,9 @@ skills/contract-fixture-author/SKILL.md
 skills/contract-steward/SKILL.md
 skills/core-enforcement/SKILL.md
 skills/feature-implementation-runner/SKILL.md
+skills/frontend-wizard-operator-mode/SKILL.md
 skills/hackathon-submission-auditor/SKILL.md
+skills/local-operator-setup/SKILL.md
 skills/phase-closeout-audit/SKILL.md
 skills/phase-closeout-audit/templates/closeout-audit.md
 skills/pre-commit-quality-gate/SKILL.md
@@ -318,6 +321,7 @@ skills/repo-doc-router/SKILL.md
 skills/repo-orientation/SKILL.md
 skills/roadmap-phase-planner/SKILL.md
 skills/roadmap-phase-planner/templates/phase-plan.md
+skills/zerog-credential-safety/SKILL.md
 tests/README.md
 tests/center-cli/center-cli.test.ts
 tests/contracts/validate-contracts.test.ts
