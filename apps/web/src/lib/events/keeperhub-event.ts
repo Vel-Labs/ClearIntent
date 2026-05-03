@@ -1,3 +1,5 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
+
 export const KEEPERHUB_EVENT_SCHEMA_VERSION = "clearintent.keeperhub.reported-event.v1" as const;
 export const CLEARINTENT_KEEPERHUB_EVENT_SCHEMA_VERSION = "clearintent.keeperhub-event.v1" as const;
 export const KEEPERHUB_EVENT_AUTHORITY = "reported_non_authoritative" as const;
@@ -67,6 +69,8 @@ export type KeeperHubEventIssueCode =
   | "missing_event_type"
   | "missing_workflow_id"
   | "missing_run_or_execution_id"
+  | "missing_webhook_token"
+  | "invalid_webhook_token"
   | "invalid_status"
   | "invalid_occurred_at"
   | "invalid_transaction_hash"
@@ -81,7 +85,7 @@ export type KeeperHubEventIssue = {
 
 export type KeeperHubEventBoundaryCheck = {
   id: "token" | "signature" | "timestamp_replay" | "source_binding";
-  status: "not_implemented" | "not_checked";
+  status: "pass" | "fail" | "not_configured" | "not_implemented" | "not_checked";
   supplied: boolean;
   authoritative: false;
   detail: string;
@@ -119,6 +123,7 @@ export type KeeperHubEventIngestResult = KeeperHubEventIngestReceipt | KeeperHub
 
 export type KeeperHubEventRequestContext = {
   headers?: Headers | Record<string, string | undefined>;
+  webhookSecret?: string;
 };
 
 const VALID_STATUSES = new Set<KeeperHubReportedEventStatus>([
@@ -154,6 +159,20 @@ export function ingestKeeperHubReportedEvent(
       source: { provider: "keeperhub" },
       payload: { ...clearIntentEvent.event }
     };
+    const isolationKey = buildIsolationKey(clearIntentEvent.event);
+    const tokenValidation = validateAgentWebhookToken(clearIntentEvent.event, context);
+    const eventChecks = updateTokenCheck(checks, tokenValidation);
+    if (!tokenValidation.ok) {
+      return {
+        ok: false,
+        accepted: false,
+        provider: "keeperhub",
+        boundary: KEEPERHUB_EVENT_AUTHORITY,
+        authoritative: false,
+        issues: [tokenValidation.issue],
+        checks: eventChecks
+      };
+    }
 
     return {
       ok: true,
@@ -163,12 +182,15 @@ export function ingestKeeperHubReportedEvent(
       authoritative: false,
       event,
       clearintent: clearIntentEvent.event,
-      isolationKey: buildIsolationKey(clearIntentEvent.event),
+      isolationKey,
       delivery: disabledDelivery(),
-      checks,
+      checks: eventChecks,
       warnings: [
         "ClearIntent KeeperHub event shape was accepted for display and local routing only.",
-        "User webhook fanout is disabled until agent-scoped webhook registration, token validation, and replay checks exist."
+        tokenValidation.configured
+          ? "Agent-scoped webhook token matched the event binding. This authenticates delivery only; it is not authority approval."
+          : "Agent-scoped webhook token validation is not configured. Set CLEARINTENT_KEEPERHUB_WEBHOOK_SECRET before enabling user fanout.",
+        "User webhook fanout is disabled until agent-scoped webhook registration and replay checks exist."
       ]
     };
   }
@@ -213,6 +235,15 @@ export function ingestKeeperHubReportedEvent(
       "Token, signature, timestamp/replay, and source-binding checks are planned but not implemented."
     ]
   };
+}
+
+export function buildKeeperHubWebhookToken(input: {
+  secret: string;
+  parentWallet?: string;
+  agentAccount?: string;
+  agentEnsName?: string;
+}): string {
+  return createHmac("sha256", input.secret).update(buildWebhookTokenMaterial(input)).digest("hex");
 }
 
 export function validateClearIntentKeeperHubEvent(payload: unknown):
@@ -370,10 +401,10 @@ function buildBoundaryChecks(headers: KeeperHubEventRequestContext["headers"]): 
   return [
     {
       id: "token",
-      status: "not_implemented",
-      supplied: hasHeader(headers, "authorization") || hasHeader(headers, "x-keeperhub-token"),
+      status: "not_configured",
+      supplied: hasHeader(headers, "authorization") || hasHeader(headers, "x-keeperhub-token") || hasHeader(headers, "x-clearintent-webhook-token"),
       authoritative: false,
-      detail: "Token presence can be observed, but token validation is not implemented in this stub."
+      detail: "Agent-scoped webhook token validation is not configured for this request."
     },
     {
       id: "signature",
@@ -397,6 +428,94 @@ function buildBoundaryChecks(headers: KeeperHubEventRequestContext["headers"]): 
       detail: "Source binding to the configured workflow/project is planned but not checked in this stub."
     }
   ];
+}
+
+function validateAgentWebhookToken(
+  event: ClearIntentKeeperHubEvent,
+  context: KeeperHubEventRequestContext
+): { ok: true; configured: boolean } | { ok: false; configured: true; issue: KeeperHubEventIssue } {
+  const secret = optionalNonEmptyString(context.webhookSecret);
+  if (secret === undefined) {
+    return { ok: true, configured: false };
+  }
+
+  const suppliedToken = readBearerToken(context.headers) ?? readHeader(context.headers, "x-clearintent-webhook-token");
+  if (suppliedToken === undefined) {
+    return {
+      ok: false,
+      configured: true,
+      issue: {
+        code: "missing_webhook_token",
+        message: "ClearIntent KeeperHub event requires x-clearintent-webhook-token or bearer token when webhook verification is configured.",
+        path: "headers.x-clearintent-webhook-token"
+      }
+    };
+  }
+
+  const expected = buildKeeperHubWebhookToken({
+    secret,
+    parentWallet: event.parentWallet,
+    agentAccount: event.agentAccount,
+    agentEnsName: event.agentEnsName
+  });
+
+  if (!constantTimeEqual(suppliedToken, expected)) {
+    return {
+      ok: false,
+      configured: true,
+      issue: {
+        code: "invalid_webhook_token",
+        message: "ClearIntent KeeperHub event token does not match the parent/agent binding.",
+        path: "headers.x-clearintent-webhook-token"
+      }
+    };
+  }
+
+  return { ok: true, configured: true };
+}
+
+function updateTokenCheck(
+  checks: KeeperHubEventBoundaryCheck[],
+  validation: ReturnType<typeof validateAgentWebhookToken>
+): KeeperHubEventBoundaryCheck[] {
+  return checks.map((check) => {
+    if (check.id !== "token") return check;
+    if (!validation.configured) return check;
+    return {
+      ...check,
+      status: validation.ok ? "pass" : "fail",
+      detail: validation.ok
+        ? "Agent-scoped webhook token matched the parent/agent binding."
+        : validation.issue.message
+    };
+  });
+}
+
+function buildWebhookTokenMaterial(input: {
+  parentWallet?: string;
+  agentAccount?: string;
+  agentEnsName?: string;
+}): string {
+  return [
+    "clearintent-keeperhub-webhook-v1",
+    input.parentWallet?.toLowerCase() ?? "parent-unbound",
+    input.agentAccount?.toLowerCase() ?? "agent-account-unbound",
+    input.agentEnsName?.toLowerCase() ?? "agent-ens-unbound"
+  ].join(":");
+}
+
+function readBearerToken(headers: KeeperHubEventRequestContext["headers"]): string | undefined {
+  const authorization = readHeader(headers, "authorization");
+  if (authorization === undefined) return undefined;
+  const match = /^Bearer\s+(.+)$/i.exec(authorization);
+  return optionalNonEmptyString(match?.[1]);
+}
+
+function constantTimeEqual(left: string, right: string): boolean {
+  const leftBuffer = Buffer.from(left, "utf8");
+  const rightBuffer = Buffer.from(right, "utf8");
+  if (leftBuffer.byteLength !== rightBuffer.byteLength) return false;
+  return timingSafeEqual(leftBuffer, rightBuffer);
 }
 
 function requireExactString(

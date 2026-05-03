@@ -2,7 +2,10 @@ import { ingestKeeperHubReportedEvent } from "../../../../lib/events/keeperhub-e
 
 export async function POST(request: Request): Promise<Response> {
   const payload = await parseJson(request);
-  const result = ingestKeeperHubReportedEvent(payload.ok ? payload.value : undefined, { headers: request.headers });
+  const result = ingestKeeperHubReportedEvent(payload.ok ? payload.value : undefined, {
+    headers: request.headers,
+    webhookSecret: process.env.CLEARINTENT_KEEPERHUB_WEBHOOK_SECRET
+  });
   const body = payload.ok
     ? result
     : {

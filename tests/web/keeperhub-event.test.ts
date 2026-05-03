@@ -5,6 +5,7 @@ import {
   CLEARINTENT_KEEPERHUB_EVENT_SCHEMA_VERSION,
   KEEPERHUB_EVENT_AUTHORITY,
   KEEPERHUB_EVENT_SCHEMA_VERSION,
+  buildKeeperHubWebhookToken,
   ingestKeeperHubReportedEvent
 } from "../../apps/web/src/lib/events/keeperhub-event";
 
@@ -66,7 +67,7 @@ describe("KeeperHub reported event boundary", () => {
     expect(result.boundary).toBe(KEEPERHUB_EVENT_AUTHORITY);
     expect(result.checks).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: "token", status: "not_implemented", supplied: true, authoritative: false }),
+        expect.objectContaining({ id: "token", status: "not_configured", supplied: true, authoritative: false }),
         expect.objectContaining({ id: "signature", status: "not_implemented", supplied: true, authoritative: false }),
         expect.objectContaining({ id: "timestamp_replay", status: "not_implemented", supplied: true, authoritative: false }),
         expect.objectContaining({ id: "source_binding", status: "not_checked", supplied: true, authoritative: false })
@@ -117,6 +118,58 @@ describe("KeeperHub reported event boundary", () => {
     expect(result.clearintent?.agentEnsName).toBe("vel2.agent.clearintent.eth");
     expect(result.isolationKey).toBe("0x8b1F1bE3D0ab7C9B1180d66970fed3033B7CE720");
     expect(result.delivery.userWebhookForwarding).toBe(false);
+  });
+
+  it("accepts ClearIntent KeeperHub events with an agent-scoped webhook token", () => {
+    const token = buildKeeperHubWebhookToken({
+      secret: "demo_secret",
+      parentWallet: validClearIntentEvent.parentWallet,
+      agentAccount: validClearIntentEvent.agentAccount,
+      agentEnsName: validClearIntentEvent.agentEnsName
+    });
+
+    const result = ingestKeeperHubReportedEvent(validClearIntentEvent, {
+      webhookSecret: "demo_secret",
+      headers: {
+        "x-clearintent-webhook-token": token,
+        "x-keeperhub-workflow-id": "r8hbrox9eorgvvlunk72b"
+      }
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.checks).toContainEqual(
+      expect.objectContaining({
+        id: "token",
+        status: "pass",
+        supplied: true,
+        authoritative: false
+      })
+    );
+  });
+
+  it("rejects ClearIntent KeeperHub events when configured token verification fails", () => {
+    const result = ingestKeeperHubReportedEvent(validClearIntentEvent, {
+      webhookSecret: "demo_secret",
+      headers: {
+        "x-clearintent-webhook-token": "wrong-token",
+        "x-keeperhub-workflow-id": "r8hbrox9eorgvvlunk72b"
+      }
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues).toContainEqual(
+      expect.objectContaining({ code: "invalid_webhook_token", path: "headers.x-clearintent-webhook-token" })
+    );
+    expect(result.checks).toContainEqual(
+      expect.objectContaining({
+        id: "token",
+        status: "fail",
+        supplied: true,
+        authoritative: false
+      })
+    );
   });
 
   it("rejects unresolved KeeperHub template values before event routing", () => {

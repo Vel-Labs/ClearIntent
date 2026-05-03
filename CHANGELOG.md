@@ -4,6 +4,7 @@ All notable repo changes should be logged here.
 
 ## 2026-05-03
 
+- Added optional agent-scoped KeeperHub webhook token validation so hosted event ingress can reject spoofed events when `CLEARINTENT_KEEPERHUB_WEBHOOK_SECRET` is configured.
 - Hardened wizard wallet evidence handling so ENS claim and resolver-record steps wait for successful transaction receipts before marking a layer ready, preventing pending/reverted wallet transactions from advancing the setup flow.
 - Fixed hosted wizard Step 5 resolver preparation by carrying the resolver address prepared during the ENS subname claim into the ENS record-binding route, avoiding `missing_resolver` while the new subname is still indexing.
 - Tightened Step 4 of the setup wizard by removing the duplicate global publish action, replacing the hosted 0G running state with a compact progress panel, and reducing the active card height pressure on the wizard header/timeline.
