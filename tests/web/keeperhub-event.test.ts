@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { POST } from "../../apps/web/src/app/api/keeperhub/events/route";
 import { POST as PUBLIC_EVENTS_POST } from "../../apps/web/src/app/api/events/route";
 import { buildKeeperHubEventDisplayModel } from "../../apps/web/src/components/events/keeperhub-event-boundary";
+import { buildDemoIntent } from "../../apps/web/src/lib/demo-intent";
 import {
   CLEARINTENT_KEEPERHUB_EVENT_SCHEMA_VERSION,
   KEEPERHUB_EVENT_AUTHORITY,
@@ -231,6 +232,34 @@ describe("KeeperHub reported event boundary", () => {
     );
 
     expect(response.status).toBe(202);
+  });
+
+  it("accepts simulated pass and fail demo events through the public route", async () => {
+    const setup = {
+      schemaVersion: 1 as const,
+      discoveryKey: "0xparent:0xagent:vel2.agent.clearintent.eth",
+      parentWallet: "0xF7aDD17E99F097f9D0A6150D093EC049B2698c60",
+      agentAccount: "0x8b1F1bE3D0ab7C9B1180d66970fed3033B7CE720",
+      agentEnsName: "vel2.agent.clearintent.eth",
+      status: "complete" as const,
+      policyHash: `0x${"d".repeat(64)}`,
+      auditLatest: "0g://audit/latest",
+      source: "browser-local" as const,
+      updatedAt: "2026-05-03T00:00:00.000Z"
+    };
+    const pass = buildDemoIntent({ setup, destination: "0x0000000000000000000000000000000000000abc", renderCount: 1 });
+    const fail = buildDemoIntent({ setup, destination: "0x0000000000000000000000000000000000000abc", renderCount: 2 });
+
+    for (const payload of [pass.eventPayload, fail.eventPayload]) {
+      const response = await PUBLIC_EVENTS_POST(
+        new Request("http://localhost/api/events?registry=vel2-f7ad-8b1f", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+      );
+      expect(response.status).toBe(202);
+    }
   });
 
   it("builds display copy that cannot be mistaken for trusted evidence", () => {

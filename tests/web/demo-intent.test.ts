@@ -9,7 +9,8 @@ const setup: AgentSetupDiscoveryRecord = {
   agentAccount: "0x8b1F1bE3D0ab7C9B1180d66970fed3033B7CE720",
   agentEnsName: "vel2.agent.clearintent.eth",
   status: "complete",
-  policyHash: "0xpolicy",
+  policyHash: `0x${"d".repeat(64)}`,
+  auditLatest: "0g://audit/latest",
   source: "browser-local",
   updatedAt: "2026-05-03T00:00:00.000Z"
 };
@@ -23,12 +24,13 @@ describe("demo intent previews", () => {
     });
 
     expect(intent.actionType).toBe("demo-native-transfer");
-    expect(intent.mode).toBe("render-only");
+    expect(intent.mode).toBe("simulation-only");
     expect(intent.transfer.from).toBe(setup.agentAccount);
     expect(intent.transfer.to).toBe("0x0000000000000000000000000000000000000abc");
     expect(intent.transfer.amount).toMatch(/^0\.00[0-9]{4}$/);
     expect(BigInt(intent.transfer.valueWei)).toBeGreaterThan(0n);
     expect(intent.controls.transactionSubmitted).toBe(false);
+    expect(intent.eventPayload.transactionHash).toBe("none");
     expect(intent.humanSummary).toContain("send");
   });
 
@@ -39,5 +41,20 @@ describe("demo intent previews", () => {
     expect(first.transfer.amount).not.toBe(second.transfer.amount);
     expect(first.controls.nonce).toBe("demo-0001");
     expect(second.controls.nonce).toBe("demo-0002");
+  });
+
+  it("alternates simulated pass and fail event payloads for webhook testing", () => {
+    const pass = buildDemoIntent({ setup, destination: "0x0000000000000000000000000000000000000abc", renderCount: 1 });
+    const fail = buildDemoIntent({ setup, destination: "0x0000000000000000000000000000000000000abc", renderCount: 2 });
+
+    expect(pass.evaluation.status).toBe("pass");
+    expect(pass.eventPayload.shouldExecute).toBe(true);
+    expect(pass.eventPayload.status).toBe("executed");
+    expect(pass.eventPayload.eventType).toBe("clearintent.demo.execution.allowed");
+
+    expect(fail.evaluation.status).toBe("fail");
+    expect(fail.eventPayload.shouldExecute).toBe(false);
+    expect(fail.eventPayload.status).toBe("failed");
+    expect(fail.eventPayload.eventType).toBe("clearintent.demo.execution.blocked");
   });
 });

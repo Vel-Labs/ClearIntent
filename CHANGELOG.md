@@ -5,7 +5,7 @@ All notable repo changes should be logged here.
 ## 2026-05-03
 
 - Added `/api/events` as the clean public event ingest route for user-facing webhook configuration while keeping the older `/api/keeperhub/events` route as a KeeperHub compatibility wrapper.
-- Upgraded the Settings demo intent into a meaningful render-only native-transfer preview with randomized amounts, nonce/deadline metadata, network context, and human-readable summary instead of a zero-value placeholder.
+- Upgraded the Settings demo intent into a meaningful simulation-only native-transfer preview with randomized amounts, nonce/deadline metadata, explicit alternating pass/fail testing copy, public `/api/events` posting, and human-readable summary instead of a zero-value placeholder.
 - Reframed Settings webhook context so `/api/events` is the canonical public ClearIntent ingest endpoint and the parent-wallet/agent-specific portion is shown as bounded registry context, including a full public URL plus deterministic username/parent-wallet/agent-wallet webhook display URL instead of a provider-specific or fake per-user API route.
 - Added a no-contract hosted ENS subname issuer path for setup Step 3, gated by `ENS_ENABLE_HOSTED_SUBNAME_ISSUER`, so external users can request ClearIntent subnames without controlling the parent ENS wallet.
 - Added ENS parent-owner preflight and readable wallet provider error handling for setup Step 3 so non-owner tester wallets are blocked with actionable copy instead of `[object Object]` gas-estimation failures.

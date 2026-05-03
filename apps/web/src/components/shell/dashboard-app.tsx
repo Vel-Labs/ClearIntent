@@ -312,6 +312,7 @@ function SettingsPage({
   const primarySetup = discoveredSetups[0];
   const [demoDestination, setDemoDestination] = useState(wallet?.account ?? "");
   const [demoIntentCount, setDemoIntentCount] = useState(0);
+  const [demoDelivery, setDemoDelivery] = useState("No demo event sent yet.");
   const registryContext = buildBoundedEventRegistryContext(wallet, primarySetup);
   const exportContext = buildExportContext(wallet, discoveredSetups, registryContext);
   const localSdkPrompt = buildOperatorHandoffPrompt(wallet, primarySetup, registryContext);
@@ -321,6 +322,25 @@ function SettingsPage({
     destination: demoDestination,
     renderCount: demoIntentCount
   });
+  async function sendDemoEvent() {
+    setDemoDelivery("Sending simulation event to /api/events...");
+    try {
+      const registry = registryContext.registry.displayName;
+      const response = await fetch(`/api/events${registry === undefined ? "" : `?registry=${encodeURIComponent(registry)}`}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(demoIntent.eventPayload)
+      });
+      const body = (await response.json()) as { accepted?: boolean; issues?: Array<{ code?: string }> };
+      const result = response.ok && body.accepted === true ? "accepted" : "rejected";
+      const issueCodes = body.issues?.map((issue) => issue.code).filter(Boolean).join(", ");
+      setDemoDelivery(
+        `${result}: ${demoIntent.evaluation.status} simulation was posted to /api/events${issueCodes ? ` (${issueCodes})` : ""}.`
+      );
+    } catch (error) {
+      setDemoDelivery(error instanceof Error ? `error: ${error.message}` : "error: failed to send demo event");
+    }
+  }
   return (
     <SectionPage
       eyebrow={setupStatus === "complete" ? "Operator controls" : "Available after setup"}
@@ -352,12 +372,14 @@ function SettingsPage({
         />
         <ContextBlock
           title="Demo intent"
-          body="Generate a meaningful render-only ClearIntent transfer preview with randomized amount, deadline, nonce, and review summary. This does not submit a transaction."
+          body="Generate a meaningful simulation-only ClearIntent transfer preview. For webhook testing, generated demo outcomes intentionally alternate: odd runs pass, even runs fail, and every fourth run simulates a policy-hash mismatch. This does not submit a transaction."
           rows={[
             ["From", primarySetup?.agentAccount ?? "Agent account not linked"],
             ["To", demoDestination || "Destination address required"],
             ["Amount", demoIntent.transfer.amount],
             ["Network", demoIntent.network.label],
+            ["Evaluation", `${demoIntent.evaluation.status}: ${demoIntent.evaluation.reason}`],
+            ["Webhook simulation", demoDelivery],
             ["Policy hash", primarySetup?.policyHash ?? "Policy hash not indexed"],
             ["Status", demoIntentCount > 0 ? `Rendered ${demoIntentCount} demo intent(s)` : primarySetup ? "Ready to render demo payload" : "Setup required"]
           ]}
@@ -372,10 +394,21 @@ function SettingsPage({
               <button
                 className="button primary"
                 disabled={primarySetup === undefined || demoDestination.trim().length === 0}
-                onClick={() => setDemoIntentCount((count) => count + 1)}
+                onClick={() => {
+                  setDemoDelivery("No demo event sent yet.");
+                  setDemoIntentCount((count) => count + 1);
+                }}
                 type="button"
               >
                 Generate demo intent
+              </button>
+              <button
+                className="button ghost"
+                disabled={primarySetup === undefined || demoDestination.trim().length === 0 || demoIntentCount === 0}
+                onClick={() => void sendDemoEvent()}
+                type="button"
+              >
+                Send demo event
               </button>
             </div>
           }
