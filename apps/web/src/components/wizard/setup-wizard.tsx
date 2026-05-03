@@ -7,6 +7,8 @@ import {
   type AgentAccountEvidence
 } from "../../lib/alchemy";
 import { isUsableAgentLabel, normalizeAgentLabel, toAgentEnsName } from "../../lib/ens/names";
+import { upsertAgentSetupDiscovery } from "../../lib/setup-discovery";
+import { loadSetupWizardResume, saveSetupWizardResume } from "../../lib/setup-resume";
 import type { Eip1193Provider } from "../../lib/wallet";
 
 export type SetupWizardStatus = "not-started" | "in-progress" | "complete";
@@ -209,6 +211,9 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
     ...getAlchemyReadiness(),
     env: undefined
   }));
+  const [resumeLoaded, setResumeLoaded] = useState(false);
+  const [resumeRestored, setResumeRestored] = useState(false);
+  const [resumeDismissed, setResumeDismissed] = useState(false);
   const safeActiveIndex = clamp(activeStepIndex, 0, wizardSteps.length - 1);
   const accountKitReadiness = accountKitConfig;
   const normalizedAgentName = useMemo(() => normalizeAgentLabel(agentName), [agentName]);
@@ -220,6 +225,86 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
   const effectiveActiveIndex = safeActiveIndex > 0 && !nameIsAvailable ? 0 : safeActiveIndex;
   const activeStep = wizardSteps[effectiveActiveIndex];
   const finalStepActive = effectiveActiveIndex === wizardSteps.length - 1;
+
+  useEffect(() => {
+    const resume = loadSetupWizardResume();
+    if (resume !== undefined) {
+      setAgentName(resume.agentName);
+      setNameCheck(restoreNameCheck(resume.nameCheck));
+      setAccountStep(
+        restoreAccountStep(resume.accountStep) ?? {
+          status: "idle",
+          message: "Derive the parent-owned smart account after the agent name is confirmed."
+        }
+      );
+      setAccountFunding(restoreAccountFunding(resume.accountFunding) ?? { status: "idle" });
+      setEnsStep(
+        restoreStepOperation(resume.ensStep, {
+          status: "idle",
+          message: "Deploy the smart account before preparing the ENS subname transaction."
+        })
+      );
+      setZeroGStep(
+        restoreStepOperation(resume.zeroGStep, {
+          status: "idle",
+          message: "Publish policy, audit, and agent-card artifacts once the ENS name is selected."
+        })
+      );
+      setRecordsStep(
+        restoreStepOperation(resume.recordsStep, {
+          status: "idle",
+          message: "Publish 0G artifacts before preparing the ENS resolver record multicall."
+        })
+      );
+      setKeeperHubStep(
+        restoreStepOperation(resume.keeperHubStep, {
+          status: "idle",
+          message: "Bind the ClearIntent execution gate after ENS records are submitted."
+        })
+      );
+      setResumeRestored(true);
+    }
+    setResumeLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!resumeLoaded) return;
+    const accountEvidence = accountStep.status === "deployed" ? accountStep.evidence : undefined;
+    const zeroGRecords = zeroGStep.status === "ready" ? (zeroGStep.evidence.records as ZeroGRecords | undefined) : undefined;
+    if (accountEvidence !== undefined) {
+      upsertAgentSetupDiscovery({
+        parentWallet: accountEvidence.parentAddress,
+        agentAccount: accountEvidence.accountAddress,
+        agentEnsName,
+        status: recordsStep.status === "ready" && keeperHubStep.status === "ready" ? "complete" : "in-progress",
+        policyUri: zeroGRecords?.policyUri,
+        policyHash: zeroGRecords?.policyHash,
+        auditLatest: zeroGRecords?.auditLatest,
+        keeperHubRunId: keeperHubStep.status === "ready" ? runIdFromEvidence(keeperHubStep.evidence) : undefined
+      });
+    }
+    saveSetupWizardResume({
+      agentName,
+      nameCheck: serializeNameCheck(nameCheck, agentEnsName),
+      accountStep: serializeAccountStep(accountStep),
+      accountFunding: serializeAccountFunding(accountFunding),
+      ensStep: serializeStepOperation(ensStep),
+      zeroGStep: serializeStepOperation(zeroGStep),
+      recordsStep: serializeStepOperation(recordsStep),
+      keeperHubStep: serializeStepOperation(keeperHubStep)
+    });
+  }, [
+    accountFunding,
+    accountStep,
+    agentEnsName,
+    agentName,
+    ensStep,
+    keeperHubStep,
+    nameCheck,
+    recordsStep,
+    resumeLoaded,
+    zeroGStep
+  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -763,6 +848,20 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
           ENS writes, 0G publishing, and provider configuration. Each step stays visible so custody never becomes a
           hidden background task.
         </p>
+        {resumeRestored && !resumeDismissed ? (
+          <div className="wizard-resume-note" role="status">
+            <div>
+              <strong>Browser resume cache restored</strong>
+              <span>
+                Cached public setup evidence is visible again after refresh. Provider receipts and signed artifacts remain
+                the authority source.
+              </span>
+            </div>
+            <button className="button ghost" onClick={() => setResumeDismissed(true)} type="button">
+              Dismiss
+            </button>
+          </div>
+        ) : null}
       </section>
 
       <section className="wizard-stage" aria-label="ClearIntent setup timeline">
@@ -997,6 +1096,123 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
+}
+
+function restoreNameCheck(value: unknown): NameCheckState {
+  if (!isRecord(value) || value.status !== "available" || typeof value.message !== "string") {
+    return { status: "idle", message: "Enter a name to check ENS availability." };
+  }
+  return { status: "available", message: value.message };
+}
+
+function restoreAccountStep(value: unknown): AccountStepState | undefined {
+  if (!isRecord(value) || typeof value.status !== "string" || typeof value.message !== "string") return undefined;
+  if (value.status === "ready" || value.status === "deployed") {
+    if (!isAgentAccountEvidence(value.evidence) || !Array.isArray(value.issues)) return undefined;
+    return value as AccountStepState;
+  }
+  if (value.status === "error") {
+    if (!Array.isArray(value.issues)) return undefined;
+    return value as AccountStepState;
+  }
+  return undefined;
+}
+
+function restoreAccountFunding(value: unknown): AccountFundingState | undefined {
+  if (!isRecord(value) || typeof value.status !== "string") return undefined;
+  if (value.status === "submitted") {
+    if (
+      typeof value.amountWei !== "string" ||
+      typeof value.accountAddress !== "string" ||
+      typeof value.transactionHash !== "string"
+    ) {
+      return undefined;
+    }
+    const amountWei = parsePersistedBigInt(value.amountWei);
+    if (amountWei === undefined) return undefined;
+    return {
+      status: "submitted",
+      amountWei,
+      accountAddress: value.accountAddress,
+      transactionHash: value.transactionHash
+    };
+  }
+  if (value.status === "error") {
+    if (typeof value.amountWei !== "string" || typeof value.accountAddress !== "string" || typeof value.message !== "string") {
+      return undefined;
+    }
+    const amountWei = parsePersistedBigInt(value.amountWei);
+    if (amountWei === undefined) return undefined;
+    return {
+      status: "error",
+      amountWei,
+      accountAddress: value.accountAddress,
+      message: value.message
+    };
+  }
+  return undefined;
+}
+
+function restoreStepOperation(value: unknown, fallback: StepOperationState): StepOperationState {
+  if (!isRecord(value) || typeof value.status !== "string" || typeof value.message !== "string") return fallback;
+  if (value.status === "prepared") {
+    if (!isRecord(value.evidence) || !Array.isArray(value.transactions) || !Array.isArray(value.issues)) return fallback;
+    return value as StepOperationState;
+  }
+  if (value.status === "ready") {
+    if (!isRecord(value.evidence) || !Array.isArray(value.issues)) return fallback;
+    return value as StepOperationState;
+  }
+  if (value.status === "error") {
+    if (!Array.isArray(value.issues)) return fallback;
+    return value as StepOperationState;
+  }
+  return fallback;
+}
+
+function serializeNameCheck(value: NameCheckState, agentEnsName: string): unknown {
+  return value.status === "available" ? { status: value.status, message: value.message, agentEnsName } : undefined;
+}
+
+function serializeAccountStep(value: AccountStepState): unknown {
+  return value.status === "ready" || value.status === "deployed" || (value.status === "error" && value.evidence !== undefined)
+    ? value
+    : undefined;
+}
+
+function serializeAccountFunding(value: AccountFundingState): unknown {
+  if (value.status !== "submitted" && value.status !== "error") return undefined;
+  return {
+    ...value,
+    amountWei: value.amountWei.toString()
+  };
+}
+
+function serializeStepOperation(value: StepOperationState): unknown {
+  return value.status === "prepared" || value.status === "ready" || value.status === "error" ? value : undefined;
+}
+
+function isAgentAccountEvidence(value: unknown): value is AgentAccountEvidence {
+  return (
+    isRecord(value) &&
+    typeof value.parentAddress === "string" &&
+    typeof value.accountAddress === "string" &&
+    typeof value.chainId === "number" &&
+    typeof value.chainName === "string" &&
+    typeof value.salt === "string"
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parsePersistedBigInt(value: string): bigint | undefined {
+  try {
+    return BigInt(value);
+  } catch {
+    return undefined;
+  }
 }
 
 function shortAddress(value: string): string {

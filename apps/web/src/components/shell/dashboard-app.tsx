@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { OverviewPage } from "../overview";
 import { SetupWizard, type SetupWizardStatus } from "../wizard";
 import { AppShell, type ShellNavItem } from "./app-shell";
+import { discoverAgentSetups, hasCompleteAgentSetup, type AgentSetupDiscoveryRecord } from "../../lib/setup-discovery";
+import { loadDashboardResume, saveDashboardResume } from "../../lib/setup-resume";
 import { connectEip1193Wallet, type Eip1193Provider, type WalletAccountState } from "../../lib/wallet";
 
-type DashboardPage = "overview" | "setup" | "provider-evidence" | "intent-history" | "human-intervention" | "settings";
+export type DashboardPage = "overview" | "setup" | "provider-evidence" | "intent-history" | "human-intervention" | "settings";
 type DashboardAccessStage = "public" | "wallet-connected" | "setup-complete";
 
 declare global {
@@ -19,19 +21,46 @@ declare global {
 export function DashboardApp() {
   const [selectedPage, setSelectedPage] = useState<DashboardPage>("overview");
   const [wallet, setWallet] = useState<WalletAccountState | undefined>();
+  const [discoveredSetups, setDiscoveredSetups] = useState<AgentSetupDiscoveryRecord[]>([]);
   const [setupStatus, setSetupStatus] = useState<SetupWizardStatus>("not-started");
   const [activeSetupStep, setActiveSetupStep] = useState(0);
+  const [resumeLoaded, setResumeLoaded] = useState(false);
 
   const connected = wallet?.status === "connected";
   const accessStage = getDashboardAccessStage(connected, setupStatus);
   const navItems = useMemo(() => buildNavItems(accessStage), [accessStage]);
+
+  useEffect(() => {
+    const resume = loadDashboardResume();
+    if (resume !== undefined) {
+      setSetupStatus(resume.setupStatus);
+      setActiveSetupStep(resume.activeSetupStep);
+    }
+    setResumeLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!resumeLoaded) return;
+    saveDashboardResume({ activeSetupStep, setupStatus });
+  }, [activeSetupStep, resumeLoaded, setupStatus]);
+
+  function refreshDiscovery(account = wallet?.account): AgentSetupDiscoveryRecord[] {
+    const walletSetups = discoverAgentSetups(account);
+    setDiscoveredSetups(walletSetups);
+    return walletSetups;
+  }
 
   async function connectWallet() {
     if (typeof window === "undefined") return;
     const nextWallet = await connectEip1193Wallet(window.ethereum);
     setWallet(nextWallet);
     if (nextWallet.status === "connected") {
-      setSelectedPage("setup");
+      const walletSetups = refreshDiscovery(nextWallet.account);
+      const nextSetupStatus = hasCompleteAgentSetup(walletSetups) ? "complete" : setupStatus;
+      if (hasCompleteAgentSetup(walletSetups)) {
+        setSetupStatus(nextSetupStatus);
+      }
+      setSelectedPage(pageAfterWalletConnect(nextSetupStatus));
     }
   }
 
@@ -53,6 +82,7 @@ export function DashboardApp() {
           onComplete={() => {
             setSetupStatus("complete");
             setActiveSetupStep(0);
+            refreshDiscovery();
             setSelectedPage("provider-evidence");
           }}
           onStart={() => {
@@ -62,10 +92,18 @@ export function DashboardApp() {
           status={setupStatus}
         />
       ) : null}
-      {selectedPage === "provider-evidence" ? <ProviderEvidencePage setupStatus={setupStatus} wallet={wallet} /> : null}
-      {selectedPage === "intent-history" ? <IntentHistoryPage setupStatus={setupStatus} /> : null}
-      {selectedPage === "human-intervention" ? <HumanInterventionPage setupStatus={setupStatus} /> : null}
-      {selectedPage === "settings" ? <SettingsPage setupStatus={setupStatus} /> : null}
+      {selectedPage === "provider-evidence" ? (
+        <ProviderEvidencePage discoveredSetups={discoveredSetups} setupStatus={setupStatus} wallet={wallet} />
+      ) : null}
+      {selectedPage === "intent-history" ? (
+        <IntentHistoryPage discoveredSetups={discoveredSetups} setupStatus={setupStatus} wallet={wallet} />
+      ) : null}
+      {selectedPage === "human-intervention" ? (
+        <HumanInterventionPage discoveredSetups={discoveredSetups} setupStatus={setupStatus} wallet={wallet} />
+      ) : null}
+      {selectedPage === "settings" ? (
+        <SettingsPage discoveredSetups={discoveredSetups} setupStatus={setupStatus} wallet={wallet} />
+      ) : null}
     </AppShell>
   );
 }
@@ -74,6 +112,10 @@ export function getDashboardAccessStage(connected: boolean, setupStatus: SetupWi
   if (!connected) return "public";
   if (setupStatus !== "complete") return "wallet-connected";
   return "setup-complete";
+}
+
+export function pageAfterWalletConnect(setupStatus: SetupWizardStatus): DashboardPage {
+  return setupStatus === "complete" ? "provider-evidence" : "setup";
 }
 
 export function buildNavItems(accessStage: DashboardAccessStage): ShellNavItem[] {
@@ -94,27 +136,91 @@ export function buildNavItems(accessStage: DashboardAccessStage): ShellNavItem[]
   ];
 }
 
-function ProviderEvidencePage({ setupStatus, wallet }: { setupStatus: SetupWizardStatus; wallet?: WalletAccountState }) {
+function ProviderEvidencePage({
+  discoveredSetups,
+  setupStatus,
+  wallet
+}: {
+  discoveredSetups: AgentSetupDiscoveryRecord[];
+  setupStatus: SetupWizardStatus;
+  wallet?: WalletAccountState;
+}) {
   return (
     <SectionPage
       eyebrow={setupStatus === "complete" ? "Wallet evidence" : "Requires setup"}
       title="Provider Evidence"
       summary="After setup, this page reflects the connected wallet's ClearIntent state across ENS, 0G, KeeperHub, signer readiness, and account configuration."
     >
+      {discoveredSetups.length > 0 ? <DiscoveredSetupsPanel records={discoveredSetups} /> : null}
       <div className="grid">
         <InfoPanel label="Parent wallet" value={wallet?.account ?? "Connected wallet not configured"} />
-        <InfoPanel label="ENS identity" value="Resolved from configured records after wizard completion." />
-        <InfoPanel label="0G policy and audit" value="Loaded from artifact references, not frontend-local state." />
-        <InfoPanel label="KeeperHub route" value="Workflow evidence only unless transaction evidence exists." />
-        <InfoPanel label="Delegation" value="Session-key or smart-account enforcement is not claimed yet." />
+        <InfoPanel label="Configured wallets" value={configuredWalletsSummary(discoveredSetups)} />
+        <InfoPanel label="ENS identities" value={identitySummary(discoveredSetups)} />
+        <InfoPanel label="0G policy and audit" value={artifactSummary(discoveredSetups)} />
+        <InfoPanel label="KeeperHub route" value={keeperHubSummary(discoveredSetups)} />
+        <InfoPanel label="Delegation" value="Parent-owned agent account evidence is indexed; session-key enforcement is not claimed yet." />
         <InfoPanel label="Signer evidence" value="Phase 5C wallet prompt evidence appears after operator validation." />
       </div>
     </SectionPage>
   );
 }
 
-function IntentHistoryPage({ setupStatus }: { setupStatus: SetupWizardStatus }) {
-  const intents = setupStatus === "complete" ? sampleIntents : [];
+function DiscoveredSetupsPanel({ records }: { records: AgentSetupDiscoveryRecord[] }) {
+  return (
+    <div className="panel discovery-panel">
+      <h2>Linked agent setups</h2>
+      <p>
+        These agent identities were discovered from this browser's wallet-scoped setup index. ENS, 0G, and KeeperHub
+        receipts remain the authority evidence.
+      </p>
+      <div className="discovery-list">
+        {records.map((record) => (
+          <dl className="discovery-record" key={record.discoveryKey}>
+            <div>
+              <dt>Status</dt>
+              <dd>{record.status}</dd>
+            </div>
+            <div>
+              <dt>Agent ENS</dt>
+              <dd>{record.agentEnsName}</dd>
+            </div>
+            <div>
+              <dt>Agent account</dt>
+              <dd>{record.agentAccount}</dd>
+            </div>
+            <div>
+              <dt>Policy hash</dt>
+              <dd>{record.policyHash ?? "Not indexed yet"}</dd>
+            </div>
+            <div>
+              <dt>Policy URI</dt>
+              <dd>{record.policyUri ?? "Not indexed yet"}</dd>
+            </div>
+            <div>
+              <dt>Audit latest</dt>
+              <dd>{record.auditLatest ?? "Not indexed yet"}</dd>
+            </div>
+            <div>
+              <dt>KeeperHub run</dt>
+              <dd>{record.keeperHubRunId ?? "Not indexed yet"}</dd>
+            </div>
+          </dl>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function IntentHistoryPage({
+  discoveredSetups,
+  setupStatus,
+  wallet
+}: {
+  discoveredSetups: AgentSetupDiscoveryRecord[];
+  setupStatus: SetupWizardStatus;
+  wallet?: WalletAccountState;
+}) {
+  const intents = buildIntentHistory(discoveredSetups, wallet);
 
   return (
     <SectionPage
@@ -125,52 +231,163 @@ function IntentHistoryPage({ setupStatus }: { setupStatus: SetupWizardStatus }) 
       {intents.length === 0 ? (
         <div className="panel">
           <h2>No delegated account history yet</h2>
-          <p>Complete setup and run an approved ClearIntent flow before this page can show transaction history.</p>
+          <p>
+            {setupStatus === "complete"
+              ? "Setup evidence is present, but no transaction-backed ClearIntent intent history has been recorded in this browser index."
+              : "Complete setup and run an approved ClearIntent flow before this page can show transaction history."}
+          </p>
         </div>
       ) : (
         <div className="history-layout">
           <div className="history-list">
             {intents.map((intent) => (
               <button className="history-row" key={intent.id} type="button">
-                <span>{intent.title}</span>
+                <span>
+                  <strong>{intent.title}</strong>
+                  <small>{intent.subtitle}</small>
+                </span>
                 <strong>{intent.status}</strong>
               </button>
             ))}
           </div>
-          <pre>{JSON.stringify(sampleAuditPayload, null, 2)}</pre>
+          <pre>{JSON.stringify(intents[0]?.payload ?? {}, null, 2)}</pre>
         </div>
       )}
     </SectionPage>
   );
 }
 
-function HumanInterventionPage({ setupStatus }: { setupStatus: SetupWizardStatus }) {
+function HumanInterventionPage({
+  discoveredSetups,
+  setupStatus,
+  wallet
+}: {
+  discoveredSetups: AgentSetupDiscoveryRecord[];
+  setupStatus: SetupWizardStatus;
+  wallet?: WalletAccountState;
+}) {
+  const primarySetup = discoveredSetups[0];
   return (
     <SectionPage
       eyebrow="Escalations"
       title="Human Intervention"
       summary="This page is for explicit escalation events: policy exceptions, rejected wallet prompts, degraded audit writes, threshold triggers, and actions that need the parent wallet to decide."
     >
-      <div className="grid">
+      <div className="grid dashboard-context-grid">
         <InfoPanel label="Pending reviews" value={setupStatus === "complete" ? "0 pending" : "Setup required before reviews can appear."} />
-        <InfoPanel label="Recent escalations" value="No human intervention evidence is recorded in this local dashboard session." />
-        <InfoPanel label="Policy behavior" value="Out-of-policy or degraded actions must fail closed or escalate." />
+        <InfoPanel
+          label="Escalation authority"
+          value={wallet?.account ? `Parent wallet ${wallet.account} is the approval authority for sensitive changes.` : "Connect the parent wallet to identify escalation authority."}
+        />
+        <InfoPanel
+          label="Covered agent"
+          value={primarySetup ? `${primarySetup.agentEnsName} / ${primarySetup.agentAccount}` : "No linked agent setup is indexed yet."}
+        />
+        <InfoPanel
+          label="Approval history"
+          value={
+            primarySetup
+              ? "Setup approvals are indexed from the wizard; transaction approval history waits for signed intent tests."
+              : "No parent-wallet approval history is available until setup or intent tests record evidence."
+          }
+        />
+        <InfoPanel label="Recent escalations" value="No policy exception, rejected wallet prompt, degraded audit write, or threshold-trigger evidence is recorded yet." />
+        <InfoPanel label="Policy behavior" value="Out-of-policy or degraded actions must fail closed or escalate before signing or execution." />
       </div>
     </SectionPage>
   );
 }
 
-function SettingsPage({ setupStatus }: { setupStatus: SetupWizardStatus }) {
+function SettingsPage({
+  discoveredSetups,
+  setupStatus,
+  wallet
+}: {
+  discoveredSetups: AgentSetupDiscoveryRecord[];
+  setupStatus: SetupWizardStatus;
+  wallet?: WalletAccountState;
+}) {
+  const primarySetup = discoveredSetups[0];
+  const [demoDestination, setDemoDestination] = useState(wallet?.account ?? "");
+  const [demoIntentCount, setDemoIntentCount] = useState(0);
+  const exportContext = buildExportContext(wallet, discoveredSetups);
+  const localSdkPrompt = buildOperatorHandoffPrompt(wallet, primarySetup);
+  const demoIntent = buildDemoIntent(wallet, primarySetup, demoDestination, demoIntentCount);
   return (
     <SectionPage
       eyebrow={setupStatus === "complete" ? "Operator controls" : "Available after setup"}
       title="Settings"
       summary="Settings should change operator preferences and alert layers without becoming the authority source for policy, audit, or execution truth."
     >
-      <div className="grid">
-        <InfoPanel label="Alert layers" value="Configure email, Discord, Telegram, or webhook destinations after provider setup." />
-        <InfoPanel label="Escalation wallet" value="Parent-wallet authority remains the source of sensitive approval changes." />
-        <InfoPanel label="Export context" value="Generate SDK/CLI handoff references without exposing parent secrets." />
+      <div className="settings-grid">
+        <ContextBlock
+          title="Alert layers"
+          body="Individual user webhook destinations stay bounded to this parent wallet and agent setup."
+          rows={[
+            ["Bounded webhook", primarySetup ? `/api/keeperhub/events/${primarySetup.discoveryKey.slice(0, 12)}` : "Unavailable until an agent setup is linked"],
+            ["Email", "Not configured"],
+            ["Discord", "Not configured"],
+            ["Telegram", "Not configured"]
+          ]}
+        />
+        <ContextBlock
+          title="Demo intent"
+          body="Generate a local demo transfer intent shape for wallet and delegate-account testing. This does not submit a transaction."
+          rows={[
+            ["From", primarySetup?.agentAccount ?? "Agent account not linked"],
+            ["To", demoDestination || "Destination address required"],
+            ["Policy hash", primarySetup?.policyHash ?? "Policy hash not indexed"],
+            ["Status", demoIntentCount > 0 ? `Rendered ${demoIntentCount} demo intent(s)` : primarySetup ? "Ready to render demo payload" : "Setup required"]
+          ]}
+          action={
+            <div className="context-actions">
+              <input
+                aria-label="Demo intent destination address"
+                onChange={(event) => setDemoDestination(event.target.value)}
+                placeholder="0x destination"
+                value={demoDestination}
+              />
+              <button
+                className="button primary"
+                disabled={primarySetup === undefined || demoDestination.trim().length === 0}
+                onClick={() => setDemoIntentCount((count) => count + 1)}
+                type="button"
+              >
+                Trigger demo intent
+              </button>
+            </div>
+          }
+          code={JSON.stringify(demoIntent, null, 2)}
+        />
+        <ContextBlock
+          title="Escalation wallet"
+          body="Parent-wallet approval remains the control point for sensitive setup changes and out-of-policy actions."
+          rows={[
+            ["Parent wallet", wallet?.account ?? "Not connected"],
+            ["Approval history", primarySetup ? "Setup evidence indexed; signed intent history pending." : "No linked approval evidence"],
+            ["Pending approvals", "0"]
+          ]}
+        />
+        <ContextBlock
+          title="Export context"
+          body="Everything needed for handoff should be visible and copyable without exposing parent secrets."
+          rows={[
+            ["Linked agents", String(discoveredSetups.length)],
+            ["Export source", "browser-local discovery index"],
+            ["Authority note", "Receipts and signed artifacts remain canonical"]
+          ]}
+          code={JSON.stringify(exportContext, null, 2)}
+        />
+        <ContextBlock
+          title="Operator CLI handoff"
+          body="Use this with the local SDK/CLI lane so the agent runtime receives references, not parent-wallet secrets."
+          rows={[
+            ["Command", "npm run clearintent -- agent context"],
+            ["Agent ENS", primarySetup?.agentEnsName ?? "Not linked"],
+            ["Agent account", primarySetup?.agentAccount ?? "Not linked"]
+          ]}
+          code={localSdkPrompt}
+        />
       </div>
     </SectionPage>
   );
@@ -198,16 +415,139 @@ function InfoPanel({ label, value }: { label: string; value: string }) {
   );
 }
 
-const sampleIntents = [
-  { id: "intent-demo-001", title: "Demo policy-bounded transfer", status: "executed" },
-  { id: "intent-demo-002", title: "Threshold review requested", status: "human review" }
-];
+function ContextBlock({
+  action,
+  body,
+  code,
+  rows,
+  title
+}: {
+  action?: ReactNode;
+  body: string;
+  code?: string;
+  rows: [string, string][];
+  title: string;
+}) {
+  return (
+    <div className="panel context-block">
+      <h2>{title}</h2>
+      <p>{body}</p>
+      <dl>
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+      {action}
+      {code !== undefined ? <pre>{code}</pre> : null}
+    </div>
+  );
+}
 
-const sampleAuditPayload = {
-  intentId: "intent-demo-001",
-  policyHash: "0x...",
-  humanReviewCheckpoint: "required-before-signing",
-  signatureEvidence: "operator-wallet-required",
-  executionReceipt: "keeperhub-workflow-evidence",
-  frontendAuthority: false
-};
+function configuredWalletsSummary(records: AgentSetupDiscoveryRecord[]): string {
+  if (records.length === 0) return "No agent wallets are linked to the connected parent wallet yet.";
+  return records.map((record) => `${record.agentEnsName}: ${record.agentAccount}`).join("; ");
+}
+
+function identitySummary(records: AgentSetupDiscoveryRecord[]): string {
+  if (records.length === 0) return "No ENS identity has been discovered for this parent wallet.";
+  return records.map((record) => record.agentEnsName).join(", ");
+}
+
+function artifactSummary(records: AgentSetupDiscoveryRecord[]): string {
+  if (records.length === 0) return "No 0G policy or audit artifacts are indexed for this parent wallet.";
+  const present = records.filter((record) => record.policyUri || record.policyHash || record.auditLatest).length;
+  return `${present}/${records.length} linked setups include indexed 0G policy or audit references.`;
+}
+
+function keeperHubSummary(records: AgentSetupDiscoveryRecord[]): string {
+  if (records.length === 0) return "No KeeperHub route is indexed for this parent wallet.";
+  const present = records.filter((record) => record.keeperHubRunId).length;
+  return `${present}/${records.length} linked setups include KeeperHub run evidence.`;
+}
+
+function buildIntentHistory(records: AgentSetupDiscoveryRecord[], wallet?: WalletAccountState) {
+  return records.map((record) => ({
+    id: `setup-${record.discoveryKey}`,
+    title: "Setup custody map recorded",
+    subtitle: `${record.agentEnsName} linked under ${shortAddress(record.parentWallet)}`,
+    status: record.status === "complete" ? "setup complete" : "setup pending",
+    payload: {
+      eventType: "clearintent.setup.discovery",
+      parentWallet: wallet?.account ?? record.parentWallet,
+      agentAccount: record.agentAccount,
+      agentEnsName: record.agentEnsName,
+      policyUri: record.policyUri,
+      policyHash: record.policyHash,
+      auditLatest: record.auditLatest,
+      keeperHubRunId: record.keeperHubRunId,
+      transactionEvidence: "not_recorded",
+      frontendAuthority: false
+    }
+  }));
+}
+
+function buildExportContext(wallet: WalletAccountState | undefined, records: AgentSetupDiscoveryRecord[]) {
+  return {
+    schemaVersion: "clearintent.dashboard-export.v1",
+    parentWallet: wallet?.account,
+    linkedAgents: records.map((record) => ({
+      agentEnsName: record.agentEnsName,
+      agentAccount: record.agentAccount,
+      status: record.status,
+      policyUri: record.policyUri,
+      policyHash: record.policyHash,
+      auditLatest: record.auditLatest,
+      keeperHubRunId: record.keeperHubRunId
+    })),
+    custodyBoundary: "Export contains public references only. Parent wallet secrets are never included.",
+    frontendAuthority: false
+  };
+}
+
+function buildOperatorHandoffPrompt(wallet: WalletAccountState | undefined, setup: AgentSetupDiscoveryRecord | undefined): string {
+  if (setup === undefined) {
+    return "Connect the parent wallet and complete or import an agent setup before generating the CLI handoff.";
+  }
+  return [
+    "Use the ClearIntent local SDK/CLI lane with these public references only.",
+    "",
+    `Parent wallet: ${wallet?.account ?? setup.parentWallet}`,
+    `Agent ENS: ${setup.agentEnsName}`,
+    `Agent account: ${setup.agentAccount}`,
+    `Policy URI: ${setup.policyUri ?? "not indexed"}`,
+    `Policy hash: ${setup.policyHash ?? "not indexed"}`,
+    `Audit latest: ${setup.auditLatest ?? "not indexed"}`,
+    `KeeperHub run: ${setup.keeperHubRunId ?? "not indexed"}`,
+    "",
+    "Do not request or expose the parent wallet private key or seed phrase."
+  ].join("\n");
+}
+
+function buildDemoIntent(
+  wallet: WalletAccountState | undefined,
+  setup: AgentSetupDiscoveryRecord | undefined,
+  destination: string,
+  renderCount: number
+) {
+  return {
+    schemaVersion: "clearintent.demo-intent.v1",
+    renderCount,
+    actionType: "demo-transfer",
+    from: setup?.agentAccount ?? "agent-account-not-linked",
+    to: destination || "destination-address-required",
+    parentWallet: wallet?.account ?? setup?.parentWallet,
+    agentEnsName: setup?.agentEnsName,
+    policyHash: setup?.policyHash,
+    amount: "0",
+    mode: "render-only",
+    requiresHumanReview: true,
+    frontendAuthority: false
+  };
+}
+
+function shortAddress(value: string): string {
+  return value.length > 12 ? `${value.slice(0, 6)}...${value.slice(-4)}` : value;
+}

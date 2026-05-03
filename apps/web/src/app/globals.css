@@ -695,6 +695,44 @@ a {
   line-height: 1.45;
 }
 
+.discovery-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.discovery-list {
+  display: grid;
+  gap: 10px;
+}
+
+.discovery-record {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: color-mix(in srgb, var(--panel-strong) 70%, black);
+}
+
+.discovery-record div {
+  min-width: 0;
+}
+
+.discovery-record dt {
+  color: var(--subtle);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.discovery-record dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-size: 13px;
+}
+
 .evidence-list {
   display: grid;
   gap: 10px;
@@ -838,8 +876,9 @@ pre {
 
 .history-row {
   cursor: pointer;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
   gap: 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -849,10 +888,101 @@ pre {
   text-align: left;
 }
 
-.history-row strong {
+.history-row span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.history-row span strong {
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-size: 14px;
+  white-space: normal;
+}
+
+.history-row small {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.history-row > strong {
   color: var(--accent);
   font-size: 13px;
   white-space: nowrap;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.context-block {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.context-block dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.context-block dl div {
+  display: grid;
+  grid-template-columns: minmax(108px, 0.35fr) minmax(0, 1fr);
+  gap: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+.context-block dl div:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.context-block dt,
+.context-block dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.context-block dt {
+  color: var(--subtle);
+  font-size: 12px;
+}
+
+.context-block dd {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.context-block pre,
+.history-layout pre {
+  max-height: 360px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.context-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.context-actions input {
+  flex: 1 1 240px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel-strong) 82%, black);
+  color: var(--text);
+  padding: 10px 12px;
 }
 
 .wizard-page {
@@ -885,6 +1015,35 @@ pre {
   margin: 0;
   color: var(--muted);
   line-height: 1.55;
+}
+
+.wizard-resume-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: min(760px, 100%);
+  border: 1px solid color-mix(in srgb, var(--ok) 32%, var(--border));
+  border-radius: 8px;
+  padding: 12px;
+  background: color-mix(in srgb, var(--ok) 8%, var(--panel));
+  text-align: left;
+}
+
+.wizard-resume-note div {
+  display: grid;
+  gap: 4px;
+}
+
+.wizard-resume-note strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.wizard-resume-note span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .wizard-stage {
@@ -1718,6 +1877,10 @@ pre {
   .overview-hero,
   .landing-hero,
   .history-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-grid {
     grid-template-columns: 1fr;
   }
 

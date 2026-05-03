@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildNavItems, getDashboardAccessStage } from "../../apps/web/src/components/shell/dashboard-app";
+import { buildNavItems, getDashboardAccessStage, pageAfterWalletConnect } from "../../apps/web/src/components/shell/dashboard-app";
 
 describe("dashboard navigation gating", () => {
   it("shows only Overview before a parent wallet is connected", () => {
@@ -28,5 +28,10 @@ describe("dashboard navigation gating", () => {
       "human-intervention",
       "settings"
     ]);
+  });
+
+  it("returns completed operators to evidence after reconnecting a cached setup", () => {
+    expect(pageAfterWalletConnect("complete")).toBe("provider-evidence");
+    expect(pageAfterWalletConnect("in-progress")).toBe("setup");
   });
 });
