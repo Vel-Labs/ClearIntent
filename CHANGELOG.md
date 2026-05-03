@@ -4,6 +4,7 @@ All notable repo changes should be logged here.
 
 ## 2026-05-03
 
+- Added a bounded hosted 0G publishing path in the setup wizard so Step 4 no longer remains in an indefinite running state, returns readable operator errors, advances to ENS records after successful hosted publishing, and presents local SDK vs hosted publishing as compact stacked mode cards.
 - Split the hosted setup wizard transaction flow so Step 2 funds the predicted Sepolia smart account before deployment, Step 3 prepares the ENS subname claim before requesting the parent-wallet transaction, and Step 5 batches the ENS address record with the ClearIntent text-record resolver multicall.
 
 ## 2026-05-02

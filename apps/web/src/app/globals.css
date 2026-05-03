@@ -1405,20 +1405,25 @@ pre {
 
 .wizard-operator-modes {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   min-width: 0;
 }
 
 .wizard-operator-mode {
   display: grid;
-  align-content: start;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.72fr);
+  align-items: start;
   gap: 10px;
   min-width: 0;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: color-mix(in srgb, var(--panel-strong) 82%, black);
   padding: 12px;
+}
+
+.wizard-operator-mode > div {
+  min-width: 0;
 }
 
 .wizard-operator-mode.recommended {
@@ -1445,9 +1450,18 @@ pre {
 }
 
 .wizard-operator-mode pre {
-  max-height: 160px;
+  grid-row: span 2;
+  max-height: 116px;
+  min-width: 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  overflow: auto;
+}
+
+.wizard-operator-mode .button {
+  justify-self: end;
+  align-self: end;
+  width: min(100%, 220px);
 }
 
 .wizard-hosted-warning {
@@ -1455,6 +1469,21 @@ pre {
   border-radius: 8px;
   color: var(--warning);
   padding: 10px;
+}
+
+@media (max-width: 900px) {
+  .wizard-operator-mode {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wizard-operator-mode pre {
+    grid-row: auto;
+  }
+
+  .wizard-operator-mode .button {
+    justify-self: stretch;
+    width: 100%;
+  }
 }
 
 .wizard-account-block {

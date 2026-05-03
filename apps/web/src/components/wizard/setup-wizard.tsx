@@ -81,6 +81,7 @@ type AccountKitConfigPayload = AlchemyReadiness & {
 type CopyState = "idle" | "copied" | "error";
 
 const suggestedAgentGasTopUpWei = 500_000_000_000_000n;
+const hostedZeroGTimeoutMs = 180_000;
 const lowCostPriorityFeeWei = 500_000_000n;
 const lowCostFeeMultiplierNumerator = 12n;
 const lowCostFeeMultiplierDenominator = 10n;
@@ -620,13 +621,20 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
     }
     const accountEvidence = accountStep.status === "deployed" ? accountStep.evidence : undefined;
     if (accountEvidence === undefined) return;
-    setZeroGStep({ status: "running", message: "Publishing agent card, policy, and audit pointer artifacts to 0G..." });
+    setZeroGStep({
+      status: "running",
+      message: "Publishing agent card, policy, and audit pointer artifacts to 0G. This can take a minute while 0G finalizes the uploads..."
+    });
 
     try {
-      const status = await postJson<Record<string, unknown>>("/api/setup/zerog-bindings", {
-        agentEnsName,
-        controllerAddress: accountEvidence.accountAddress
-      });
+      const status = await postJson<Record<string, unknown>>(
+        "/api/setup/zerog-bindings",
+        {
+          agentEnsName,
+          controllerAddress: accountEvidence.accountAddress
+        },
+        { timeoutMs: hostedZeroGTimeoutMs }
+      );
       const blockingReasons = asStringArray(status.blockingReasons);
       if (blockingReasons.length > 0 || status.records === undefined) {
         throw new Error(`0G binding blocked: ${blockingReasons.join(", ") || "missing records"}`);
@@ -637,11 +645,12 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
         evidence: status,
         issues: asStringArray(status.degradedReasons)
       });
+      advanceActiveStep();
     } catch (error) {
       setZeroGStep({
         status: "error",
         message: "0G binding publish is blocked.",
-        issues: [error instanceof Error ? error.message : String(error)]
+        issues: [humanizeZeroGError(error)]
       });
     }
   }
@@ -1278,17 +1287,46 @@ Return these public values for dashboard import:
 - 0G tx hashes`;
 }
 
-async function postJson<T>(url: string, body: Record<string, unknown>): Promise<T> {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  const payload = (await response.json()) as T & { error?: string };
-  if (!response.ok && payload.error !== undefined) {
-    throw new Error(payload.error);
+async function postJson<T>(url: string, body: Record<string, unknown>, options: { timeoutMs?: number } = {}): Promise<T> {
+  const abortController = options.timeoutMs === undefined ? undefined : new AbortController();
+  const timeout = options.timeoutMs === undefined ? undefined : window.setTimeout(() => abortController?.abort(), options.timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+      signal: abortController?.signal
+    });
+    const payload = (await response.json()) as T & { error?: string };
+    if (!response.ok && payload.error !== undefined) {
+      throw new Error(payload.error);
+    }
+    return payload;
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("Hosted 0G publishing timed out before the deployment returned artifact refs. Retry hosted publishing or use local SDK mode.");
+    }
+    throw error;
+  } finally {
+    if (timeout !== undefined) {
+      window.clearTimeout(timeout);
+    }
   }
-  return payload;
+}
+
+function humanizeZeroGError(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  if (message.includes("Hosted 0G publishing timed out")) {
+    return message;
+  }
+  if (message.includes("missing_credentials")) {
+    return "Hosted 0G publishing is not configured with an operator private key. Use local SDK mode or configure demo credentials on the deployment.";
+  }
+  if (message.includes("live_writes_disabled")) {
+    return "Hosted 0G live writes are disabled for this deployment. Enable ZERO_G_ENABLE_LIVE_WRITES only for an intentional demo environment.";
+  }
+  return message;
 }
 
 async function sendWalletTransactions(transactions: PreparedWalletTransaction[], chainId: number): Promise<string[]> {
