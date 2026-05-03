@@ -1,6 +1,9 @@
 import { json, loadSetupEnv, parseJsonObject, stringField } from "../_shared";
 import { getEnsAvailabilityRpcUrls } from "../../../../lib/ens/availability";
 
+type EthersModule = Awaited<ReturnType<typeof importEthers>>;
+type EthersInterface = InstanceType<EthersModule["Interface"]>;
+
 const ensRegistryAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
 const defaultResolverAddress = "0xF29100983E058B709F3D539b0c765937B804AC15";
 const zeroAddress = "0x0000000000000000000000000000000000000000";
@@ -23,7 +26,7 @@ export async function POST(request: Request): Promise<Response> {
     return json({ error: "ownerAddress and agentAccountAddress are required." }, 400);
   }
 
-  const { ethers } = await import("ethers");
+  const ethers = await importEthers();
   const ensName = `${label}.${parentName}`;
   const node = ethers.namehash(ensName);
   const registry = new ethers.Interface([
@@ -106,8 +109,8 @@ export async function POST(request: Request): Promise<Response> {
 }
 
 async function readEnsOwner(input: {
-  ethers: typeof import("ethers");
-  registry: import("ethers").Interface;
+  ethers: EthersModule;
+  registry: EthersInterface;
   node: string;
   rpcUrls: string[];
 }): Promise<string | undefined> {
@@ -130,9 +133,9 @@ async function readEnsOwner(input: {
 }
 
 async function maybeIssueHostedSubname(input: {
-  ethers: typeof import("ethers");
+  ethers: EthersModule;
   env: NodeJS.ProcessEnv;
-  registry: import("ethers").Interface;
+  registry: EthersInterface;
   parentName: string;
   parentNode: string;
   labelHash: string;
@@ -198,6 +201,11 @@ async function maybeIssueHostedSubname(input: {
       error: error instanceof Error ? error.message : String(error)
     };
   }
+}
+
+async function importEthers(): Promise<typeof import("ethers").ethers> {
+  const mod = await import("ethers");
+  return mod.ethers;
 }
 
 function parseBoolean(value: string | undefined): boolean {
