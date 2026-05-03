@@ -4,10 +4,14 @@ All notable repo changes should be logged here.
 
 ## 2026-05-03
 
+- Added a time-aware hosted 0G publishing indicator for setup Step 4 so slow policy artifact uploads show elapsed time, activity, and current provider-wait phase instead of looking stuck.
+- Added wallet transaction guardrails so setup ENS and gas-funding submissions block before wallet approval when the parent wallet has a pending nonce or gas estimation fails, preventing inflated MetaMask fee prompts from becoming the demo path.
 - Passed wizard custody context into KeeperHub live-submit payloads and tightened KeeperHub event ingest so placeholder `none` values cannot satisfy user-isolation binding.
 - Added wallet-scoped browser discovery for hosted setup re-entry so a connected parent wallet can surface linked agent ENS/account setup evidence instead of forcing existing operators back through a blank wizard.
 - Added browser-local setup resume snapshots for dashboard navigation and wizard receipt evidence so refreshes no longer erase visible progress, while keeping provider receipts and signed artifacts as authority truth.
 - Expanded dashboard context pages so Provider Evidence, Intent History, Human Intervention, and Settings render linked parent-wallet/agent setup context, exportable handoff data, alert-layer placeholders, and a render-only demo intent trigger.
+- Added the `clearintent-transaction-runner` repo-local skill so any signing, submission, execution, simulation, or demo transaction path is gated by ClearIntent intent creation, evaluation, and evidence preservation.
+- Added bounded-experience repo-local skills for wallet discovery, provider evidence refresh, demo intent running, policy-change review, operator export handoff, emergency freeze, and post-transaction audit.
 - Added optional agent-scoped KeeperHub webhook token validation so hosted event ingress can reject spoofed events when `CLEARINTENT_KEEPERHUB_WEBHOOK_SECRET` is configured.
 - Hardened wizard wallet evidence handling so ENS claim and resolver-record steps wait for successful transaction receipts before marking a layer ready, preventing pending/reverted wallet transactions from advancing the setup flow.
 - Fixed hosted wizard Step 5 resolver preparation by carrying the resolver address prepared during the ENS subname claim into the ENS record-binding route, avoiding `missing_resolver` while the new subname is still indexing.

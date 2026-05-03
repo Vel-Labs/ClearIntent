@@ -1638,13 +1638,63 @@ pre {
 
 .wizard-hosted-progress {
   display: grid;
-  gap: 6px;
+  gap: 10px;
   border-color: color-mix(in srgb, var(--accent) 46%, var(--border));
   color: var(--accent);
 }
 
+.wizard-hosted-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wizard-hosted-progress-header strong {
+  color: var(--accent);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.wizard-hosted-activity {
+  position: relative;
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 36%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 7%, #05070c);
+}
+
+.wizard-hosted-activity span {
+  position: absolute;
+  inset: 1px auto 1px 1px;
+  width: 36%;
+  border-radius: inherit;
+  background: var(--accent);
+  animation: hosted-publish-scan 1.35s ease-in-out infinite;
+}
+
 .wizard-hosted-progress strong {
   color: var(--text);
+}
+
+@keyframes hosted-publish-scan {
+  0% {
+    transform: translateX(-105%);
+  }
+
+  100% {
+    transform: translateX(285%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wizard-hosted-activity span {
+    animation: none;
+    transform: none;
+    width: 100%;
+  }
 }
 
 @media (max-width: 900px) {

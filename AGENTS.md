@@ -86,6 +86,14 @@ Available repo-local skills:
 | `clearintent-intent-author` | Drafting canonical ClearIntent intent payloads for wallet review, webhook alerts, and audit artifacts. |
 | `clearintent-executor-gate` | Routing approved intents through KeeperHub or another adapter without allowing policy bypass. |
 | `clearintent-escalation-review` | Handling blocked, mismatched, or degraded intents without treating notifications as approvals. |
+| `clearintent-transaction-runner` | Gating any signing, submission, execution, simulation, or demo transaction path behind canonical ClearIntent intent creation, evaluation, and evidence preservation. |
+| `clearintent-wallet-discovery` | Discovering parent-wallet-linked agent accounts, ENS identities, 0G refs, and KeeperHub routes without treating browser cache as authority. |
+| `clearintent-provider-evidence-refresh` | Refreshing ENS, 0G, KeeperHub, signer, wallet, and payload evidence before showing configured, ready, verified, or complete status. |
+| `clearintent-demo-intent-runner` | Running render-only, simulation-only, wallet-request-only, or safe demo intent flows without overstating execution proof. |
+| `clearintent-policy-change-review` | Reviewing policy, destination, chain, value, escalation, session-authority, or executor-binding changes before they expand or alter agent authority. |
+| `clearintent-operator-export-handoff` | Exporting SDK, CLI, dashboard, or agent handoff context with public references only and no secrets. |
+| `clearintent-emergency-freeze` | Stopping execution and preserving evidence when policy, intent, wallet, webhook, executor, or transaction evidence is suspicious or mismatched. |
+| `clearintent-post-transaction-audit` | Reconciling intent, policy, signature, KeeperHub, transaction, receipt, notification, and 0G audit evidence after any attempted transaction. |
 
 Before commit, push, or phase handoff, use `pre-commit-quality-gate` or an equivalent checklist and report exact commands/results.
 

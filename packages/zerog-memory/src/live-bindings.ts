@@ -29,7 +29,7 @@ type EnsBindingRecords = {
 export type ZeroGLiveBindingsStatus = {
   ok: boolean;
   providerMode: "live";
-  claimLevel: "local-adapter" | "0g-write-read" | "0g-write-read-verified";
+  claimLevel: "local-adapter" | "0g-write-submitted" | "0g-write-read" | "0g-write-read-verified";
   liveProvider: true;
   summary: string;
   ensName?: string;
@@ -73,7 +73,9 @@ export async function getZeroGLiveBindingsStatus(env: NodeJS.ProcessEnv = proces
   }
 
   const degradedReasons = executorAddress === controllerAddress ? ["keeperhub_executor_unbound"] : [];
-  const proof = env.ZERO_G_REQUIRE_PROOF?.toLowerCase() === "true";
+  const verificationMode = parseVerificationMode(env.ZERO_G_BINDINGS_VERIFICATION_MODE);
+  const readbackRequired = verificationMode === "readback";
+  const proof = readbackRequired && env.ZERO_G_REQUIRE_PROOF?.toLowerCase() === "true";
 
   try {
     const [{ Indexer, MemData }, { ethers }] = await Promise.all([import("@0gfoundation/0g-ts-sdk"), import("ethers")]);
@@ -101,13 +103,15 @@ export async function getZeroGLiveBindingsStatus(env: NodeJS.ProcessEnv = proces
         throw new Error("0G upload did not return rootHash and txHash.");
       }
 
-      const [blob, readError] = await indexer.downloadToBlob(rootHash, { proof });
-      if (readError !== null) {
-        throw new Error(readError.message);
-      }
-      const downloaded = Buffer.from(await blob.arrayBuffer()).toString("utf8");
-      if (downloaded !== encoded) {
-        throw new Error(`Downloaded ${name} payload did not match uploaded payload.`);
+      if (readbackRequired) {
+        const [blob, readError] = await indexer.downloadToBlob(rootHash, { proof });
+        if (readError !== null) {
+          throw new Error(readError.message);
+        }
+        const downloaded = Buffer.from(await blob.arrayBuffer()).toString("utf8");
+        if (downloaded !== encoded) {
+          throw new Error(`Downloaded ${name} payload did not match uploaded payload.`);
+        }
       }
 
       return {
@@ -195,17 +199,20 @@ export async function getZeroGLiveBindingsStatus(env: NodeJS.ProcessEnv = proces
       auditLatest: auditUpload.uri,
       clearintentVersion
     };
-    const finalDegradedReasons = proof ? degradedReasons : [...degradedReasons, "missing_proof"];
+    const verificationDegradedReasons = readbackRequired ? (proof ? [] : ["missing_proof"]) : ["readback_deferred"];
+    const finalDegradedReasons = [...degradedReasons, ...verificationDegradedReasons];
 
     return {
       ok: finalDegradedReasons.length === 0,
       providerMode: "live",
-      claimLevel: proof ? "0g-write-read-verified" : "0g-write-read",
+      claimLevel: readbackRequired ? (proof ? "0g-write-read-verified" : "0g-write-read") : "0g-write-submitted",
       liveProvider: true,
       summary:
-        degradedReasons.length === 0
-          ? "0G ENS binding artifacts uploaded and read back successfully."
-          : "0G ENS binding artifacts uploaded and read back, with degraded executor binding.",
+        readbackRequired
+          ? degradedReasons.length === 0
+            ? "0G ENS binding artifacts uploaded and read back successfully."
+            : "0G ENS binding artifacts uploaded and read back, with degraded executor binding."
+          : "0G ENS binding artifacts uploaded and refs generated; readback/proof verification is deferred.",
       ensName,
       controllerAddress,
       records,
@@ -222,7 +229,11 @@ export async function getZeroGLiveBindingsStatus(env: NodeJS.ProcessEnv = proces
           id: "proof",
           label: "Live proof",
           status: proof ? "pass" : "degraded",
-          detail: proof ? "Proof-enabled downloads were requested." : "Proof was not requested; set ZERO_G_REQUIRE_PROOF=true to test proof."
+          detail: readbackRequired
+            ? proof
+              ? "Proof-enabled downloads were requested."
+              : "Readback was requested without proof; set ZERO_G_REQUIRE_PROOF=true to test proof."
+            : "Hosted fast mode returned upload refs without readback/proof verification; run memory live-bindings for proof evidence."
         }
       ],
       blockingReasons: [],
@@ -264,6 +275,10 @@ function normalizePrivateKey(value: string | undefined): string | undefined {
     return undefined;
   }
   return trimmed.startsWith("0x") ? trimmed : `0x${trimmed}`;
+}
+
+function parseVerificationMode(value: string | undefined): "readback" | "submit-only" {
+  return value === "submit-only" ? "submit-only" : "readback";
 }
 
 function nonEmpty(value: string | undefined): string | undefined {

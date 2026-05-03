@@ -9,7 +9,7 @@ import {
 import { isUsableAgentLabel, normalizeAgentLabel, toAgentEnsName } from "../../lib/ens/names";
 import { upsertAgentSetupDiscovery } from "../../lib/setup-discovery";
 import { loadSetupWizardResume, saveSetupWizardResume } from "../../lib/setup-resume";
-import type { Eip1193Provider } from "../../lib/wallet";
+import { sendNativeTransfer, sendWalletTransactions, type PreparedWalletTransaction } from "../../lib/wallet/transactions";
 
 export type SetupWizardStatus = "not-started" | "in-progress" | "complete";
 
@@ -70,13 +70,6 @@ type ZeroGRecords = {
   clearintentVersion: string;
 };
 
-type PreparedWalletTransaction = {
-  label: string;
-  to: string;
-  value: string;
-  data: string;
-};
-
 type AccountKitConfigPayload = AlchemyReadiness & {
   env?: Record<string, string | undefined>;
 };
@@ -85,11 +78,6 @@ type CopyState = "idle" | "copied" | "error";
 
 const suggestedAgentGasTopUpWei = 500_000_000_000_000n;
 const hostedZeroGTimeoutMs = 180_000;
-const walletReceiptTimeoutMs = 150_000;
-const walletReceiptPollMs = 3_000;
-const lowCostPriorityFeeWei = 500_000_000n;
-const lowCostFeeMultiplierNumerator = 12n;
-const lowCostFeeMultiplierDenominator = 10n;
 
 const wizardSteps: WizardStep[] = [
   {
@@ -1272,6 +1260,29 @@ function ZeroGOperationBlock({
   step: WizardStep;
 }) {
   const hostedUnavailable = state.status === "error" && hasAnyIssue(state.issues, ["missing_credentials", "live_writes_disabled"]);
+  const [runningStartedAt, setRunningStartedAt] = useState<number | undefined>(undefined);
+  const [nowMs, setNowMs] = useState(Date.now());
+
+  useEffect(() => {
+    if (state.status !== "running") {
+      setRunningStartedAt(undefined);
+      return;
+    }
+
+    const startedAt = Date.now();
+    setRunningStartedAt(startedAt);
+    setNowMs(startedAt);
+    const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [state.status]);
+
+  const elapsedSeconds = runningStartedAt === undefined ? 0 : Math.max(0, Math.floor((nowMs - runningStartedAt) / 1000));
+  const hostedProgressPhase =
+    elapsedSeconds < 45
+      ? "Uploading 0G artifacts"
+      : elapsedSeconds < 120
+        ? "Waiting for 0G finalization"
+        : "Still waiting on provider confirmation";
 
   return (
     <div className={`wizard-operation-block ${state.status}`}>
@@ -1283,11 +1294,18 @@ function ZeroGOperationBlock({
 
       {state.status === "running" ? (
         <div className="wizard-hosted-progress" role="status">
-          <span>Hosted publish in progress</span>
-          <strong>Uploading policy, audit, and agent card to 0G.</strong>
+          <div className="wizard-hosted-progress-header">
+            <span>Hosted publish in progress</span>
+            <strong>{formatElapsed(elapsedSeconds)}</strong>
+          </div>
+          <div className="wizard-hosted-activity" aria-hidden="true">
+            <span />
+          </div>
+          <strong>{hostedProgressPhase}</strong>
           <p>
-            Hosted publishing can take around one minute because three 0G artifacts must finalize and read back. Keep
-            this tab open; the wizard will advance to ENS records when refs return.
+            Hosted publishing can take multiple minutes because the backend writes the policy, audit pointer, and agent
+            card, then waits for usable refs. Keep this tab open; the wizard will advance to ENS records when refs
+            return.
           </p>
         </div>
       ) : null}
@@ -1566,182 +1584,10 @@ function humanizeZeroGError(error: unknown): string {
   return message;
 }
 
-async function sendWalletTransactions(transactions: PreparedWalletTransaction[], chainId: number): Promise<string[]> {
-  const provider = typeof window === "undefined" ? undefined : window.ethereum;
-  if (provider === undefined) {
-    throw new Error("No EIP-1193 wallet provider is available.");
-  }
-
-  await provider.request({
-    method: "wallet_switchEthereumChain",
-    params: [{ chainId: `0x${chainId.toString(16)}` }]
-  });
-  const accounts = await provider.request({ method: "eth_requestAccounts" });
-  const from = Array.isArray(accounts) && typeof accounts[0] === "string" ? accounts[0] : undefined;
-  if (from === undefined) {
-    throw new Error("Wallet did not return a parent account.");
-  }
-
-  const hashes: string[] = [];
-  for (const transaction of transactions) {
-    const txParams = await buildLowCostWalletTransaction(provider, {
-      from,
-      to: transaction.to,
-      value: transaction.value,
-      data: transaction.data
-    });
-    const hash = await provider.request({
-      method: "eth_sendTransaction",
-      params: [txParams]
-    });
-    if (typeof hash !== "string" || !hash.startsWith("0x")) {
-      throw new Error(`${transaction.label} did not return a transaction hash.`);
-    }
-    await waitForSuccessfulWalletReceipt(provider, hash, transaction.label);
-    hashes.push(hash);
-  }
-  return hashes;
-}
-
-async function waitForSuccessfulWalletReceipt(provider: Eip1193Provider, hash: string, label: string): Promise<void> {
-  const startedAt = Date.now();
-
-  while (Date.now() - startedAt < walletReceiptTimeoutMs) {
-    const receipt = await provider.request({
-      method: "eth_getTransactionReceipt",
-      params: [hash]
-    });
-
-    if (receipt !== null && typeof receipt === "object") {
-      const status = "status" in receipt ? (receipt as { status?: unknown }).status : undefined;
-      if (status === "0x1" || status === "0x01") {
-        return;
-      }
-      if (status === "0x0" || status === "0x00") {
-        throw new Error(`${label} reverted onchain. Transaction: ${hash}`);
-      }
-    }
-
-    await sleep(walletReceiptPollMs);
-  }
-
-  throw new Error(`${label} is still pending after ${Math.round(walletReceiptTimeoutMs / 1000)} seconds. Transaction: ${hash}. Wait for it to confirm, then retry this step.`);
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
-}
-
-async function sendNativeTransfer(input: { chainId: number; to: string; valueWei: bigint }): Promise<string> {
-  const provider = typeof window === "undefined" ? undefined : window.ethereum;
-  if (provider === undefined) {
-    throw new Error("No EIP-1193 wallet provider is available.");
-  }
-
-  await provider.request({
-    method: "wallet_switchEthereumChain",
-    params: [{ chainId: `0x${input.chainId.toString(16)}` }]
-  });
-  const accounts = await provider.request({ method: "eth_requestAccounts" });
-  const from = Array.isArray(accounts) && typeof accounts[0] === "string" ? accounts[0] : undefined;
-  if (from === undefined) {
-    throw new Error("Wallet did not return a parent account.");
-  }
-
-  const hash = await provider.request({
-    method: "eth_sendTransaction",
-    params: [
-      await buildLowCostWalletTransaction(provider, {
-        from,
-        to: input.to,
-        value: `0x${input.valueWei.toString(16)}`,
-        data: "0x"
-      })
-    ]
-  });
-  if (typeof hash !== "string" || !hash.startsWith("0x")) {
-    throw new Error("Funding transaction did not return a transaction hash.");
-  }
-  return hash;
-}
-
-async function buildLowCostWalletTransaction(
-  provider: NonNullable<typeof window.ethereum>,
-  request: { from: string; to: string; value: string; data: string }
-): Promise<Record<string, string>> {
-  const transaction: Record<string, string> = {
-    from: request.from,
-    to: request.to,
-    value: request.value,
-    data: request.data
-  };
-
-  const [gas, fees] = await Promise.all([estimateGasLimit(provider, transaction), estimateLowCostFees(provider)]);
-  if (gas !== undefined) {
-    transaction.gas = gas;
-  }
-  if (fees !== undefined) {
-    transaction.type = "0x2";
-    transaction.maxPriorityFeePerGas = fees.maxPriorityFeePerGas;
-    transaction.maxFeePerGas = fees.maxFeePerGas;
-  }
-
-  return transaction;
-}
-
-async function estimateGasLimit(provider: NonNullable<typeof window.ethereum>, transaction: Record<string, string>): Promise<string | undefined> {
-  try {
-    const value = await provider.request({
-      method: "eth_estimateGas",
-      params: [transaction]
-    });
-    if (typeof value !== "string" || !value.startsWith("0x")) {
-      return undefined;
-    }
-    const estimated = BigInt(value);
-    return `0x${((estimated * lowCostFeeMultiplierNumerator) / lowCostFeeMultiplierDenominator).toString(16)}`;
-  } catch {
-    return undefined;
-  }
-}
-
-async function estimateLowCostFees(
-  provider: NonNullable<typeof window.ethereum>
-): Promise<{ maxFeePerGas: string; maxPriorityFeePerGas: string } | undefined> {
-  try {
-    const feeHistory = await provider.request({
-      method: "eth_feeHistory",
-      params: ["0x1", "latest", []]
-    });
-    const baseFees = typeof feeHistory === "object" && feeHistory !== null ? (feeHistory as { baseFeePerGas?: unknown }).baseFeePerGas : undefined;
-    const latestBaseFeeHex = Array.isArray(baseFees) && typeof baseFees.at(-1) === "string" ? baseFees.at(-1) : undefined;
-    if (latestBaseFeeHex === undefined || !latestBaseFeeHex.startsWith("0x")) {
-      return undefined;
-    }
-
-    const baseFee = BigInt(latestBaseFeeHex);
-    const priorityFee = await readBoundedPriorityFee(provider);
-    const maxFee = (baseFee * lowCostFeeMultiplierNumerator) / lowCostFeeMultiplierDenominator + priorityFee;
-    return {
-      maxFeePerGas: `0x${maxFee.toString(16)}`,
-      maxPriorityFeePerGas: `0x${priorityFee.toString(16)}`
-    };
-  } catch {
-    return undefined;
-  }
-}
-
-async function readBoundedPriorityFee(provider: NonNullable<typeof window.ethereum>): Promise<bigint> {
-  try {
-    const value = await provider.request({ method: "eth_maxPriorityFeePerGas" });
-    if (typeof value === "string" && value.startsWith("0x")) {
-      const suggested = BigInt(value);
-      return suggested > lowCostPriorityFeeWei ? lowCostPriorityFeeWei : suggested;
-    }
-  } catch {
-    // Fall through to the fixed low-cost priority fee.
-  }
-  return lowCostPriorityFeeWei;
+function formatElapsed(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")} elapsed`;
 }
 
 function asStringArray(value: unknown): string[] {

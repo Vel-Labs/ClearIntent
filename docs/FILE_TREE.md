@@ -56,8 +56,11 @@ apps/web/src/lib/ens/availability.ts
 apps/web/src/lib/ens/names.ts
 apps/web/src/lib/events/keeperhub-event.ts
 apps/web/src/lib/evidence-model.ts
+apps/web/src/lib/setup-discovery.ts
+apps/web/src/lib/setup-resume.ts
 apps/web/src/lib/wallet/eip1193.ts
 apps/web/src/lib/wallet/index.ts
+apps/web/src/lib/wallet/transactions.ts
 apps/web/tsconfig.json
 bin/clearintent.mjs
 clearintent.config.json
@@ -318,9 +321,17 @@ skills/agent-assignment-writer/templates/agent-assignment.md
 skills/agent-assignment-writer/templates/fresh-agent-handoff.md
 skills/center-cli-operator/SKILL.md
 skills/clearintent-agent-operator/SKILL.md
+skills/clearintent-demo-intent-runner/SKILL.md
+skills/clearintent-emergency-freeze/SKILL.md
 skills/clearintent-escalation-review/SKILL.md
 skills/clearintent-executor-gate/SKILL.md
 skills/clearintent-intent-author/SKILL.md
+skills/clearintent-operator-export-handoff/SKILL.md
+skills/clearintent-policy-change-review/SKILL.md
+skills/clearintent-post-transaction-audit/SKILL.md
+skills/clearintent-provider-evidence-refresh/SKILL.md
+skills/clearintent-transaction-runner/SKILL.md
+skills/clearintent-wallet-discovery/SKILL.md
 skills/credential-safety/SKILL.md
 skills/contract-fixture-author/SKILL.md
 skills/contract-steward/SKILL.md
@@ -352,6 +363,7 @@ tests/web/authority-state.test.ts
 tests/web/ens-availability.test.ts
 tests/web/keeperhub-event.test.ts
 tests/web/wallet-adapter.test.ts
+tests/web/wallet-transactions.test.ts
 tests/zerog-memory/live-config.test.ts
 tests/zerog-memory/zerog-memory.test.ts
 tsconfig.json
