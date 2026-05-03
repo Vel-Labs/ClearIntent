@@ -220,15 +220,20 @@ export async function prepareEnsTextRecordMulticall(input: {
   ensName: string;
   resolverAddress: string;
   records: EnsBindingRecordValues;
+  address?: string;
 }): Promise<EnsResolverMulticall> {
   const { ethers } = await import("ethers");
   const node = ethers.namehash(input.ensName);
   const resolverInterface = new ethers.Interface([
+    "function setAddr(bytes32 node, address addr)",
     "function setText(bytes32 node, string key, string value)",
     "function multicall(bytes[] data) returns (bytes[] results)"
   ]);
   const writes = orderedRecordWrites(input.records);
-  const calls = writes.map((record) => resolverInterface.encodeFunctionData("setText", [node, record.key, record.value]));
+  const calls = [
+    ...(input.address === undefined ? [] : [resolverInterface.encodeFunctionData("setAddr", [node, input.address])]),
+    ...writes.map((record) => resolverInterface.encodeFunctionData("setText", [node, record.key, record.value]))
+  ];
   const data = resolverInterface.encodeFunctionData("multicall", [calls]);
 
   return {
@@ -240,7 +245,10 @@ export async function prepareEnsTextRecordMulticall(input: {
     value: "0",
     data,
     method: "multicall(bytes[])",
-    summary: `Set ${writes.length} ClearIntent text records on ${input.ensName}.`
+    summary:
+      input.address === undefined
+        ? `Set ${writes.length} ClearIntent text records on ${input.ensName}.`
+        : `Set the ETH address and ${writes.length} ClearIntent text records on ${input.ensName}.`
   };
 }
 

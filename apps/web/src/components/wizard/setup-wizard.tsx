@@ -55,6 +55,7 @@ type AccountFundingState =
 type StepOperationState =
   | { status: "idle"; message: string }
   | { status: "running"; message: string }
+  | { status: "prepared"; message: string; evidence: Record<string, unknown>; transactions: PreparedWalletTransaction[]; issues: string[] }
   | { status: "ready"; message: string; evidence: Record<string, unknown>; issues: string[] }
   | { status: "error"; message: string; issues: string[]; evidence?: Record<string, unknown> };
 
@@ -366,10 +367,10 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
       if (accountStep.status === "creating") return "Creating";
       if (accountStep.status === "deploying") return "Deploying";
       if (accountFunding.status === "funding") return "Funding agent gas";
-      if (accountStep.status === "ready" && accountFunding.status !== "submitted") return "Fund agent gas";
+      if (accountStep.status === "ready" && accountFunding.status !== "submitted") return "Send Sepolia funding";
       if (accountStep.status === "ready" && accountFunding.status === "submitted") return "Deploy smart account";
       if (accountStep.status === "error" && accountStep.evidence !== undefined && accountFunding.status !== "submitted") {
-        return "Fund agent gas";
+        return "Send Sepolia funding";
       }
       if (accountStep.status === "error" && accountStep.evidence !== undefined && accountFunding.status === "submitted") {
         return "Retry deployment";
@@ -377,6 +378,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
       if (accountIsReady) return "Next step";
       return step.actionLabel;
     }
+    if (step.id === "ens" && ensStep.status === "prepared") return "Send ENS claim";
     if (step.id === "ens" && ensStep.status === "ready") return "Next step";
     if (step.id === "zerog" && zeroGStep.status === "ready") return "Next step";
     if (step.id === "records" && recordsStep.status === "ready") return "Next step";
@@ -449,7 +451,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
         message:
           result.issues.length > 0
             ? "Smart-account address derived with a configuration warning."
-            : "Smart-account address derived. Fund the new account with deployment gas, then deploy it.",
+            : "Smart-account address derived. Next, fund the new account with Sepolia ETH before deployment.",
         evidence: result.evidence,
         issues: result.issues
       });
@@ -526,8 +528,8 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
         transactionHash
       });
       setAccountStep({
-        status: "error",
-        message: "Agent gas funding transaction was submitted.",
+        status: "ready",
+        message: "Agent gas funding transaction was submitted. Wait for it to land, then deploy the smart account.",
         issues: [
           `Funding transaction: ${transactionHash}`,
           "Retry deployment after the funding transaction is visible on the Account Kit target chain."
@@ -556,9 +558,29 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
       advanceActiveStep();
       return;
     }
+    if (ensStep.status === "prepared") {
+      setEnsStep({ ...ensStep, status: "running", message: "Requesting parent-wallet approval for the prepared ENS claim transaction..." });
+      try {
+        const hashes = await sendWalletTransactions(ensStep.transactions, 1);
+        setEnsStep({
+          status: "ready",
+          message: "ENS subname claim transaction was submitted from the parent wallet.",
+          evidence: { ...ensStep.evidence, transactionHashes: hashes },
+          issues: ensStep.issues
+        });
+      } catch (error) {
+        setEnsStep({
+          status: "error",
+          message: "ENS subname claim submission is blocked.",
+          issues: [error instanceof Error ? error.message : String(error)],
+          evidence: ensStep.evidence
+        });
+      }
+      return;
+    }
     const accountEvidence = accountStep.status === "deployed" ? accountStep.evidence : undefined;
     if (accountEvidence === undefined) return;
-    setEnsStep({ status: "running", message: "Preparing ENS subname transactions for parent-wallet approval..." });
+    setEnsStep({ status: "running", message: "Preparing one ENS subname claim transaction. Wallet approval comes next." });
 
     try {
       const payload = await postJson<{
@@ -575,11 +597,11 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
       if (!payload.ok || payload.transactions === undefined || payload.ensName === undefined) {
         throw new Error(payload.error ?? "ENS claim preparation did not return transactions.");
       }
-      const hashes = await sendWalletTransactions(payload.transactions, 1);
       setEnsStep({
-        status: "ready",
-        message: "ENS subname transactions were submitted from the parent wallet.",
-        evidence: { ensName: payload.ensName, transactionHashes: hashes, warning: payload.warning ?? "" },
+        status: "prepared",
+        message: "ENS subname claim is prepared. Send the wallet transaction as the next action.",
+        evidence: { ensName: payload.ensName, warning: payload.warning ?? "", transactionCount: payload.transactions.length },
+        transactions: payload.transactions,
         issues: []
       });
     } catch (error) {
@@ -650,6 +672,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
     setRecordsStep({ status: "running", message: "Preparing resolver multicall and requesting parent-wallet submission..." });
 
     try {
+      const accountEvidence = accountStep.status === "deployed" ? accountStep.evidence : undefined;
       const status = await postJson<{
         ok?: boolean;
         summary?: string;
@@ -658,13 +681,14 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
         tx?: { to: string; value: string; data: string };
       }>("/api/setup/ens-records", {
         agentEnsName,
+        agentAccountAddress: accountEvidence?.accountAddress,
         ...zeroGRecords
       });
       if (!status.ok || status.tx === undefined) {
         throw new Error(`ENS record binding blocked: ${(status.blockingReasons ?? []).join(", ") || "missing transaction"}`);
       }
       const hashes = await sendWalletTransactions(
-        [{ label: "Set ClearIntent ENS text records", to: status.tx.to, value: "0x0", data: status.tx.data }],
+        [{ label: "Set ENS address and ClearIntent records", to: status.tx.to, value: "0x0", data: status.tx.data }],
         1
       );
       setRecordsStep({
@@ -963,10 +987,20 @@ function shortAddress(value: string): string {
 function OperationBlock({ state, step }: { state: StepOperationState; step: WizardStep }) {
   return (
     <div className={`wizard-operation-block ${state.status}`}>
-      <span>{state.status === "ready" ? "Evidence recorded" : state.status === "running" ? "Working" : state.status === "error" ? "Blocked" : "Active step"}</span>
+      <span>
+        {state.status === "ready"
+          ? "Evidence recorded"
+          : state.status === "running"
+            ? "Working"
+          : state.status === "prepared"
+            ? "Prepared"
+          : state.status === "error"
+            ? "Blocked"
+          : "Active step"}
+      </span>
       <strong>{state.message}</strong>
       <p>{step.summary}</p>
-      {state.status === "ready" ? <ProofList evidence={state.evidence} /> : null}
+      {state.status === "ready" || state.status === "prepared" ? <ProofList evidence={state.evidence} /> : null}
       {state.status === "error" || (state.status === "ready" && state.issues.length > 0) ? (
         <ul>
           {state.issues.map((issue) => (
@@ -1165,6 +1199,9 @@ function currentReceipt(
   }
   if (stepId === "ens" && ensStep.status === "ready") {
     return firstHashFromEvidence(ensStep.evidence) ?? "Submitted";
+  }
+  if (stepId === "ens" && ensStep.status === "prepared") {
+    return "Prepared for wallet";
   }
   if (stepId === "zerog" && zeroGStep.status === "ready") {
     return policyUriFromEvidence(zeroGStep.evidence) ?? "0G artifacts recorded";

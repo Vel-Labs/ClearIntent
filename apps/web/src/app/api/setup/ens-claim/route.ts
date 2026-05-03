@@ -27,7 +27,6 @@ export async function POST(request: Request): Promise<Response> {
   const registry = new ethers.Interface([
     "function setSubnodeRecord(bytes32 node, bytes32 label, address owner, address resolver, uint64 ttl)"
   ]);
-  const resolver = new ethers.Interface(["function setAddr(bytes32 node, address addr)"]);
   const parentNode = ethers.namehash(parentName);
   const labelHash = ethers.id(label);
 
@@ -37,20 +36,16 @@ export async function POST(request: Request): Promise<Response> {
     parentName,
     resolverAddress,
     warning:
-      "This browser transaction path works only when the connected wallet controls the unwrapped parent ENS name. Wrapped-name controller support needs a dedicated NameWrapper path.",
+      "This browser transaction path works only when the connected wallet controls the unwrapped parent ENS name. The address record is set later with the ClearIntent resolver multicall.",
     transactions: [
       {
         label: "Create subname",
         to: ensRegistryAddress,
         value: "0x0",
         data: registry.encodeFunctionData("setSubnodeRecord", [parentNode, labelHash, ownerAddress, resolverAddress, 0])
-      },
-      {
-        label: "Set ETH address",
-        to: resolverAddress,
-        value: "0x0",
-        data: resolver.encodeFunctionData("setAddr", [node, agentAccountAddress])
       }
-    ]
+    ],
+    addressRecordDeferredToEnsRecords: true,
+    agentAccountAddress
   });
 }

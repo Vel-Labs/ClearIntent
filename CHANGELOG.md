@@ -2,6 +2,10 @@
 
 All notable repo changes should be logged here.
 
+## 2026-05-03
+
+- Split the hosted setup wizard transaction flow so Step 2 funds the predicted Sepolia smart account before deployment, Step 3 prepares the ENS subname claim before requesting the parent-wallet transaction, and Step 5 batches the ENS address record with the ClearIntent text-record resolver multicall.
+
 ## 2026-05-02
 
 - Added the `clearintent` executable shim plus local-operator, agent-context, and fail-closed intent gate CLI routes so `clearintent setup local-operator`, `clearintent agent context`, and `clearintent intent create/evaluate/submit/execute` can become the contracted local SDK path for agents.
