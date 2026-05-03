@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { POST } from "../../apps/web/src/app/api/keeperhub/events/route";
+import { POST as PUBLIC_EVENTS_POST } from "../../apps/web/src/app/api/events/route";
 import { buildKeeperHubEventDisplayModel } from "../../apps/web/src/components/events/keeperhub-event-boundary";
 import {
   CLEARINTENT_KEEPERHUB_EVENT_SCHEMA_VERSION,
@@ -218,6 +219,18 @@ describe("KeeperHub reported event boundary", () => {
 
     expect(first.status).toBe(202);
     expect(await first.text()).toBe(await second.text());
+  });
+
+  it("accepts the same payload through the public /api/events route", async () => {
+    const response = await PUBLIC_EVENTS_POST(
+      new Request("http://localhost/api/events?registry=vel2-f7ad-8b1f", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(validEvent)
+      })
+    );
+
+    expect(response.status).toBe(202);
   });
 
   it("builds display copy that cannot be mistaken for trusted evidence", () => {

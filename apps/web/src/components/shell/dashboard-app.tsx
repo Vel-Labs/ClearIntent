@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { OverviewPage } from "../overview";
 import { SetupWizard, type SetupWizardStatus } from "../wizard";
 import { AppShell, type ShellNavItem } from "./app-shell";
+import { buildBoundedEventRegistryContext, keeperHubEventIngestEndpoint } from "../../lib/bounded-event-registry";
+import { buildDemoIntent } from "../../lib/demo-intent";
 import { discoverAgentSetups, hasCompleteAgentSetup, type AgentSetupDiscoveryRecord } from "../../lib/setup-discovery";
 import { loadDashboardResume, saveDashboardResume } from "../../lib/setup-resume";
 import { connectEip1193Wallet, type Eip1193Provider, type WalletAccountState } from "../../lib/wallet";
@@ -310,9 +312,15 @@ function SettingsPage({
   const primarySetup = discoveredSetups[0];
   const [demoDestination, setDemoDestination] = useState(wallet?.account ?? "");
   const [demoIntentCount, setDemoIntentCount] = useState(0);
-  const exportContext = buildExportContext(wallet, discoveredSetups);
-  const localSdkPrompt = buildOperatorHandoffPrompt(wallet, primarySetup);
-  const demoIntent = buildDemoIntent(wallet, primarySetup, demoDestination, demoIntentCount);
+  const registryContext = buildBoundedEventRegistryContext(wallet, primarySetup);
+  const exportContext = buildExportContext(wallet, discoveredSetups, registryContext);
+  const localSdkPrompt = buildOperatorHandoffPrompt(wallet, primarySetup, registryContext);
+  const demoIntent = buildDemoIntent({
+    wallet,
+    setup: primarySetup,
+    destination: demoDestination,
+    renderCount: demoIntentCount
+  });
   return (
     <SectionPage
       eyebrow={setupStatus === "complete" ? "Operator controls" : "Available after setup"}
@@ -322,20 +330,34 @@ function SettingsPage({
       <div className="settings-grid">
         <ContextBlock
           title="Alert layers"
-          body="Individual user webhook destinations stay bounded to this parent wallet and agent setup."
+          body="KeeperHub sends events to ClearIntent's ingest endpoint. The bounded registry tells the user which parent wallet and agent setup the event context belongs to."
           rows={[
-            ["Bounded webhook", primarySetup ? `/api/keeperhub/events/${primarySetup.discoveryKey.slice(0, 12)}` : "Unavailable until an agent setup is linked"],
+            ["KeeperHub ingest endpoint", keeperHubEventIngestEndpoint],
+            ["Public ingest URL", registryContext.ingest.url],
+            [
+              "Bounded registry",
+              primarySetup
+                ? "Context is scoped to the connected parent wallet, agent account, and agent ENS."
+                : "Unavailable until an agent setup is linked"
+            ],
+            ["Derived webhook name", registryContext.registry.displayName ?? "Unavailable until an agent setup is linked"],
+            ["Derived webhook URL", registryContext.registry.url],
+            ["Registry key", registryContext.registry.key ?? "Unavailable until an agent setup is linked"],
+            ["User webhook forwarding", "Disabled until scoped destination registration, replay checks, and KeeperHub source binding exist"],
             ["Email", "Not configured"],
             ["Discord", "Not configured"],
             ["Telegram", "Not configured"]
           ]}
+          code={JSON.stringify(registryContext, null, 2)}
         />
         <ContextBlock
           title="Demo intent"
-          body="Generate a local demo transfer intent shape for wallet and delegate-account testing. This does not submit a transaction."
+          body="Generate a meaningful render-only ClearIntent transfer preview with randomized amount, deadline, nonce, and review summary. This does not submit a transaction."
           rows={[
             ["From", primarySetup?.agentAccount ?? "Agent account not linked"],
             ["To", demoDestination || "Destination address required"],
+            ["Amount", demoIntent.transfer.amount],
+            ["Network", demoIntent.network.label],
             ["Policy hash", primarySetup?.policyHash ?? "Policy hash not indexed"],
             ["Status", demoIntentCount > 0 ? `Rendered ${demoIntentCount} demo intent(s)` : primarySetup ? "Ready to render demo payload" : "Setup required"]
           ]}
@@ -353,7 +375,7 @@ function SettingsPage({
                 onClick={() => setDemoIntentCount((count) => count + 1)}
                 type="button"
               >
-                Trigger demo intent
+                Generate demo intent
               </button>
             </div>
           }
@@ -489,10 +511,17 @@ function buildIntentHistory(records: AgentSetupDiscoveryRecord[], wallet?: Walle
   }));
 }
 
-function buildExportContext(wallet: WalletAccountState | undefined, records: AgentSetupDiscoveryRecord[]) {
+function buildExportContext(
+  wallet: WalletAccountState | undefined,
+  records: AgentSetupDiscoveryRecord[],
+  registryContext = buildBoundedEventRegistryContext(wallet, records[0])
+) {
   return {
     schemaVersion: "clearintent.dashboard-export.v1",
     parentWallet: wallet?.account,
+    keeperHubEventIngest: registryContext.ingest,
+    boundedEventRegistry: registryContext.registry,
+    userWebhookForwarding: registryContext.delivery,
     linkedAgents: records.map((record) => ({
       agentEnsName: record.agentEnsName,
       agentAccount: record.agentAccount,
@@ -507,7 +536,11 @@ function buildExportContext(wallet: WalletAccountState | undefined, records: Age
   };
 }
 
-function buildOperatorHandoffPrompt(wallet: WalletAccountState | undefined, setup: AgentSetupDiscoveryRecord | undefined): string {
+function buildOperatorHandoffPrompt(
+  wallet: WalletAccountState | undefined,
+  setup: AgentSetupDiscoveryRecord | undefined,
+  registryContext = buildBoundedEventRegistryContext(wallet, setup)
+): string {
   if (setup === undefined) {
     return "Connect the parent wallet and complete or import an agent setup before generating the CLI handoff.";
   }
@@ -521,31 +554,15 @@ function buildOperatorHandoffPrompt(wallet: WalletAccountState | undefined, setu
     `Policy hash: ${setup.policyHash ?? "not indexed"}`,
     `Audit latest: ${setup.auditLatest ?? "not indexed"}`,
     `KeeperHub run: ${setup.keeperHubRunId ?? "not indexed"}`,
+    `KeeperHub event ingest: ${registryContext.ingest.endpoint}`,
+    `KeeperHub event ingest URL: ${registryContext.ingest.url}`,
+    `Derived webhook name: ${registryContext.registry.displayName ?? "not available"}`,
+    `Derived webhook URL: ${registryContext.registry.url}`,
+    `Bounded registry key: ${registryContext.registry.key ?? "not available"}`,
+    "User webhook forwarding: disabled until scoped registration, replay checks, and source binding exist",
     "",
     "Do not request or expose the parent wallet private key or seed phrase."
   ].join("\n");
-}
-
-function buildDemoIntent(
-  wallet: WalletAccountState | undefined,
-  setup: AgentSetupDiscoveryRecord | undefined,
-  destination: string,
-  renderCount: number
-) {
-  return {
-    schemaVersion: "clearintent.demo-intent.v1",
-    renderCount,
-    actionType: "demo-transfer",
-    from: setup?.agentAccount ?? "agent-account-not-linked",
-    to: destination || "destination-address-required",
-    parentWallet: wallet?.account ?? setup?.parentWallet,
-    agentEnsName: setup?.agentEnsName,
-    policyHash: setup?.policyHash,
-    amount: "0",
-    mode: "render-only",
-    requiresHumanReview: true,
-    frontendAuthority: false
-  };
 }
 
 function shortAddress(value: string): string {
