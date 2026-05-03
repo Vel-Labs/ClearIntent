@@ -19,7 +19,7 @@ const profilePath = path.join(repoRoot, "REPO_PROFILE.json");
 const packageJsonPath = path.join(repoRoot, "package.json");
 const fileTreePath = path.join(repoRoot, "docs", "FILE_TREE.md");
 const placeholderScanRoots = ["docs/templates", "skills"];
-const ignoredTreeDirs = new Set([".git", "node_modules", ".next"]);
+const ignoredTreeDirs = new Set([".git", "node_modules", ".next", ".playwright-mcp"]);
 
 const npmBuiltinCommands = new Set(["npm install", "npm ci", "npm test"]);
 

@@ -23,6 +23,7 @@ Root-level `skills/` contains repo-local scaffold skills. They live at root for 
 Root `ROADMAP.md` and `DECISIONS.md` are high-visibility indexes. Detailed roadmap scope lives under `roadmaps/`; dated decision entries live under `decisions/`.
 Top-level `contracts/` is also required reading. It is outside `docs/` because it is both human-readable governance and machine-checkable contract truth.
 Top-level `packages/core/API.md` documents the current callable authority API. It is a package API, not an HTTP route map.
+`architecture/TECHNICAL_README.md` preserves the deeper technical repo-orientation material that used to live in the root README.
 Top-level `REPO_PROFILE.json` is the machine-readable taxonomy for paths, commands, governance locks, and scaffold validation.
 For implementation sequencing, `governance/stability-handoff.md` explains why `contracts/` and `packages/core/` must stabilize before provider adapters or demos.
 
@@ -59,13 +60,17 @@ For implementation sequencing, `governance/stability-handoff.md` explains why `c
 
 ### Hackathon submission prep
 
-1. `hackathon/README.md`
-2. `hackathon/vendor-tracks.md`
-3. `hackathon/rules.md`
-4. `hackathon/judging-strategy.md`
-5. `hackathon/demo-plan.md`
-6. `hackathon/wallet-demo-strategy.md`
-7. `hackathon/submission-checklist.md`
+1. `../README.md`
+2. `hackathon/README.md`
+3. `hackathon/vendor-tracks.md`
+4. `hackathon/rules.md`
+5. `hackathon/judging-strategy.md`
+6. `hackathon/demo-plan.md`
+7. `hackathon/wallet-demo-strategy.md`
+8. `hackathon/submission-checklist.md`
+9. `providers/0G/README.md`
+10. `providers/ENS/README.md`
+11. `providers/KeeperHub/README.md`
 
 ### Wallet and signer planning
 

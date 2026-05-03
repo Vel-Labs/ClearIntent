@@ -1,138 +1,33 @@
 # ClearIntent
 
-ClearIntent is an authority layer for autonomous onchain agents.
+ClearIntent is an authority layer for autonomous AI agents: a TypeScript framework that turns agent intents into verifiable, scoped, signable actions on EVM chains.
 
-The project goal is to let agents reason, plan, and coordinate without giving them unchecked execution authority. Agents produce bounded intents. Humans and approved operators review those intents through readable signing flows. Onchain contracts verify the authority, policy, nonce, deadline, and execution bounds before KeeperHub or any other executor can act.
+Current evidence: local contract/core tests pass; ENS identity is live-bound; 0G policy and audit storage has live write/read proof; KeeperHub has workflow-execution proof; EIP-712 and ERC-7730 signing surfaces are locally fixture-proven; the Phase 6 authority dashboard foundation and Phase 7 setup/custody wizard have recorded evidence; Phase 8 established SDK/CLI handoffs and repo-local agent skills for driving intents into structured, auditable workflows.
 
-ClearIntent supports signer adapters across injected wallets, WalletConnect wallets, smart wallets, and hardware-backed wallets. The baseline integration target is EIP-712 typed intent signing plus ClearIntent's own human-readable approval metadata. Wallet-specific rendering and secure-screen guarantees are reported separately by tested capability level.
+ClearIntent's submission posture is intentionally evidence-bound: the project proves the authority envelope, provider evidence flow, setup/custody journey, and demo notification rendering. Transaction-backed autonomous execution remains an explicit near-term gap until a real transaction hash and receipt are recorded.
 
-ClearIntent is not betting on one wallet. It makes agent authority portable across wallet surfaces, while reporting the assurance level honestly.
+## Capability Snapshot
 
-## Current Repository State
+| Capability | Today | Near goal |
+| --- | --- | --- |
+| Intent schema + authority kernel | `local-fixture` / local tests over canonical contracts | testnet-integrated verification |
+| Agent identity | `ens-live-bound` for `guardian.agent.clearintent.eth` | user-scoped agent subnames such as `<username>.agent.clearintent.eth` |
+| Policy and audit memory | `0g-write-read-verified` plus ENS-bound 0G artifacts | richer audit bundles and optional encrypted/private modes |
+| Execution adapter | `keeperhub-live-submitted` workflow proof, no transaction hash | transaction-backed KeeperHub receipt |
+| Signer adapter | EIP-712 typed data and ERC-7730 metadata fixtures | real wallet prompt evidence, then WalletConnect/hardware matrices |
+| Dashboard | Phase 6 authority dashboard foundation | live provider reads and trusted KeeperHub event checks |
+| Setup/custody wizard | Phase 7 evidence for parent wallet, agent smart account, 0G policy, ENS payload, KeeperHub run | one transaction-backed test intent through the agent account path |
+| SDK/CLI handoff | `clearintent` executable shim, local operator setup, agent context, intent create/evaluate/submit/execute | public npm package release |
+| Agent workflow skills | repo-local ClearIntent skills for intent authoring, execution gates, escalation, transaction running, and audit | reusable agent framework example |
+| Demo notifications | simulation-only Discord webhook forwarding for rendered ClearIntent events | authenticated, replay-checked event fanout |
 
-This scaffold is documentation, contracts, and validation tooling first. Phase 1 established the canonical `contracts/` authority layer and executable `packages/core/` authority primitives. Phase 1.5 added the Center CLI. Phase 2A added local 0G policy memory/audit semantics. Phase 2B reached live 0G write/read proof. Phase 3A added the local ENS identity scaffold, and Phase 3B reached live ENS binding for `guardian.agent.clearintent.eth`. Phase 4A added the local KeeperHub execution scaffold, and Phase 4B has workflow-execution evidence but no transaction hash. Phase 5A/5B are complete locally; Phase 5C/5D/5E need real wallet-facing validation.
-
-The next implementation target is the Phase 6 authority dashboard and wallet validator. It should demonstrate:
-
-1. ENS-resolved agent identity and metadata.
-2. 0G-backed policy memory, audit storage, and risk reflection.
-3. Bounded EIP-712 intent generation.
-4. Human-readable approval metadata.
-5. Software-wallet validation through explicit signer adapters.
-6. KeeperHub execution evidence boundaries after policy and signature verification.
-
-The Phase 7 target is the guided UX/setup wizard. The full Guardian Agent planner/critic/executor demo comes after the authority dashboard and wizard can provide scoped references safely.
-
-## What this repo should become
-
-```text
-ClearIntent
-  -> framework primitive
-  -> example Guardian Agent
-  -> reusable adapters
-  -> wallet-neutral signer support
-  -> audit-first open-source project
-```
-
-The framework primitive is the important part. The example agent proves the primitive works, but the repo should remain useful to other builders who want safe agent execution without copying our whole app.
-
-## Intended product flow
-
-The preferred user path is hosted-dashboard first, SDK/CLI second:
-
-```text
-connect parent wallet in ClearIntent dashboard
-  -> create or connect a dedicated agent wallet / smart account
-  -> configure policy and escalation rules
-  -> store/resolve policy and audit pointers through 0G and ENS
-  -> run the ClearIntent SDK or CLI with scoped references
-  -> agent proposes intents without receiving parent-wallet secrets
-```
-
-The hosted dashboard should be a stateless interface over wallet-owned authority, decentralized policy/audit records, and user-configured execution providers. It should not custody keys or become the canonical policy database.
-
-The agent-facing runtime should receive only scoped configuration: ENS identity, 0G policy/audit pointers, KeeperHub executor settings, allowed action parameters, and scoped agent-wallet/session-key identifiers where implemented. Users should not provide an LLM agent with a seed phrase, parent private key, unrestricted hot-wallet key, or raw secret stored in an agent-readable workspace.
-
-## Repository map
-
-```text
-AGENTS.md                         operating rules for humans and coding agents
-REPO_PROFILE.json                 machine-readable repo taxonomy, commands, and scaffold rules
-docs/architecture/ARCHITECTURE.md                   top-level system design
-docs/architecture/REPO_BOUNDARIES.md                layer ownership and authority boundaries
-ROADMAP.md                        high-visibility roadmap index
-DECISIONS.md                      high-visibility decision index
-CHANGELOG.md                      chronological repo changes
-CONTRIBUTING.md                   contributor expectations
-AI_USAGE.md                       AI tooling disclosure log
-.claude/                          Claude-specific bootstrap pointers
-skills/                           repo-local scaffold skill templates
-
-docs/
-  README.md                       documentation index
-  agents/                         agent start guide and onboarding routing
-  repo-truth/                     durable truth, methodology, boundaries, source materials
-  governance/                     audits, multi-agent workflow, worktrees, quality standards
-  hackathon/                      objectives, rules, vendor tracks, submission plan
-  architecture/                   technical architecture references
-  decisions/                      dated decision logs
-  roadmaps/                       roadmap detail, current state, and feature packages
-  templates/                      phase, audit, and prompt templates
-  audits/                         midpoint and closeout audit outputs
-
-contracts/
-  README.md                       canonical authority contract overview
-  authority-lifecycle.md          lifecycle states and human intervention gates
-  schemas/                        machine-checkable intent, policy, risk, review, receipt, and audit schemas
-  examples/                       valid and invalid fixtures for contract-first implementation
-
-  scripts/
-  validate-scaffold.ts            repo-local scaffold and taxonomy validation command
-  validate-contracts.ts           repo-local contract validation command
-
-packages/
-  core/                           executable authority primitives
-  center-cli/                     local human/JSON operator surface
-  ens-identity/                   Phase 3A local ENS identity scaffold
-  keeperhub-adapter/              Phase 4A local KeeperHub execution scaffold
-  zerog-memory/                   Phase 2A local 0G memory/audit scaffold
-
-tests/
-  README.md                       shared local quality gate for humans and agents
-  contracts/                      contract validation tests
-```
-
-## Local Setup and Validation
-
-Install dependencies:
+## Install
 
 ```bash
+git clone https://github.com/Vel-Labs/ClearIntent
+cd ClearIntent
 npm install
-```
-
-Run the contract validation script:
-
-```bash
-npm run validate:scaffold
-npm run validate:contracts
-```
-
-Run contract-only tests:
-
-```bash
-npm run test:contracts
-```
-
-Run all repo-local tests:
-
-```bash
 npm test
-```
-
-Run TypeScript checking for scripts and tests:
-
-```bash
-npm run typecheck
 ```
 
 Run the full local quality gate:
@@ -141,65 +36,181 @@ Run the full local quality gate:
 npm run check
 ```
 
-Before a phase closeout, these commands should pass locally. Live provider claims still require phase-specific live evidence; local scaffold tests are not live ENS, 0G, KeeperHub, or signer proof.
+## Quick Start
 
-## Repo-local skills
+Run the interactive operator center:
 
-ClearIntent keeps reusable agent guidance in root `skills/`. These are repo-local scaffold assets, not automatically installed global skills.
+```bash
+npm run clearintent
+```
 
-| Skill | Use when |
+Create and evaluate a local bounded intent:
+
+```bash
+npm run clearintent -- intent create --template safe-test-transfer
+npm run clearintent -- intent evaluate
+```
+
+After `npm install`, the local package bin is also available from the checkout:
+
+```bash
+npx --no-install clearintent setup local-operator
+npx --no-install clearintent agent context
+npx --no-install clearintent intent create --template safe-test-transfer
+```
+
+The root package is now publish-ready from the repo side, but it has not been published to npm. Until a public npm release exists, use `npm run clearintent` or `npx --no-install clearintent` from a local checkout.
+
+## How It Works
+
+ClearIntent has two complementary layers.
+
+**Authority architecture**
+
+```mermaid
+graph TB
+    User[Human Operator] --> Dashboard[apps/web<br/>Dashboard + Wizard]
+    User --> CLI[center-cli<br/>Operator CLI + Agent Handoff]
+    CLI --> Core[packages/core<br/>Authority Kernel]
+    Dashboard --> Core
+
+    Core --> ENS[ens-identity<br/>Agent Identity]
+    Core --> ZG[zerog-memory<br/>Policy + Audit]
+    Core --> Signer[signer-adapter<br/>EIP-712 + ERC-7730]
+    Core --> KH[keeperhub-adapter<br/>Execution Gate]
+
+    ENS -.live-bound.-> ENSChain[(ENS)]
+    ZG -.write/read proof.-> OG[(0G Storage)]
+    KH -.workflow proof.-> KeeperHub[(KeeperHub)]
+    Signer -.local fixture.-> Wallets[Wallets / Hardware]
+    Dashboard -.simulation-only.-> Discord[Discord Webhook]
+```
+
+**Current proven path**
+
+```mermaid
+flowchart LR
+    A[Agent or operator drafts intent] --> B[ClearIntent validates schema and policy envelope]
+    B --> C[ENS identity and 0G policy/audit refs are inspectable]
+    C --> D[EIP-712 payload and human preview render]
+    D --> E[KeeperHub workflow proof can be submitted after verification]
+    E --> F[Dashboard/CLI show reported state and gaps]
+    F --> G[Simulation-only event can render to Discord]
+```
+
+**Full intended lifecycle**
+
+```mermaid
+flowchart LR
+    A[Agent proposes action] --> B[Resolve identity via ENS]
+    B --> C[Load policy from 0G]
+    C --> D[Build bounded EIP-712 intent]
+    D --> E[Human review or scoped policy approval]
+    E --> F[Wallet signs typed payload]
+    F --> G[Verify signature, policy, nonce, deadline, executor, bounds]
+    G --> H[KeeperHub or executor submits transaction]
+    H --> I[Receipt and audit bundle write to 0G]
+    I --> J[ENS / agent card points to latest audit state]
+```
+
+The second diagram is the product lifecycle target. The current submission does not claim transaction-backed execution until `H` has a real transaction hash and receipt evidence.
+
+## Provider Usage
+
+ClearIntent used sponsor/provider products as implementation surfaces, not as branding wrappers.
+
+| Provider | How ClearIntent used it | Evidence boundary |
+| --- | --- | --- |
+| ENS | Live agent identity and text-record binding for 0G policy, policy hash, audit pointer, agent card, and ClearIntent version. | `ens-live-bound`; identity discovery is not approval. |
+| 0G | Live Storage write/read/proof path for policy and audit artifacts, later bound through ENS records. | `0g-write-read-verified`; optional 0G Compute remains deferred. |
+| KeeperHub | Workflow execution adapter and live workflow/run proof after ClearIntent verification gates. | `keeperhub-live-submitted`; no transaction hash yet. |
+| Alchemy Account Kit | Dashboard/wizard path for parent-owned agent smart account setup on Sepolia. | setup/custody evidence; no session-key enforcement claim. |
+| EIP-712 / ERC-7730 wallet standards | Canonical typed intent payload and local clear-signing metadata generation. | local fixture proof; wallet-rendered preview remains pending. |
+| Discord webhooks | Demo-only rendering of ClearIntent event outcomes to a configured operator webhook. | simulation-only notification; not approval or execution evidence. |
+
+## Packages
+
+| Package | Purpose | Current claim |
+| --- | --- | --- |
+| `packages/core` | Contract-backed authority kernel: lifecycle, hashing, validation, fail-closed verification. | local authority kernel |
+| `packages/center-cli` | Human CLI and AI-readable JSON operator surface, plus SDK-style handoff commands. | shipped locally |
+| `packages/zerog-memory` | 0G policy/audit artifact adapter and live binding helpers. | `0g-write-read-verified` |
+| `packages/ens-identity` | ENS agent identity resolver and text-record binding helpers. | `ens-live-bound` |
+| `packages/keeperhub-adapter` | KeeperHub workflow execution adapter and receipt conversion boundary. | `keeperhub-live-submitted` |
+| `packages/signer-adapter` | EIP-712 typed payloads, readable preview, ERC-7730 metadata, injected-wallet request shape. | local fixture |
+| `apps/web` | Authority dashboard, setup/custody wizard, provider evidence views, simulation-only event rendering. | local dashboard/wizard evidence |
+
+Each package/app has a local README with usage, provider fit, and claim boundaries.
+
+## CLI Commands
+
+The Center CLI exposes human-readable output by default and deterministic JSON with `--json`.
+
+| Group | Commands |
 | --- | --- |
-| `repo-orientation` | Orienting a new human or agent to ClearIntent before first action. |
-| `repo-doc-router` | Adding, moving, indexing, or reorganizing docs, templates, skills, roadmap files, decisions, or repo taxonomy. |
-| `roadmap-phase-planner` | Turning a roadmap feature or phase into an executable implementation plan. |
-| `agent-assignment-writer` | Preparing bounded human or agent workstream assignments, fresh-session handoffs, or parallel-agent prompts. |
-| `feature-implementation-runner` | Executing an approved phase plan or feature implementation. |
-| `contract-steward` | Changing contracts, schemas, lifecycle gates, examples, validation, or fail-closed authority rules. |
-| `contract-fixture-author` | Adding or updating contract schemas, valid fixtures, invalid fixtures, and contract tests. |
-| `core-enforcement` | Implementing `packages/core` enforcement logic against canonical contracts. |
-| `adapter-scaffold` | Creating or reviewing ENS, 0G, KeeperHub, signer, OpenCleaw, or x402 adapters. |
-| `phase-closeout-audit` | Closing a roadmap phase, scaffold pass, or governance task with verification evidence. |
-| `pre-commit-quality-gate` | Checking commit, push, handoff, or merge readiness after changes. |
-| `hackathon-submission-auditor` | Checking hackathon submission readiness, vendor eligibility, demo claims, feedback files, and disclosure requirements. |
+| Setup | `setup local-operator`, `agent context` |
+| Intent | `intent create`, `intent evaluate`, `intent submit`, `intent execute`, `intent validate`, `intent state` |
+| Authority | `authority evaluate` |
+| Center | `center status`, `center inspect` |
+| Identity | `identity status`, `identity live-status`, `identity bind-records`, `identity send-bind-records` |
+| Memory | `memory status`, `memory check`, `memory audit-bundle`, `memory live-status`, `memory live-smoke`, `memory live-bindings` |
+| Execution | `execution status`, `keeperhub status`, `keeperhub live-status`, `keeperhub live-submit`, `keeperhub live-run-status` |
+| Signer | `signer status`, `signer preview`, `signer typed-data`, `signer metadata` |
+| Safety | `credentials status`, `test local`, `module list`, `module doctor` |
 
-See `skills/README.md` for the skill directory and maintenance rules.
+For machine consumers through npm, use:
 
-## Start here
+```bash
+npm run --silent clearintent -- agent context --json
+```
 
-Read in this order:
+## Hackathon Tracks
 
-1. `AGENTS.md`
-2. `REPO_PROFILE.json`
-3. `docs/agents/START_HERE.md`
-4. `docs/README.md`
-5. `docs/repo-truth/THC_METHODOLOGY.md`
-6. `docs/repo-truth/THC_IN_THIS_REPO.md`
-7. `docs/architecture/ARCHITECTURE.md`
-8. `docs/architecture/REPO_BOUNDARIES.md`
-9. `ROADMAP.md`
-10. `docs/roadmaps/CURRENT_STATE_AND_NEXT.md`
-11. `DECISIONS.md`
-12. `docs/hackathon/README.md`
-13. `docs/hackathon/vendor-tracks.md`
-14. `docs/hackathon/rules.md`
+This repo was built for ETHGlobal Open Agents 2026 submission work.
 
-## Core doctrine
+- **0G - Best Agent Framework, Tooling & Core Extensions**: ClearIntent uses 0G as decentralized policy memory and audit storage for agent authority decisions.
+- **KeeperHub - Best Use of KeeperHub**: ClearIntent uses KeeperHub as the execution workflow layer after ClearIntent verification gates approve or block an intent.
+- **ENS - Best ENS Integration for AI Agents**: ClearIntent uses ENS as the canonical agent identity and discovery surface for policy/audit pointers.
+- **ENS - Most Creative Use of ENS**: ClearIntent uses user-scoped agent subnames and text records to make agent custody, policy, and audit context discoverable.
 
-- Agents may propose. Authority must be bounded.
-- `contracts/` defines the non-negotiable information contract for authority shapes.
-- `packages/core/` implements and enforces the contracts; it does not invent authority semantics independently.
-- `contracts/` plus `packages/core/` are the stability handoff before provider adapters and demo work.
-- Identity must resolve from durable records, not hidden configuration.
-- Policies must be inspectable and versioned.
-- Signed intents must be replayable and auditable.
-- Execution must fail closed when evidence is missing.
-- Code must be readable before it is clever.
-- Documentation is part of delivery, not post-delivery cleanup.
+See `docs/hackathon/vendor-tracks.md` for detailed submission notes.
 
-## Naming posture
+## Near Goals and Roadmap
 
-ClearIntent should stay vendor-neutral. Ledger hardware, Trezor, Tangem, MetaMask, WalletConnect, Rainbow, ENS, 0G, KeeperHub, ERC-7730, EIP-712, ERC-8004, ERC-7857, and x402 are integrations or standards, not the product identity.
+Near goals:
 
-## Status
+1. Record one transaction-backed KeeperHub or executor receipt through the agent account path.
+2. Run Phase 5C real software-wallet validation and capture exact wallet prompt/signature evidence.
+3. Add trusted KeeperHub event checks: token/signature validation, replay protection, and source binding.
+4. Add thin live provider reads in the dashboard without making the frontend an authority source.
+5. Package and publish the CLI when the npm release decision is made.
 
-Local contract/core, Center CLI, 0G memory, ENS identity, and KeeperHub execution scaffolds are complete through Phase 4A. Live 0G, ENS, KeeperHub/onchain, signer, Guardian Agent, dashboard, and deployment claims remain gated on future phases and live evidence.
+Roadmap items:
+
+- Phase 5C/5D/5E: software wallet, WalletConnect/mobile, and hardware-wallet validation matrices.
+- Phase 6 hardening: authority dashboard provider reads and wallet-validation evidence capture.
+- Phase 7 hardening: setup/custody wizard polish and one end-to-end test intent.
+- Phase 8 stretch: ERC-8004, ENSIP-style agent registration, ERC-7857/iNFTs, x402, zk policy proofs, and auto-rotating ENS session addresses.
+
+## Project Structure
+
+```text
+clearintent/
+├── contracts/             # JSON Schema authority contracts + fixtures
+├── packages/              # TypeScript authority, CLI, provider, and signer packages
+├── apps/web/              # Next.js authority dashboard + setup/custody wizard
+├── skills/                # Repo-local agent skills for ClearIntent workflows
+├── docs/                  # Architecture, governance, audits, providers, hackathon
+├── tests/                 # Local quality gate
+└── scripts/               # Validation scripts
+```
+
+For deeper repo orientation, read `docs/architecture/TECHNICAL_README.md`.
+
+## Naming Posture
+
+ClearIntent is vendor-neutral. ENS, 0G, KeeperHub, Alchemy Account Kit, MetaMask, WalletConnect, Ledger, Trezor, Tangem, ERC-7730, EIP-712, ERC-8004, ERC-7857, and x402 are integrations or standards, not the product identity.
+
+## License
+
+MIT - see `LICENSE`.

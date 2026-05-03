@@ -4,6 +4,9 @@ All notable repo changes should be logged here.
 
 ## 2026-05-03
 
+- Replaced the root README with a submission/product entrypoint grounded in exact ENS, 0G, KeeperHub, signer, dashboard, wizard, SDK/CLI, skill, and Discord demo evidence boundaries; moved the prior technical orientation into `docs/architecture/TECHNICAL_README.md`.
+- Added package/app README visibility for ENS identity, KeeperHub adapter, signer adapter, and the web app, explicitly documenting how provider products were used and where current claims stop.
+- Made the root package publish-ready from the repo side by adding npm metadata, a constrained `files` list, and an MIT `LICENSE`; root docs now distinguish local `npx --no-install clearintent` from an unpublished public npm release.
 - Reset stale dashboard-complete resume state when the connected wallet has no matching complete setup, preventing live-site wizard actions from staying disabled for new wallet tests.
 - Scoped setup wizard resume restoration to the connected parent wallet and added a Start over reset action so browser-local resume state cannot trap a new wallet/name test in an old journey.
 - Added operator-provided Discord webhook forwarding for Settings demo events, with browser-local URL entry, server-side Discord URL validation, redacted status display, and no export of the webhook secret.

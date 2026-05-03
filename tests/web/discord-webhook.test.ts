@@ -46,7 +46,7 @@ describe("Discord webhook forwarding", () => {
       "https://discord.com/api/webhooks/123456789/demo_token",
       expect.objectContaining({ method: "POST" })
     );
-    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(String(init.body)).toContain("simulation-only");
     expect(String(init.body)).not.toContain("demo_token");
   });

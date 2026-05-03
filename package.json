@@ -1,11 +1,31 @@
 {
   "name": "clearintent",
   "version": "0.1.0",
-  "private": true,
+  "description": "Authority layer for autonomous AI agents: scoped intents, readable signing, policy verification, and auditable execution workflows.",
+  "license": "MIT",
+  "homepage": "https://github.com/Vel-Labs/ClearIntent#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vel-Labs/ClearIntent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Vel-Labs/ClearIntent/issues"
+  },
   "type": "module",
   "bin": {
     "clearintent": "./bin/clearintent.mjs"
   },
+  "files": [
+    "README.md",
+    "LICENSE",
+    "bin/",
+    "contracts/",
+    "packages/",
+    "skills/",
+    "docs/architecture/TECHNICAL_README.md",
+    "docs/providers/",
+    "clearintent.config.json"
+  ],
   "workspaces": [
     "apps/web"
   ],
