@@ -10,6 +10,7 @@ export type DashboardResumeSnapshot = {
 export type SetupWizardResumeSnapshot = {
   schemaVersion: 1;
   updatedAt: string;
+  parentWallet?: string;
   agentName: string;
   nameCheck?: unknown;
   accountStep?: unknown;
@@ -45,6 +46,11 @@ export function saveSetupWizardResume(snapshot: Omit<SetupWizardResumeSnapshot, 
     updatedAt: new Date().toISOString(),
     ...snapshot
   });
+}
+
+export function resumeMatchesWallet(resume: SetupWizardResumeSnapshot, parentWallet: string | undefined): boolean {
+  if (resume.parentWallet === undefined || parentWallet === undefined) return false;
+  return resume.parentWallet.toLowerCase() === parentWallet.toLowerCase();
 }
 
 export function clearSetupResume(): void {

@@ -78,6 +78,7 @@ export function DashboardApp() {
       {selectedPage === "setup" ? (
         <SetupWizard
           activeStepIndex={activeSetupStep}
+          connectedWallet={wallet?.account}
           onAdvance={() => {
             setSetupStatus("in-progress");
             setActiveSetupStep((currentStep) => currentStep + 1);
@@ -87,6 +88,10 @@ export function DashboardApp() {
             setActiveSetupStep(0);
             refreshDiscovery();
             setSelectedPage("provider-evidence");
+          }}
+          onReset={() => {
+            setSetupStatus("in-progress");
+            setActiveSetupStep(0);
           }}
           onStart={() => {
             setSetupStatus("in-progress");

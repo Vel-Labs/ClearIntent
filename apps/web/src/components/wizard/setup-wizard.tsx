@@ -8,7 +8,7 @@ import {
 } from "../../lib/alchemy";
 import { isUsableAgentLabel, normalizeAgentLabel, toAgentEnsName } from "../../lib/ens/names";
 import { upsertAgentSetupDiscovery } from "../../lib/setup-discovery";
-import { loadSetupWizardResume, saveSetupWizardResume } from "../../lib/setup-resume";
+import { clearSetupResume, loadSetupWizardResume, resumeMatchesWallet, saveSetupWizardResume } from "../../lib/setup-resume";
 import { sendNativeTransfer, sendWalletTransactions, type PreparedWalletTransaction } from "../../lib/wallet/transactions";
 
 export type SetupWizardStatus = "not-started" | "in-progress" | "complete";
@@ -29,8 +29,10 @@ type WizardStep = {
 type SetupWizardProps = {
   status: SetupWizardStatus;
   activeStepIndex: number;
+  connectedWallet?: string;
   onAdvance: () => void;
   onComplete: () => void;
+  onReset: () => void;
   onStart: () => void;
 };
 
@@ -167,7 +169,7 @@ const wizardSteps: WizardStep[] = [
   }
 ];
 
-export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, status }: SetupWizardProps) {
+export function SetupWizard({ activeStepIndex, connectedWallet, onAdvance, onComplete, onReset, onStart, status }: SetupWizardProps) {
   const [agentName, setAgentName] = useState("");
   const [nameCheck, setNameCheck] = useState<NameCheckState>({
     status: "idle",
@@ -216,7 +218,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
 
   useEffect(() => {
     const resume = loadSetupWizardResume();
-    if (resume !== undefined) {
+    if (resume !== undefined && resumeMatchesWallet(resume, connectedWallet)) {
       setAgentName(resume.agentName);
       setNameCheck(restoreNameCheck(resume.nameCheck));
       setAccountStep(
@@ -253,7 +255,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
       setResumeRestored(true);
     }
     setResumeLoaded(true);
-  }, []);
+  }, [connectedWallet]);
 
   useEffect(() => {
     if (!resumeLoaded) return;
@@ -272,6 +274,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
       });
     }
     saveSetupWizardResume({
+      parentWallet: accountEvidence?.parentAddress ?? connectedWallet,
       agentName,
       nameCheck: serializeNameCheck(nameCheck, agentEnsName),
       accountStep: serializeAccountStep(accountStep),
@@ -291,6 +294,7 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
     nameCheck,
     recordsStep,
     resumeLoaded,
+    connectedWallet,
     zeroGStep
   ]);
 
@@ -856,6 +860,21 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
     }
   }
 
+  function resetWizardJourney() {
+    clearSetupResume();
+    setAgentName("");
+    setNameCheck({ status: "idle", message: "Enter a name to check ENS availability." });
+    setAccountStep({ status: "idle", message: "Derive the parent-owned smart account after the agent name is confirmed." });
+    setAccountFunding({ status: "idle" });
+    setEnsStep({ status: "idle", message: "Deploy the smart account before preparing the ENS subname transaction." });
+    setZeroGStep({ status: "idle", message: "Publish policy, audit, and agent-card artifacts once the ENS name is selected." });
+    setRecordsStep({ status: "idle", message: "Publish 0G artifacts before preparing the ENS resolver record multicall." });
+    setKeeperHubStep({ status: "idle", message: "Bind the ClearIntent execution gate after ENS records are submitted." });
+    setResumeRestored(false);
+    setResumeDismissed(false);
+    onReset();
+  }
+
   return (
     <div className="wizard-page">
       <section className="wizard-intro" aria-labelledby="setup-wizard-title">
@@ -877,6 +896,9 @@ export function SetupWizard({ activeStepIndex, onAdvance, onComplete, onStart, s
             </div>
             <button className="button ghost" onClick={() => setResumeDismissed(true)} type="button">
               Dismiss
+            </button>
+            <button className="button ghost" onClick={resetWizardJourney} type="button">
+              Start over
             </button>
           </div>
         ) : null}
