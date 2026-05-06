@@ -1,0 +1,17 @@
+{
+  "artifactKind": "THC-BOT History",
+  "contractVersion": "0.1.0",
+  "runs": [
+    {
+      "runId": "2026-05-06_clearintent_0.1.0_52d0966",
+      "generatedAt": "2026-05-06T19:12:11.482Z",
+      "reviewedRevision": "52d0966",
+      "contractVersion": "0.1.0",
+      "recommendedLevel": "THC-4 Reproducible - Local THC Check",
+      "totalScore": 88,
+      "confidence": "medium",
+      "validationState": "Complete",
+      "path": "runs/2026-05-06_clearintent_0.1.0_52d0966/"
+    }
+  ]
+}

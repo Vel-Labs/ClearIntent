@@ -1,0 +1,29 @@
+{
+  "actions": [
+    {
+      "priority": "high",
+      "action": "Capture one transaction-backed KeeperHub or executor receipt through the agent account path.",
+      "expectedImpact": "Removes the largest current authority/evidence gap and can raise execution proof beyond workflow status."
+    },
+    {
+      "priority": "high",
+      "action": "Run Phase 5C software-wallet validation and preserve wallet prompt/signature evidence.",
+      "expectedImpact": "Separates ClearIntent-rendered readability from wallet-rendered signing proof."
+    },
+    {
+      "priority": "medium",
+      "action": "Request independent public or peer THC review against revision 52d0966.",
+      "expectedImpact": "Converts first-party THC-BOT artifacts into externally checked trust evidence."
+    },
+    {
+      "priority": "medium",
+      "action": "Add trusted KeeperHub/webhook event source binding and replay checks.",
+      "expectedImpact": "Allows event surfaces to carry stronger evidence without overstating authority."
+    },
+    {
+      "priority": "low",
+      "action": "Keep future THC-BOT runs appended instead of overwriting history.",
+      "expectedImpact": "Builds score, cap, and hidden-trust trend history for public reviewers."
+    }
+  ]
+}

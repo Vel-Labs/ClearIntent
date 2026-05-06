@@ -1,0 +1,304 @@
+{
+  "artifactKind": "THC-BOT",
+  "contractVersion": "0.1.0",
+  "rubricVersion": "THC Methodology 0.2.0",
+  "validationState": "Complete",
+  "project": {
+    "name": "ClearIntent",
+    "repositoryUrl": {
+      "value": "https://github.com/Vel-Labs/ClearIntent",
+      "status": "provided",
+      "reason": ""
+    },
+    "visibility": "public"
+  },
+  "reviewedRevision": {
+    "commitSha": {
+      "value": "52d0966a1c0677c067520edb0c948ced4a91bfe0",
+      "status": "provided",
+      "reason": ""
+    },
+    "generatedAt": "2026-05-06T19:12:11.482Z",
+    "worktreeState": "clean"
+  },
+  "review": {
+    "reviewLabel": "Local THC Check",
+    "recommendedLevel": "THC-4 Reproducible - Local THC Check",
+    "totalScore": 88,
+    "confidence": "medium",
+    "capsApplied": [
+      "Local THC Check only; not independent public, peer, Vel Labs, or leaderboard verification.",
+      "No transaction-backed autonomous execution receipt is recorded yet.",
+      "Real wallet-rendered signing evidence remains incomplete."
+    ]
+  },
+  "evidenceTable": [
+    {
+      "category": "Truth",
+      "score": 29,
+      "evidence": [
+        "README.md states the product mission, current evidence, and explicit transaction-backed execution gap.",
+        "AGENTS.md, contracts/README.md, and contracts/authority-lifecycle.md define authority ownership and lifecycle gates.",
+        "docs/architecture/ARCHITECTURE.md and docs/architecture/REPO_BOUNDARIES.md separate contracts, core, adapters, dashboard, and provider evidence.",
+        "docs/repo-truth/THC_IN_THIS_REPO.md now records the THC-BOT local artifact boundary."
+      ],
+      "missingEvidence": [
+        "Some externally hosted/live-provider evidence still depends on operator-held credentials or provider dashboards for fresh replay."
+      ],
+      "notes": "Truth boundaries are strong and current. The main reduction is live evidence freshness outside a deterministic local checkout."
+    },
+    {
+      "category": "Hardening",
+      "score": 32,
+      "evidence": [
+        "npm run check passed on reviewed revision 52d0966, covering scaffold validation, contract validation, center CLI validation, credential safety, focused contract tests, all tests, and typecheck.",
+        "tests/ covers contracts, core fail-closed behavior, ENS identity, 0G memory, KeeperHub adapter, signer adapter, center CLI, and web surfaces.",
+        "scripts/check-credential-safety.ts reports live-secret readiness without printing secrets and keeps live writes gated.",
+        "contracts/examples/invalid-*.json and validation scripts prove important negative cases."
+      ],
+      "missingEvidence": [
+        "Transaction-backed KeeperHub or executor receipt remains absent.",
+        "Wallet-rendered signing and hardware secure-display evidence remain deferred.",
+        "Live provider replay requires external configuration and cannot be fully reproduced from public files alone."
+      ],
+      "notes": "Hardening is broad and automated locally, with explicit fail-closed authority posture. Remaining gaps are live execution and wallet evidence, not local validation coverage."
+    },
+    {
+      "category": "Clarity",
+      "score": 22,
+      "evidence": [
+        "README.md, docs/README.md, docs/agents/START_HERE.md, ROADMAP.md, and docs/roadmaps/CURRENT_STATE_AND_NEXT.md route humans and agents to current state and next actions.",
+        "skills/README.md and repo-local skills provide repeatable operating lanes for contracts, adapters, setup, credentials, transactions, and THC checks.",
+        "Provider and wallet docs distinguish local fixture, live-bound, workflow-execution, and unproven claim levels.",
+        "docs/thc/ now gives public reviewers a stable first inspection path."
+      ],
+      "missingEvidence": [
+        "The repo contains substantial phase history; a new reviewer still has to follow several index files to separate current proof from deferred scope.",
+        "Some dashboard/operator recovery paths remain distributed across provider, roadmap, and skill docs."
+      ],
+      "notes": "Clarity is high for an authority system of this size, but the evidence volume still imposes navigation cost."
+    },
+    {
+      "category": "Audit History",
+      "score": 5,
+      "evidence": [
+        "CHANGELOG.md, DECISIONS.md, docs/decisions/, and docs/audits/ preserve detailed phase and provider evidence history.",
+        "docs/thc/LOCAL_CHECK.md and this THC-BOT run provide local review artifacts for the current methodology revision."
+      ],
+      "missingEvidence": [
+        "No independent public, peer, or Vel Labs reviewed THC artifact is recorded for this revision.",
+        "Structured THC-BOT history starts with this new run, so trend evidence is not mature yet."
+      ],
+      "notes": "Audit history is extensive, but independent review history and multi-run THC-BOT trend history are still limited."
+    }
+  ],
+  "hiddenTrustFindings": [
+    {
+      "finding": "Local THC-BOT artifacts are first-party evidence maps, not independent public verification.",
+      "severity": "medium",
+      "evidence": [
+        "docs/repo-truth/THC_LOCAL_AND_PUBLIC_REVIEW.md",
+        "docs/thc/README.md",
+        "docs/thc/LOCAL_CHECK.md"
+      ],
+      "recommendation": "Submit reviewed revision 52d0966 and the THC-BOT run package to independent public or peer review before using public score or leaderboard language."
+    },
+    {
+      "finding": "Transaction-backed autonomous execution is still unproven.",
+      "severity": "high",
+      "evidence": [
+        "README.md current submission posture",
+        "ROADMAP.md immediate next action",
+        "docs/audits/phase-4-keeperhub-execution-adapter/4b.9-closeout-audit.md"
+      ],
+      "recommendation": "Record one transaction-backed KeeperHub or executor receipt, then bind it to a canonical ExecutionReceipt and audit bundle."
+    },
+    {
+      "finding": "Real wallet-rendered signing evidence remains incomplete.",
+      "severity": "medium",
+      "evidence": [
+        "README.md capability snapshot",
+        "ROADMAP.md Phase 5C status",
+        "docs/providers/Wallets/README.md"
+      ],
+      "recommendation": "Run the prepared software-wallet validation path and preserve exact wallet prompt, signature, and ClearIntent preview evidence."
+    },
+    {
+      "finding": "Live evidence replay depends on operator-held credentials and provider availability.",
+      "severity": "medium",
+      "evidence": [
+        "npm run validate:credentials output",
+        "docs/hackathon/vendor-tracks.md",
+        "docs/roadmaps/CURRENT_STATE_AND_NEXT.md"
+      ],
+      "recommendation": "Keep non-secret transcripts and public artifact references current, and label unavailable live replay as lower confidence rather than success."
+    },
+    {
+      "finding": "KeeperHub and webhook event authenticity is improved but still not full authority truth.",
+      "severity": "medium",
+      "evidence": [
+        "README.md demo notification boundary",
+        "docs/architecture/ARCHITECTURE.md hosted dashboard note",
+        "apps/web/src/app/api/keeperhub/events/route.ts"
+      ],
+      "recommendation": "Finish source binding, replay protection, and trusted event checks before treating events as execution evidence."
+    }
+  ],
+  "nextActions": [
+    {
+      "priority": "high",
+      "action": "Capture one transaction-backed KeeperHub or executor receipt through the agent account path.",
+      "expectedImpact": "Removes the largest current authority/evidence gap and can raise execution proof beyond workflow status."
+    },
+    {
+      "priority": "high",
+      "action": "Run Phase 5C software-wallet validation and preserve wallet prompt/signature evidence.",
+      "expectedImpact": "Separates ClearIntent-rendered readability from wallet-rendered signing proof."
+    },
+    {
+      "priority": "medium",
+      "action": "Request independent public or peer THC review against revision 52d0966.",
+      "expectedImpact": "Converts first-party THC-BOT artifacts into externally checked trust evidence."
+    },
+    {
+      "priority": "medium",
+      "action": "Add trusted KeeperHub/webhook event source binding and replay checks.",
+      "expectedImpact": "Allows event surfaces to carry stronger evidence without overstating authority."
+    },
+    {
+      "priority": "low",
+      "action": "Keep future THC-BOT runs appended instead of overwriting history.",
+      "expectedImpact": "Builds score, cap, and hidden-trust trend history for public reviewers."
+    }
+  ],
+  "uncertaintyNotes": [
+    "This is a local preparation review produced in the ClearIntent checkout, not independent public verification.",
+    "npm run check passed locally, but external providers, live dashboards, and wallet prompts were not re-run against every live integration during this THC pass.",
+    "Credential safety reported missing local live-provider secrets in this environment; that is safe for repo review but limits live replay confidence.",
+    "The score reflects current repository artifacts at 52d0966, not future pushed state or uncommitted local edits."
+  ],
+  "provenance": {
+    "commandsRun": [
+      "git status --porcelain",
+      "git rev-parse HEAD",
+      "npm install",
+      "npm run check",
+      "node skills/THC_Check/scripts/scaffold-thc-bot-run.js . --project-name ClearIntent --visibility public",
+      "node skills/THC_BOT_Visualizer/scripts/render-thc-bot.js .",
+      "node skills/THC_Check/scripts/validate-thc-bot.js .",
+      "npm run validate:scaffold",
+      "npm run check"
+    ],
+    "filesInspected": [
+      "README.md",
+      "AGENTS.md",
+      "REPO_PROFILE.json",
+      "contracts/README.md",
+      "contracts/authority-lifecycle.md",
+      "contracts/schemas/agent-intent.schema.json",
+      "contracts/schemas/agent-policy.schema.json",
+      "contracts/schemas/audit-bundle.schema.json",
+      "docs/architecture/ARCHITECTURE.md",
+      "docs/architecture/REPO_BOUNDARIES.md",
+      "docs/architecture/security-model.md",
+      "docs/README.md",
+      "docs/repo-truth/THC_METHODOLOGY.md",
+      "docs/repo-truth/THC_IN_THIS_REPO.md",
+      "docs/repo-truth/THC_BOT_CONTRACT.md",
+      "docs/repo-truth/THC_SCORECARD.md",
+      "docs/repo-truth/THC_LEVELS.md",
+      "ROADMAP.md",
+      "docs/roadmaps/ROADMAP.md",
+      "docs/roadmaps/CURRENT_STATE_AND_NEXT.md",
+      "CHANGELOG.md",
+      "DECISIONS.md",
+      "docs/decisions/2026-05-02.md",
+      "docs/audits/phase-2-zerog-policy-memory-audit/2b.9-closeout-audit.md",
+      "docs/audits/phase-3-ens-agent-identity/3b.9-closeout-audit.md",
+      "docs/audits/phase-4-keeperhub-execution-adapter/4b.9-closeout-audit.md",
+      "docs/audits/phase-5-signer-readable-approval/5b.9-closeout-audit.md",
+      "docs/audits/phase-6-authority-wallet-validator/6.9-closeout-audit.md",
+      "docs/hackathon/vendor-tracks.md",
+      "docs/hackathon/rules.md",
+      "skills/README.md",
+      "skills/THC_Check/SKILL.md",
+      "scripts/validate-scaffold.ts",
+      "scripts/validate-contracts.ts",
+      "scripts/check-credential-safety.ts",
+      "tests/contracts/validate-contracts.test.ts",
+      "tests/core/core.test.ts",
+      "tests/center-cli/center-cli.test.ts"
+    ],
+    "evidenceFileHashes": {
+      "README.md": "sha256:8ef9bcac33c62625ca9dd602d3daa3afe784f4c9a4498a98c8bc541d17c1bc78",
+      "AGENTS.md": "sha256:6516fb8ee137358f7f198722e0008dd2de6d9654cf27b2c32af78f3e23a5d8c2",
+      "REPO_PROFILE.json": "sha256:dfd1556d919f4b60bec4f7fe9cc51a18a1776d7f926abfaee5ca5ab7cfe2c284",
+      "contracts/README.md": "sha256:ff9cc39889d61368b30df3b27ab54b89731ac6463419c092b47689e4150ac481",
+      "contracts/authority-lifecycle.md": "sha256:05c314ca3e8a4de68fc94b5476b2e6062d30cf2b7690696329eab3b301b3f7e4",
+      "contracts/schemas/agent-intent.schema.json": "sha256:4ce34bfd4a646c3d53e9e889a5f08665a44edab7620c182f614fa9cf1ada283e",
+      "contracts/schemas/agent-policy.schema.json": "sha256:d7a41d793dd4e9906bad4bcfa653bf0248a6dbd75c1752fe92ad9db8a122cd43",
+      "contracts/schemas/audit-bundle.schema.json": "sha256:4c4ba16ce91ea5c6d5484f667d50afbd134c460a6661e2d22dabdbb6f53b7d93",
+      "docs/architecture/ARCHITECTURE.md": "sha256:daa5822bf7c04d445e71cfac642bc3336ca250be14acf6ae3a4ee16bc8f1bd54",
+      "docs/architecture/REPO_BOUNDARIES.md": "sha256:52c566612f0a6bc720bcabc6e8d1af0e8287fe6d6592b6f4d13e6e839f95370b",
+      "docs/architecture/security-model.md": "sha256:6d99260bd04fab71669df07947a708efe6a01588539e8700003ea55b4526e190",
+      "docs/README.md": "sha256:2f24516aeae102d2dea3f2e800844c6778a35139150caa83d4ed84cd61839efc",
+      "docs/repo-truth/THC_METHODOLOGY.md": "sha256:64cb6e3e667dc56e59e6e2d0613a7b3fe386ff4f364b05316f5af1e679c3f79c",
+      "docs/repo-truth/THC_IN_THIS_REPO.md": "sha256:517ea20ed56778cdf0a6479392ed74cfee9e6666446373f60b5336c538293856",
+      "docs/repo-truth/THC_BOT_CONTRACT.md": "sha256:057fb54cd7c8faaa574c6b8c5fad550cde41a4174ddc377f30f01bbb2bd76066",
+      "docs/repo-truth/THC_SCORECARD.md": "sha256:c40d7f3346d1aa7793e4ec9353fe0ad88a7a15a25f14a72df74612f064767794",
+      "docs/repo-truth/THC_LEVELS.md": "sha256:6a752de1d6f529b152dc8e2738cc82ebc72f3c3b55c0921927eaed53871ccb27",
+      "ROADMAP.md": "sha256:a38804318f4e06c8e0e3c78814052a317dad4f268960cb83536bb5e75ae20c38",
+      "docs/roadmaps/ROADMAP.md": "sha256:301e76529ba3120d6f60702d718ebcb97191c319792ef4e599e96a1e40cd79a8",
+      "docs/roadmaps/CURRENT_STATE_AND_NEXT.md": "sha256:5ad105b866d761a246885f149a4c9137c39a0d596e0225c1ace974b013c5ecc6",
+      "CHANGELOG.md": "sha256:c80529ea9acc1f927c8bcb7aa09b0d5f979fda395072c65be689f7994bacb87d",
+      "DECISIONS.md": "sha256:ba11b1e6fdd0087909de101aa7015a1f52e071d2ba605f6f0cd8058ab1cb66ca",
+      "docs/decisions/2026-05-02.md": "sha256:d59a6b6127817a0fe4d84e2d2351188310e157f027676d4a3305688bd1073700",
+      "docs/audits/phase-2-zerog-policy-memory-audit/2b.9-closeout-audit.md": "sha256:df5a5a63e20383e0bc85e9e457b4ed9d1f86a5db1fc9555fb27d57bdd478c9e8",
+      "docs/audits/phase-3-ens-agent-identity/3b.9-closeout-audit.md": "sha256:6a0dcfcf7b4e5bbbcc1f512e6147e4ff76d810bb6feb9c763a3a75911b1a77fa",
+      "docs/audits/phase-4-keeperhub-execution-adapter/4b.9-closeout-audit.md": "sha256:6a7c424d365565b57154d0be35e78f1f94bcbdeb51bb6dfe2aaa54226aed9f1f",
+      "docs/audits/phase-5-signer-readable-approval/5b.9-closeout-audit.md": "sha256:5b912ff1c2bf48030f4d219b0e274d251cc243ddcad92872f79308c0b653ac67",
+      "docs/audits/phase-6-authority-wallet-validator/6.9-closeout-audit.md": "sha256:f0917a928a2211b84770b42aa0e73d4dd7f88944cf69b99d02b796bf2a7e4ae2",
+      "docs/hackathon/vendor-tracks.md": "sha256:7629f37c8a29a69ef439520bfcbfa112ef964541be78046f39c11bacbf8c9ba0",
+      "docs/hackathon/rules.md": "sha256:873754e9203629edfeffa8b65c8037dec5a649edbf32716b742cecf80dcceab4",
+      "skills/README.md": "sha256:097d7e7789947dbd26601e3deada659cd89537107cd7991c85041f8df6c84703",
+      "skills/THC_Check/SKILL.md": "sha256:a7280d8e59d9db912f02a8a8fbcc09390c0ad301d0ee6ab31db02cdcb439d0a6",
+      "scripts/validate-scaffold.ts": "sha256:1c50b0cf6c3f147cfb5f76095315018c5a0f781b14a043846aa397ad2a150487",
+      "scripts/validate-contracts.ts": "sha256:a3c01b5bf35313df4d23bdf13e4f93a16aa35327f671b244966c391a408572ff",
+      "scripts/check-credential-safety.ts": "sha256:b531b0f30a16a2c08f6e890956984cecaa5cef4459e8aa62abe9069f28c1dc9b",
+      "tests/contracts/validate-contracts.test.ts": "sha256:e77c372db576635fe75b195371bae449e5e46cda99e3c9b040b49130f63ed0b6",
+      "tests/core/core.test.ts": "sha256:c8d70499d598eb768cc252a1d66af2e564507914f2ebabee445d633e7850d1c8",
+      "tests/center-cli/center-cli.test.ts": "sha256:50d3c8bebeab94bd6a72bc4d509cae99557a78241a19b7bf152b7011b47c1361"
+    },
+    "reportHash": {
+      "value": "sha256:e8de02e83161d37c89d7df19e80e0eddf397d4c39b5176bf9df9a959d74758a1",
+      "status": "provided",
+      "reason": ""
+    },
+    "contractHash": {
+      "value": null,
+      "status": "unavailable",
+      "reason": "Self-referential hash is recorded in THC-BOT.provenance.json artifactHashes after artifact generation."
+    },
+    "model": {
+      "value": "GPT-5 Codex local run",
+      "status": "provided",
+      "reason": ""
+    },
+    "promptVersion": {
+      "value": "THC_Check 0.1.0",
+      "status": "provided",
+      "reason": ""
+    }
+  },
+  "commandsRun": [
+    "git status --porcelain",
+    "git rev-parse HEAD",
+    "npm install",
+    "npm run check",
+    "node skills/THC_Check/scripts/scaffold-thc-bot-run.js . --project-name ClearIntent --visibility public",
+    "node skills/THC_BOT_Visualizer/scripts/render-thc-bot.js .",
+    "node skills/THC_Check/scripts/validate-thc-bot.js .",
+    "npm run validate:scaffold",
+    "npm run check"
+  ]
+}

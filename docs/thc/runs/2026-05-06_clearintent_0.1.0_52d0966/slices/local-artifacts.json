@@ -1,0 +1,39 @@
+{
+  "artifacts": [
+    {
+      "path": "docs/thc/LOCAL_CHECK.md",
+      "status": "complete",
+      "role": "Human executive summary and readiness checklist."
+    },
+    {
+      "path": "docs/thc/runs/2026-05-06_clearintent_0.1.0_52d0966/THC-BOT.md",
+      "status": "complete",
+      "role": "Human-readable structured run report."
+    },
+    {
+      "path": "docs/thc/runs/2026-05-06_clearintent_0.1.0_52d0966/THC-BOT.contract.json",
+      "status": "complete",
+      "role": "Machine-readable THC-BOT contract for this run."
+    },
+    {
+      "path": "docs/thc/runs/2026-05-06_clearintent_0.1.0_52d0966/THC-BOT.provenance.json",
+      "status": "complete",
+      "role": "Commands, inspected files, hashes, and unavailable field notes."
+    },
+    {
+      "path": "docs/thc/THC-BOT.history.json",
+      "status": "complete",
+      "role": "Machine-readable run history ledger."
+    },
+    {
+      "path": "docs/thc/THC-BOT.md",
+      "status": "complete",
+      "role": "Human-readable run ledger."
+    },
+    {
+      "path": "docs/thc/THC-BOT.html",
+      "status": "optional",
+      "role": "Generated visualization; not canonical scoring truth."
+    }
+  ]
+}

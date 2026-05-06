@@ -1,0 +1,62 @@
+{
+  "categories": [
+    {
+      "category": "Truth",
+      "score": 29,
+      "evidence": [
+        "README.md states the product mission, current evidence, and explicit transaction-backed execution gap.",
+        "AGENTS.md, contracts/README.md, and contracts/authority-lifecycle.md define authority ownership and lifecycle gates.",
+        "docs/architecture/ARCHITECTURE.md and docs/architecture/REPO_BOUNDARIES.md separate contracts, core, adapters, dashboard, and provider evidence.",
+        "docs/repo-truth/THC_IN_THIS_REPO.md now records the THC-BOT local artifact boundary."
+      ],
+      "missingEvidence": [
+        "Some externally hosted/live-provider evidence still depends on operator-held credentials or provider dashboards for fresh replay."
+      ],
+      "notes": "Truth boundaries are strong and current. The main reduction is live evidence freshness outside a deterministic local checkout."
+    },
+    {
+      "category": "Hardening",
+      "score": 32,
+      "evidence": [
+        "npm run check passed on reviewed revision 52d0966, covering scaffold validation, contract validation, center CLI validation, credential safety, focused contract tests, all tests, and typecheck.",
+        "tests/ covers contracts, core fail-closed behavior, ENS identity, 0G memory, KeeperHub adapter, signer adapter, center CLI, and web surfaces.",
+        "scripts/check-credential-safety.ts reports live-secret readiness without printing secrets and keeps live writes gated.",
+        "contracts/examples/invalid-*.json and validation scripts prove important negative cases."
+      ],
+      "missingEvidence": [
+        "Transaction-backed KeeperHub or executor receipt remains absent.",
+        "Wallet-rendered signing and hardware secure-display evidence remain deferred.",
+        "Live provider replay requires external configuration and cannot be fully reproduced from public files alone."
+      ],
+      "notes": "Hardening is broad and automated locally, with explicit fail-closed authority posture. Remaining gaps are live execution and wallet evidence, not local validation coverage."
+    },
+    {
+      "category": "Clarity",
+      "score": 22,
+      "evidence": [
+        "README.md, docs/README.md, docs/agents/START_HERE.md, ROADMAP.md, and docs/roadmaps/CURRENT_STATE_AND_NEXT.md route humans and agents to current state and next actions.",
+        "skills/README.md and repo-local skills provide repeatable operating lanes for contracts, adapters, setup, credentials, transactions, and THC checks.",
+        "Provider and wallet docs distinguish local fixture, live-bound, workflow-execution, and unproven claim levels.",
+        "docs/thc/ now gives public reviewers a stable first inspection path."
+      ],
+      "missingEvidence": [
+        "The repo contains substantial phase history; a new reviewer still has to follow several index files to separate current proof from deferred scope.",
+        "Some dashboard/operator recovery paths remain distributed across provider, roadmap, and skill docs."
+      ],
+      "notes": "Clarity is high for an authority system of this size, but the evidence volume still imposes navigation cost."
+    },
+    {
+      "category": "Audit History",
+      "score": 5,
+      "evidence": [
+        "CHANGELOG.md, DECISIONS.md, docs/decisions/, and docs/audits/ preserve detailed phase and provider evidence history.",
+        "docs/thc/LOCAL_CHECK.md and this THC-BOT run provide local review artifacts for the current methodology revision."
+      ],
+      "missingEvidence": [
+        "No independent public, peer, or Vel Labs reviewed THC artifact is recorded for this revision.",
+        "Structured THC-BOT history starts with this new run, so trend evidence is not mature yet."
+      ],
+      "notes": "Audit history is extensive, but independent review history and multi-run THC-BOT trend history are still limited."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "projectName": "ClearIntent",
+  "repositoryUrl": "https://github.com/Vel-Labs/ClearIntent",
+  "reviewedRevision": "52d0966a1c0677c067520edb0c948ced4a91bfe0",
+  "generatedAt": "2026-05-06T19:12:11.482Z",
+  "reviewLabel": "Local THC Check",
+  "recommendedLevel": "THC-4 Reproducible - Local THC Check",
+  "totalScore": 88,
+  "confidence": "medium",
+  "validationState": "Complete",
+  "oneSentenceAssessment": "ClearIntent has strong repo-visible authority contracts, validation, audits, and operator routing, but remains capped by local-only THC review plus missing transaction-backed execution and real wallet-rendered signing evidence.",
+  "scores": {
+    "Truth": 29,
+    "Hardening": 32,
+    "Clarity": 22,
+    "Audit History": 5
+  }
+}

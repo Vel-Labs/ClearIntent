@@ -1,0 +1,54 @@
+{
+  "findings": [
+    {
+      "finding": "Local THC-BOT artifacts are first-party evidence maps, not independent public verification.",
+      "severity": "medium",
+      "evidence": [
+        "docs/repo-truth/THC_LOCAL_AND_PUBLIC_REVIEW.md",
+        "docs/thc/README.md",
+        "docs/thc/LOCAL_CHECK.md"
+      ],
+      "recommendation": "Submit reviewed revision 52d0966 and the THC-BOT run package to independent public or peer review before using public score or leaderboard language."
+    },
+    {
+      "finding": "Transaction-backed autonomous execution is still unproven.",
+      "severity": "high",
+      "evidence": [
+        "README.md current submission posture",
+        "ROADMAP.md immediate next action",
+        "docs/audits/phase-4-keeperhub-execution-adapter/4b.9-closeout-audit.md"
+      ],
+      "recommendation": "Record one transaction-backed KeeperHub or executor receipt, then bind it to a canonical ExecutionReceipt and audit bundle."
+    },
+    {
+      "finding": "Real wallet-rendered signing evidence remains incomplete.",
+      "severity": "medium",
+      "evidence": [
+        "README.md capability snapshot",
+        "ROADMAP.md Phase 5C status",
+        "docs/providers/Wallets/README.md"
+      ],
+      "recommendation": "Run the prepared software-wallet validation path and preserve exact wallet prompt, signature, and ClearIntent preview evidence."
+    },
+    {
+      "finding": "Live evidence replay depends on operator-held credentials and provider availability.",
+      "severity": "medium",
+      "evidence": [
+        "npm run validate:credentials output",
+        "docs/hackathon/vendor-tracks.md",
+        "docs/roadmaps/CURRENT_STATE_AND_NEXT.md"
+      ],
+      "recommendation": "Keep non-secret transcripts and public artifact references current, and label unavailable live replay as lower confidence rather than success."
+    },
+    {
+      "finding": "KeeperHub and webhook event authenticity is improved but still not full authority truth.",
+      "severity": "medium",
+      "evidence": [
+        "README.md demo notification boundary",
+        "docs/architecture/ARCHITECTURE.md hosted dashboard note",
+        "apps/web/src/app/api/keeperhub/events/route.ts"
+      ],
+      "recommendation": "Finish source binding, replay protection, and trusted event checks before treating events as execution evidence."
+    }
+  ]
+}

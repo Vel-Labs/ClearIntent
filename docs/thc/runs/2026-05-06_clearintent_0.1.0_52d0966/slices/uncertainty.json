@@ -1,0 +1,35 @@
+{
+  "confidence": "medium",
+  "uncertaintyNotes": [
+    {
+      "note": "This is a local preparation review produced in the ClearIntent checkout, not independent public verification.",
+      "effect": "Keep confidence below high until independently verified or live evidence is refreshed."
+    },
+    {
+      "note": "npm run check passed locally, but external providers, live dashboards, and wallet prompts were not re-run against every live integration during this THC pass.",
+      "effect": "Keep confidence below high until independently verified or live evidence is refreshed."
+    },
+    {
+      "note": "Credential safety reported missing local live-provider secrets in this environment; that is safe for repo review but limits live replay confidence.",
+      "effect": "Keep confidence below high until independently verified or live evidence is refreshed."
+    },
+    {
+      "note": "The score reflects current repository artifacts at 52d0966, not future pushed state or uncommitted local edits.",
+      "effect": "Keep confidence below high until independently verified or live evidence is refreshed."
+    }
+  ],
+  "unavailableFields": [
+    {
+      "field": "independentReview.url",
+      "reason": "No independent public or peer THC review has been recorded for revision 52d0966."
+    },
+    {
+      "field": "transactionBackedExecution.receipt",
+      "reason": "No transaction-backed KeeperHub or executor receipt is recorded yet."
+    },
+    {
+      "field": "walletRenderedSigningEvidence",
+      "reason": "Phase 5C remains ready-for-operator-test; real wallet prompt evidence is not recorded."
+    }
+  ]
+}
