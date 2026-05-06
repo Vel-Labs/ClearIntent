@@ -17,6 +17,8 @@ These skills are scaffold assets. They are not globally installed automatically.
 | --- | --- | --- |
 | `repo-orientation` | Build a checkout-grounded map for a new human or agent before first action. | None |
 | `repo-doc-router` | Keep docs, templates, skills, roadmap, decisions, and repo taxonomy discoverable after moves or additions. | None |
+| `THC_Check` | Run a local THC preparation audit and produce `LOCAL_CHECK` plus structured THC-BOT artifacts. | None |
+| `THC_BOT_Visualizer` | Render optional `docs/thc/THC-BOT.html` from canonical THC-BOT run artifacts. | `templates/thc-bot-visualizer.html` |
 | `roadmap-phase-planner` | Convert roadmap features or phases into executable implementation plans. | `templates/phase-plan.md` |
 | `agent-assignment-writer` | Create bounded human or agent assignments with ownership, validation, docs updates, and stop conditions. | `templates/agent-assignment.md`, `templates/fresh-agent-handoff.md` |
 | `feature-implementation-runner` | Execute approved feature or phase plans while preserving scope and validation discipline. | None |

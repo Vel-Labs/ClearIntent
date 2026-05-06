@@ -68,6 +68,16 @@ If the system gets harder to explain as it grows, that is a reliability issue.
 | Hardening | audits, verification, fail-closed checks, worktree isolation, threat modeling |
 | Clarity | docs indexes, readable intent previews, demo script, architecture diagrams, audit receipts |
 
+## THC-BOT artifact boundary
+
+ClearIntent uses local THC-BOT artifacts as first-party preparation evidence.
+
+- `docs/thc/LOCAL_CHECK.md` is the human executive summary and readiness checklist.
+- `docs/thc/THC-BOT.history.json` and `docs/thc/runs/<run-id>/` are the structured local run ledger.
+- `docs/thc/THC-BOT.html` is an optional visualization generated from canonical artifacts.
+
+These artifacts help future reviewers find evidence faster. They are not public certification, endorsement, or independent verification. Public or leaderboard review must still verify the cited files and current repository state independently.
+
 ## Operating implication
 
 Every feature should answer three questions:

@@ -2,6 +2,11 @@
 
 All notable repo changes should be logged here.
 
+## 2026-05-06
+
+- Updated repo-local THC methodology materials from `Vel-Labs/thc-methodology` at `1f5e84a17c4aecb43abd9eedf06b5f79e8ab2ce9`, adding the THC-BOT contract, scorecard, levels, local/public review boundary, leaderboard posture, local THC audit skill, and optional visualizer skill.
+- Routed ClearIntent THC audits to the full artifact-producing workflow: `LOCAL_CHECK.md` remains the executive summary while `THC-BOT.history.json` and `docs/thc/runs/<run-id>/` form the structured first-party run ledger for later independent verification.
+
 ## 2026-05-03
 
 - Replaced the root README with a submission/product entrypoint grounded in exact ENS, 0G, KeeperHub, signer, dashboard, wizard, SDK/CLI, skill, and Discord demo evidence boundaries; moved the prior technical orientation into `docs/architecture/TECHNICAL_README.md`.

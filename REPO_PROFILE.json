@@ -49,7 +49,12 @@
     "githubIssueConfig": ".github/ISSUE_TEMPLATE/config.yml",
     "githubQualityGate": ".github/workflows/quality-gate.yml",
     "webApp": "apps/web/",
-    "phase6AuditDirectory": "docs/audits/phase-6-authority-wallet-validator/"
+    "phase6AuditDirectory": "docs/audits/phase-6-authority-wallet-validator/",
+    "thcMethodology": "docs/repo-truth/THC_METHODOLOGY.md",
+    "thcBotContract": "docs/repo-truth/THC_BOT_CONTRACT.md",
+    "thcArtifactDirectory": "docs/thc/",
+    "thcCheckSkill": "skills/THC_Check/",
+    "thcBotVisualizerSkill": "skills/THC_BOT_Visualizer/"
   },
   "plannedCanonicalPaths": {
     "zerogMemoryPackage": "packages/zerog-memory/",
@@ -74,6 +79,7 @@
     "contracts/authority-lifecycle.md",
     "docs/architecture/ARCHITECTURE.md",
     "docs/architecture/REPO_BOUNDARIES.md",
+    "docs/repo-truth/THC_BOT_CONTRACT.md",
     "ROADMAP.md",
     "docs/roadmaps/ROADMAP.md",
     "DECISIONS.md",
@@ -158,7 +164,9 @@
     "apps/web/"
   ],
   "importantAgentDirectories": [
-    "skills/"
+    "skills/",
+    "skills/THC_Check/",
+    "skills/THC_BOT_Visualizer/"
   ],
   "importantDocsDirectories": [
     "docs/",
@@ -215,6 +223,9 @@
     "<roadmap family or phase id>",
     "<phase name>",
     "<phase>",
+    "<run-id>",
+    "<reviewed_revision>",
+    "<script id=\"thc-bot-data\" type=\"application/json\">",
     "<x>",
     "<x.1>",
     "<x.9>",

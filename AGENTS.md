@@ -67,6 +67,8 @@ Available repo-local skills:
 | --- | --- |
 | `repo-orientation` | Orienting a new human or agent to ClearIntent before first action. |
 | `repo-doc-router` | Adding, moving, indexing, or reorganizing docs, templates, skills, roadmap files, decisions, or repo taxonomy. |
+| `THC_Check` | Running a local THC preparation audit that updates `LOCAL_CHECK` plus structured THC-BOT artifacts. |
+| `THC_BOT_Visualizer` | Rendering optional `docs/thc/THC-BOT.html` from canonical THC-BOT run artifacts. |
 | `roadmap-phase-planner` | Turning a roadmap feature or phase into an executable implementation plan. |
 | `agent-assignment-writer` | Preparing bounded human or agent assignments, fresh-session handoffs, or parallel-agent prompts. |
 | `feature-implementation-runner` | Executing an approved phase plan or feature implementation. |
@@ -94,6 +96,13 @@ Available repo-local skills:
 | `clearintent-operator-export-handoff` | Exporting SDK, CLI, dashboard, or agent handoff context with public references only and no secrets. |
 | `clearintent-emergency-freeze` | Stopping execution and preserving evidence when policy, intent, wallet, webhook, executor, or transaction evidence is suspicious or mismatched. |
 | `clearintent-post-transaction-audit` | Reconciling intent, policy, signature, KeeperHub, transaction, receipt, notification, and 0G audit evidence after any attempted transaction. |
+
+Local THC audit rule:
+
+- Use `THC_Check` by default when auditing this repository with THC Methodology unless the operator explicitly asks for read-only, spot-check, or no-artifact behavior.
+- Treat `docs/thc/LOCAL_CHECK.md` as the human executive summary and `docs/thc/THC-BOT.history.json` plus `docs/thc/runs/<run-id>/` as the structured run ledger.
+- Treat `docs/thc/THC-BOT.html` as optional generated visualization, not scoring truth.
+- Local THC-BOT artifacts are first-party evidence maps only. Public or leaderboard review must independently verify cited evidence.
 
 Before commit, push, or phase handoff, use `pre-commit-quality-gate` or an equivalent checklist and report exact commands/results.
 

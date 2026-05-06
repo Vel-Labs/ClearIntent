@@ -39,9 +39,10 @@ For implementation sequencing, `governance/stability-handoff.md` explains why `c
 6. `../DECISIONS.md`
 7. `repo-truth/THC_METHODOLOGY.md`
 8. `repo-truth/THC_IN_THIS_REPO.md`
-9. `governance/code-quality-standards.md`
-10. `governance/stability-handoff.md`
-11. `roadmaps/README.md`
+9. `repo-truth/THC_BOT_CONTRACT.md`
+10. `governance/code-quality-standards.md`
+11. `governance/stability-handoff.md`
+12. `roadmaps/README.md`
 
 ### Coding agent
 
